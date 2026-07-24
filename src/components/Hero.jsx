@@ -61,18 +61,18 @@ export default function Hero() {
           </p>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-2 pt-1 w-full max-w-[180px]">
+          <div className="flex flex-col gap-2 pt-1 w-full max-w-[140px]">
             <Link
               href="/shop"
-              className="group inline-flex items-center justify-center gap-2 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-[11px] font-bold tracking-widest uppercase py-2.5 rounded-sm shadow-sm transition-all w-full text-center"
+              className="group inline-flex items-center justify-center gap-1.5 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm shadow-sm transition-all w-full text-center"
             >
               <span>Shop Now</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3 h-3" />
             </Link>
 
             <Link
               href="/collections"
-              className="inline-flex items-center justify-center border border-[#3D1418]/60 text-[#3D1418] text-[11px] font-bold tracking-widest uppercase py-2.5 rounded-sm bg-transparent w-full text-center"
+              className="inline-flex items-center justify-center border border-[#3D1418]/60 text-[#3D1418] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm bg-transparent w-full text-center"
             >
               Explore Collections
             </Link>
