@@ -55,8 +55,9 @@ export default function Hero() {
 
           {/* Subheading */}
           <p className="text-xs text-[#4A3B32] max-w-xs font-normal leading-relaxed">
-            Handpicked sarees that celebrate <br />
-            grace, heritage and timeless beauty.
+            Handpicked sarees that <br />
+            celebrate grace, heritage <br />
+            and timeless beauty.
           </p>
 
           {/* Action Buttons */}
