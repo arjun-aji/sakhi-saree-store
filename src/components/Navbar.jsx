@@ -107,51 +107,74 @@ export default function Navbar() {
 
       </div>
 
-      {/* Mobile Drawer Navigation Menu */}
+      {/* Mobile Drawer Overlay Backdrop */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#F7EFE8] border-b border-[#E2D4C5] px-6 py-4 space-y-3 shadow-lg animate-in slide-in-from-top-2 duration-200">
-          <Link 
-            href="/" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1 border-b border-[#E2D4C5]/30"
-          >
-            Home
-          </Link>
-          <Link 
-            href="/shop" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1 border-b border-[#E2D4C5]/30"
-          >
-            Shop
-          </Link>
-          <Link 
-            href="/new-arrivals" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1 border-b border-[#E2D4C5]/30"
-          >
-            New Arrivals
-          </Link>
-          <Link 
-            href="/collections" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1 border-b border-[#E2D4C5]/30"
-          >
-            Collections
-          </Link>
-          <Link 
-            href="/about" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1 border-b border-[#E2D4C5]/30"
-          >
-            About Us
-          </Link>
-          <Link 
-            href="/contact" 
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-xs font-bold tracking-widest text-[#3D1418] uppercase py-1"
-          >
-            Contact
-          </Link>
+        <div 
+          onClick={() => setMobileMenuOpen(false)}
+          className="lg:hidden fixed inset-0 bg-black/25 z-[98] backdrop-blur-[1px]"
+        />
+      )}
+
+      {/* Mobile Drawer Navigation Menu (w-1/2, h-screen, transparent skin color bg) */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden fixed top-0 left-0 h-screen w-1/2 min-w-[200px] bg-[#F7EFE8]/95 backdrop-blur-md z-[99] shadow-2xl p-5 flex flex-col border-r border-[#E2D4C5]/60 animate-in slide-in-from-left duration-300">
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-[#E2D4C5]/40 mb-6">
+            <span className="text-[10px] tracking-[0.2em] font-bold text-[#3D1418] uppercase">Menu</span>
+            <button 
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-1 hover:bg-[#3D1418]/10 rounded-md text-[#3D1418] transition-colors"
+              aria-label="Close Menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Drawer Navigation Links */}
+          <nav className="flex flex-col space-y-4">
+            <Link 
+              href="/" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              Home
+            </Link>
+            <Link 
+              href="/shop" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              Shop
+            </Link>
+            <Link 
+              href="/new-arrivals" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              New Arrivals
+            </Link>
+            <Link 
+              href="/collections" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              Collections
+            </Link>
+            <Link 
+              href="/about" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              About Us
+            </Link>
+            <Link 
+              href="/contact" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase hover:text-[#8B2635] transition-colors"
+            >
+              Contact
+            </Link>
+          </nav>
         </div>
       )}
     </header>
