@@ -48,3 +48,35 @@
   background: #3D1418;
   border-radius: 4px;
 }
+
+/* Preloader Animations */
+@keyframes elegant-load {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes logo-fade {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-elegant-load {
+  animation: elegant-load 1.6s infinite cubic-bezier(0.65, 0.05, 0.36, 1);
+}
+
+.animate-logo-fade {
+  animation: logo-fade 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}

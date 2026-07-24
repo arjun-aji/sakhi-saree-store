@@ -1,17 +1,17 @@
 import React from 'react';
-import AnnouncementBar from '../components/AnnouncementBar';
+import Preloader from '../components/Preloader';
 import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F7EFE8] relative">
-      {/* Top Announcement Bar */}
-      <AnnouncementBar />
+      {/* Luxury Loading Preloader Screen */}
+      <Preloader />
 
       {/* Main Content Area with absolute Navbar overlay */}
       <div className="relative flex-grow flex flex-col">
-
+        
         {/* Transparent Navbar overlayed directly on top of the Hero background */}
         <div className="absolute top-0 left-0 w-full z-50">
           <Navbar />
