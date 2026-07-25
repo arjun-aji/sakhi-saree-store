@@ -60,12 +60,12 @@ function LotusHandsIcon({ className = 'w-6 h-6' }) {
 }
 
 /* ── Diamond Divider ── */
-function GoldDivider() {
+function GoldDivider({ className = 'my-4' }) {
     return (
-        <div className="flex items-center justify-center gap-3 my-4">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent to-[#C59B27]/50" />
-            <span className="text-[#C59B27] text-xs">✦</span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent to-[#C59B27]/50" />
+        <div className={`flex items-center justify-center gap-2 sm:gap-3 ${className}`}>
+            <span className="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-[#C59B27]/50" />
+            <span className="text-[#C59B27] text-[10px] sm:text-xs">✦</span>
+            <span className="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-[#C59B27]/50" />
         </div>
     );
 }
@@ -146,35 +146,34 @@ export default function Contact() {
             {/* ========================================================= */}
             {/* SECTION 1: OUR PROMISE (Starts from Promises)             */}
             {/* ========================================================= */}
-            <section id="promises" className="w-full py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-t border-[#E2D4C5]">
+            <section id="promises" className="w-full py-6 sm:py-12 lg:py-16 px-2 sm:px-6 lg:px-8 border-t border-[#E2D4C5]">
                 <div className="max-w-7xl mx-auto">
                     {/* Header */}
-                    <div className="text-center mb-10">
-                        <div className="inline-flex items-center justify-center gap-2 text-[#3D1418] uppercase tracking-[0.25em] text-xs font-bold mb-2">
-                            <LotusIcon className="w-4 h-4 text-[#8B2635]" />
+                    <div className="text-center mb-4 sm:mb-10">
+                        <div className="inline-flex items-center justify-center gap-1.5 sm:gap-2 text-[#3D1418] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-[10px] sm:text-xs font-bold">
+                            <LotusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B2635]" />
                             <span>Our Promise</span>
-                            <LotusIcon className="w-4 h-4 text-[#8B2635]" />
+                            <LotusIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B2635]" />
                         </div>
                     </div>
 
                     {/* 4 Cards Grid in a Light Beige Container */}
-                    <div className="bg-[#EFE6DD]/70 rounded-2xl p-6 sm:p-8 border border-[#E2D4C5] shadow-sm">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 divide-y md:divide-y-0 md:divide-x divide-[#E2D4C5]/60">
+                    <div className="bg-[#EFE6DD]/70 rounded-2xl p-2.5 sm:p-8 border border-[#E2D4C5] shadow-sm">
+                        <div className="grid grid-cols-4 divide-x divide-[#E2D4C5]/60 gap-1 sm:gap-6">
                             {promises.map((item, idx) => {
                                 const IconComp = item.icon;
                                 return (
                                     <div
                                         key={idx}
-                                        className={`flex flex-col items-center text-center space-y-3 ${idx !== 0 ? 'pt-6 md:pt-0 md:pl-6 lg:pl-6' : ''
-                                            }`}
+                                        className="flex flex-col items-center text-center space-y-1.5 sm:space-y-3 px-1 sm:px-4"
                                     >
-                                        <div className="w-14 h-14 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#8B2635] shadow-xs hover:scale-105 transition-transform duration-300">
-                                            <IconComp className="w-7 h-7 stroke-[1.5]" />
+                                        <div className="w-7 h-7 sm:w-14 sm:h-14 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#8B2635] shadow-xs hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                                            <IconComp className="w-3.5 h-3.5 sm:w-7 sm:h-7 stroke-[1.5]" />
                                         </div>
-                                        <h3 className="font-serif-luxury text-xl font-medium text-[#2A0E11] tracking-wide">
+                                        <h3 className="font-serif-luxury text-[9px] sm:text-xl font-medium text-[#2A0E11] tracking-tight sm:tracking-wide leading-tight text-center">
                                             {item.title}
                                         </h3>
-                                        <p className="text-xs sm:text-sm text-[#4A3B32] leading-relaxed font-normal max-w-xs">
+                                        <p className="text-[7.5px] sm:text-sm text-[#4A3B32] leading-tight sm:leading-relaxed font-normal text-center">
                                             {item.description}
                                         </p>
                                     </div>
@@ -188,44 +187,47 @@ export default function Contact() {
             {/* ========================================================= */}
             {/* SECTION 2: CONTACT US                                     */}
             {/* ========================================================= */}
-            <section id="contact" className="w-full py-12 lg:py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F7EFE8]">
+            {/* ========================================================= */}
+            {/* SECTION 2: CONTACT US                                     */}
+            {/* ========================================================= */}
+            <section id="contact" className="w-full py-6 sm:py-12 lg:py-16 px-3 sm:px-6 lg:px-8 relative overflow-hidden bg-[#F7EFE8]">
                 {/* Background Subtle Gradient Overlay */}
                 <div className="absolute inset-0 pointer-events-none opacity-40 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-[#8B2635]/5 via-transparent to-transparent" />
 
                 <div className="max-w-7xl mx-auto relative z-10">
 
                     {/* Section Header */}
-                    <div className="text-left mb-8">
-                        <div className="inline-flex items-center gap-2 text-[#3D1418] uppercase tracking-[0.25em] text-xs font-bold mb-1">
+                    <div className="text-left mb-4 sm:mb-8">
+                        <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[#3D1418] uppercase tracking-[0.18em] sm:tracking-[0.25em] text-[9px] sm:text-xs font-bold mb-1">
                             <span>Contact Us</span>
-                            <LotusIcon className="w-3.5 h-3.5 text-[#8B2635]" />
+                            <LotusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8B2635]" />
                         </div>
-                        <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-5xl font-normal text-[#2A0E11] tracking-tight">
+                        <h2 className="font-serif-luxury text-base sm:text-4xl lg:text-5xl font-normal text-[#2A0E11] tracking-tight leading-tight">
                             We&apos;d Love to Hear from You!
                         </h2>
-                        <GoldDivider />
-                        <p className="text-xs sm:text-sm text-[#4A3B32] leading-relaxed max-w-md">
+                        <GoldDivider className="my-1.5 sm:my-4" />
+                        <p className="text-[10px] sm:text-sm text-[#4A3B32] leading-relaxed max-w-md">
                             Have a question, need styling advice, or just want to say hello? We&apos;re here for you.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-8 lg:gap-12 items-start">
 
                         {/* Left Column: Contact Info Cards */}
-                        <div className="lg:col-span-5 space-y-6">
+                        <div className="lg:col-span-5 space-y-2.5 sm:space-y-6">
 
                             {/* Phone */}
-                            <div className="flex items-start gap-4 p-4 rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
-                                    <Phone className="w-4 h-4 text-[#8B2635]" />
+                            <div className="flex items-start gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-lg sm:rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
+                                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
+                                    <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B2635]" />
                                 </div>
                                 <div>
-                                    <h4 className="font-serif-luxury text-base font-semibold text-[#2A0E11] tracking-wide">
+                                    <h4 className="font-serif-luxury text-xs sm:text-base font-semibold text-[#2A0E11] tracking-wide">
                                         Phone
                                     </h4>
                                     <a
                                         href="tel:+918086123456"
-                                        className="text-xs sm:text-sm text-[#4A3B32] hover:text-[#8B2635] transition-colors"
+                                        className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#8B2635] transition-colors"
                                     >
                                         +91 8086 123 456
                                     </a>
@@ -233,17 +235,17 @@ export default function Contact() {
                             </div>
 
                             {/* Email */}
-                            <div className="flex items-start gap-4 p-4 rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
-                                    <Mail className="w-4 h-4 text-[#8B2635]" />
+                            <div className="flex items-start gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-lg sm:rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
+                                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
+                                    <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B2635]" />
                                 </div>
                                 <div>
-                                    <h4 className="font-serif-luxury text-base font-semibold text-[#2A0E11] tracking-wide">
+                                    <h4 className="font-serif-luxury text-xs sm:text-base font-semibold text-[#2A0E11] tracking-wide">
                                         Email
                                     </h4>
                                     <a
                                         href="mailto:jajithks01@gmail.com"
-                                        className="text-xs sm:text-sm text-[#4A3B32] hover:text-[#8B2635] transition-colors font-medium"
+                                        className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#8B2635] transition-colors font-medium"
                                     >
                                         jajithks01@gmail.com
                                     </a>
@@ -251,15 +253,15 @@ export default function Contact() {
                             </div>
 
                             {/* Address */}
-                            <div className="flex items-start gap-4 p-4 rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
-                                <div className="w-10 h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
-                                    <MapPin className="w-4 h-4 text-[#8B2635]" />
+                            <div className="flex items-start gap-2.5 sm:gap-4 p-2.5 sm:p-4 rounded-lg sm:rounded-xl bg-[#EFE6DD]/50 border border-[#E2D4C5]/70 hover:border-[#8B2635]/40 transition-colors">
+                                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center text-[#3D1418] flex-shrink-0">
+                                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#8B2635]" />
                                 </div>
                                 <div>
-                                    <h4 className="font-serif-luxury text-base font-semibold text-[#2A0E11] tracking-wide">
+                                    <h4 className="font-serif-luxury text-xs sm:text-base font-semibold text-[#2A0E11] tracking-wide">
                                         Address
                                     </h4>
-                                    <p className="text-xs sm:text-sm text-[#4A3B32] leading-relaxed">
+                                    <p className="text-[10px] sm:text-sm text-[#4A3B32] leading-relaxed">
                                         Sakhi By Maya&apos;s
                                         <br />
                                         Kochi, Kerala, India - 682001
@@ -268,15 +270,15 @@ export default function Contact() {
                             </div>
 
                             {/* Mobile only: Personalized Styling Note */}
-                            <div className="lg:hidden p-5 rounded-2xl bg-gradient-to-br from-[#3D1418] to-[#2A0E11] text-[#F7EFE8] relative overflow-hidden shadow-md">
+                            <div className="lg:hidden p-3 sm:p-5 rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#3D1418] to-[#2A0E11] text-[#F7EFE8] relative overflow-hidden shadow-md">
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#C59B27]/10 rounded-full blur-2xl pointer-events-none" />
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Sparkles className="w-4 h-4 text-[#C59B27]" />
-                                    <span className="text-[10px] tracking-[0.2em] font-bold uppercase text-[#C59B27]">
+                                <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+                                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-[#C59B27]" />
+                                    <span className="text-[9px] sm:text-[10px] tracking-[0.18em] sm:tracking-[0.2em] font-bold uppercase text-[#C59B27]">
                                         Personalized Styling Assistance
                                     </span>
                                 </div>
-                                <p className="text-xs text-[#EFE6DD]/90 leading-relaxed">
+                                <p className="text-[10px] sm:text-xs text-[#EFE6DD]/90 leading-relaxed">
                                     Looking for custom saree consultations or bridal styling? Drop us a message or call us directly.
                                 </p>
                             </div>
@@ -346,22 +348,22 @@ export default function Contact() {
 
                         {/* Right Column: Contact Form & Traditional Brass Vessel / Flowers Image */}
                         <div className="lg:col-span-7 relative">
-                            <div className="bg-[#EFE6DD]/60 rounded-2xl p-6 sm:p-8 border border-[#E2D4C5] shadow-sm relative z-10">
+                            <div className="bg-[#EFE6DD]/60 rounded-xl sm:rounded-2xl p-3.5 sm:p-8 border border-[#E2D4C5] shadow-sm relative z-10">
 
                                 {submitted ? (
-                                    <div className="bg-[#3D1418] text-[#F7EFE8] rounded-xl p-6 text-center space-y-3 animate-in fade-in duration-300">
-                                        <div className="w-12 h-12 rounded-full bg-[#C59B27]/20 border border-[#C59B27] flex items-center justify-center mx-auto text-[#C59B27]">
+                                    <div className="bg-[#3D1418] text-[#F7EFE8] rounded-xl p-4 sm:p-6 text-center space-y-3 animate-in fade-in duration-300">
+                                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#C59B27]/20 border border-[#C59B27] flex items-center justify-center mx-auto text-[#C59B27]">
                                             ✓
                                         </div>
-                                        <h3 className="font-serif-luxury text-2xl">Thank You!</h3>
-                                        <p className="text-xs text-[#EFE6DD]">
+                                        <h3 className="font-serif-luxury text-xl sm:text-2xl">Thank You!</h3>
+                                        <p className="text-[11px] sm:text-xs text-[#EFE6DD]">
                                             Your message has been received and opening in your mail app for <span className="text-[#C59B27] font-semibold">jajithks01@gmail.com</span>. We will get back to you shortly!
                                         </p>
                                     </div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-4">
+                                    <form onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-4">
                                         {/* Row 1: Name & Email */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                                             <div>
                                                 <input
                                                     type="text"
@@ -370,7 +372,7 @@ export default function Contact() {
                                                     value={formData.name}
                                                     onChange={handleChange}
                                                     placeholder="Your Name"
-                                                    className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-4 py-2.5 text-xs sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
+                                                    className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-3 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
                                                 />
                                             </div>
                                             <div>
@@ -381,7 +383,7 @@ export default function Contact() {
                                                     value={formData.email}
                                                     onChange={handleChange}
                                                     placeholder="Your Email"
-                                                    className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-4 py-2.5 text-xs sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
+                                                    className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-3 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -394,7 +396,7 @@ export default function Contact() {
                                                 value={formData.phone}
                                                 onChange={handleChange}
                                                 placeholder="Phone Number"
-                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-4 py-2.5 text-xs sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
+                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-3 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
                                             />
                                         </div>
 
@@ -407,7 +409,7 @@ export default function Contact() {
                                                 value={formData.subject}
                                                 onChange={handleChange}
                                                 placeholder="Subject"
-                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-4 py-2.5 text-xs sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
+                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-3 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors"
                                             />
                                         </div>
 
@@ -415,12 +417,12 @@ export default function Contact() {
                                         <div>
                                             <textarea
                                                 name="message"
-                                                rows="4"
+                                                rows="3"
                                                 required
                                                 value={formData.message}
                                                 onChange={handleChange}
                                                 placeholder="Your Message"
-                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-4 py-2.5 text-xs sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors resize-none"
+                                                className="w-full bg-[#F7EFE8] border border-[#E2D4C5] rounded-md px-3 py-2 sm:px-4 sm:py-2.5 text-[11px] sm:text-sm text-[#2A0E11] placeholder-[#8C7A70] focus:outline-none focus:border-[#8B2635] transition-colors resize-none"
                                             />
                                         </div>
 
@@ -429,10 +431,10 @@ export default function Contact() {
                                             <button
                                                 type="submit"
                                                 disabled={loading}
-                                                className="inline-flex items-center justify-center gap-2 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-xs font-bold tracking-widest uppercase px-6 py-3 rounded-md shadow-md transition-all duration-300 hover:shadow-lg disabled:opacity-50"
+                                                className="inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-[10px] sm:text-xs font-bold tracking-widest uppercase px-4 py-2.5 sm:px-6 sm:py-3 rounded-md shadow-md transition-all duration-300 hover:shadow-lg disabled:opacity-50"
                                             >
                                                 <span>{loading ? 'Sending...' : 'SEND MESSAGE'}</span>
-                                                <Send className="w-3.5 h-3.5 stroke-[2]" />
+                                                <Send className="w-3 h-3 sm:w-3.5 sm:h-3.5 stroke-[2]" />
                                             </button>
                                         </div>
                                     </form>

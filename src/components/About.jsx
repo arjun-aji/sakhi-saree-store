@@ -28,12 +28,12 @@ function FloralCornerIcon({ className = 'w-20 h-20' }) {
 }
 
 /* ── Gold Diamond Divider ── */
-function GoldDivider() {
+function GoldDivider({ className = 'my-5' }) {
   return (
-    <div className="flex items-center gap-3 my-5">
-      <span className="h-px w-16 bg-gradient-to-r from-transparent to-[#C59B27]/40" />
-      <span className="text-[#C59B27] text-xs">✦</span>
-      <span className="h-px w-16 bg-gradient-to-l from-transparent to-[#C59B27]/40" />
+    <div className={`flex items-center gap-2 sm:gap-3 ${className}`}>
+      <span className="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-[#C59B27]/40" />
+      <span className="text-[#C59B27] text-[10px] sm:text-xs">✦</span>
+      <span className="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-[#C59B27]/40" />
     </div>
   );
 }
@@ -66,52 +66,45 @@ export default function About() {
       {/* ================================================================== */}
       <section
         id="about"
-        className="w-full bg-[#F8F1EA] py-[70px] sm:py-20 lg:py-[120px] px-4 sm:px-8 lg:px-12"
+        className="w-full bg-[#F8F1EA] py-6 sm:py-20 lg:py-[100px] px-3 sm:px-8 lg:px-12"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Side-by-side flex container on mobile, grid layout on desktop */}
+          <div className="flex flex-row lg:grid lg:grid-cols-12 gap-3 sm:gap-8 lg:gap-14 items-center">
 
             {/* Left: Text Content */}
-            <div className="lg:col-span-6 space-y-5">
-              <div className="inline-flex items-center gap-2 text-[#8B5A3C] uppercase tracking-[0.28em] text-[11px] font-bold">
+            <div className="w-1/2 lg:w-auto lg:col-span-6 space-y-2 sm:space-y-4 lg:space-y-6">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2.5 text-[#8B5A3C] uppercase tracking-[0.18em] sm:tracking-[0.28em] text-[9px] sm:text-xs font-bold">
                 <span>About Us</span>
-                <LotusIcon className="w-3.5 h-3.5 text-[#8B2635]" />
+                <LotusIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#8B2635]" />
               </div>
 
-              <h1 className="font-serif-luxury text-[42px] sm:text-5xl lg:text-[64px] font-normal text-[#2A0E11] leading-[1.06] tracking-tight">
+              <h1 className="font-serif-luxury text-base sm:text-5xl lg:text-[58px] font-normal text-[#2A0E11] leading-tight sm:leading-[1.06] tracking-tight">
                 Sakhi By Maya&apos;s
               </h1>
 
-              <GoldDivider />
+              <GoldDivider className="my-1.5 sm:my-4 lg:my-6" />
 
-              <p className="font-serif-luxury text-xl sm:text-2xl text-[#3D1418] italic font-normal leading-relaxed">
+              <p className="font-serif-luxury text-[11px] sm:text-xl lg:text-2xl text-[#3D1418] italic font-normal leading-snug sm:leading-relaxed">
                 Where tradition meets timeless elegance.
               </p>
 
-              <p className="text-sm text-[#5A4438] leading-[1.95] font-normal max-w-lg">
+              <p className="text-[10px] sm:text-sm lg:text-base text-[#5A4438] leading-relaxed sm:leading-[1.85] font-normal max-w-lg">
                 At Sakhi By Maya&apos;s, we celebrate the timeless beauty of handcrafted sarees. Each piece is a tribute to India&apos;s rich heritage, woven with love, care, and a promise of unmatched quality.
               </p>
             </div>
 
             {/* Right: Image Frame */}
-            <div className="lg:col-span-6 relative">
-              <div
-                className="relative p-3 sm:p-4 rounded-[20px] bg-white border border-[rgba(180,140,110,0.15)] shadow-[0_12px_35px_rgba(0,0,0,0.05)]"
-              >
-                <div className="relative aspect-[4/3] sm:aspect-[14/11] w-full rounded-[14px] overflow-hidden">
-                  <Image
-                    src="/assets/about/hero_stack.jpg"
-                    alt="Sakhi By Maya's Luxury Folded Saree Stack"
-                    fill
-                    priority
-                    className="object-cover object-center hover:scale-[1.03] transition-transform duration-700"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                  />
-                </div>
-                {/* Decorative floral corner */}
-                <div className="absolute -bottom-7 -right-7 pointer-events-none text-[#C59B27]/45">
-                  <FloralCornerIcon className="w-32 h-32" />
-                </div>
+            <div className="w-1/2 lg:w-auto lg:col-span-6 relative">
+              <div className="relative aspect-[1.13/1] w-full">
+                <Image
+                  src="/assets/about/hero_stack.jpg"
+                  alt="Sakhi By Maya's Luxury Folded Saree Stack"
+                  fill
+                  priority
+                  className="object-contain object-center hover:scale-[1.02] transition-transform duration-500"
+                  sizes="(max-width: 1024px) 50vw, 50vw"
+                />
               </div>
             </div>
 
@@ -125,25 +118,26 @@ export default function About() {
       {/* ================================================================== */}
       <section
         id="our-story"
-        className="w-full bg-white py-[70px] sm:py-20 lg:py-[120px] px-4 sm:px-8 lg:px-12"
+        className="w-full bg-white py-8 sm:py-20 lg:py-[120px] px-3 sm:px-8 lg:px-12"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+          {/* Side-by-side flex container on mobile, grid layout on desktop */}
+          <div className="flex flex-row lg:grid lg:grid-cols-12 gap-3 sm:gap-8 lg:gap-16 items-center lg:items-start">
 
             {/* Left: Story Text */}
-            <div className="lg:col-span-5 space-y-5">
-              <div className="inline-flex items-center gap-2 text-[#8B5A3C] uppercase tracking-[0.28em] text-[11px] font-bold">
-                <LotusIcon className="w-3.5 h-3.5 text-[#8B2635]" />
+            <div className="w-1/2 lg:w-auto lg:col-span-5 space-y-2 sm:space-y-4 lg:space-y-5">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[#8B5A3C] uppercase tracking-[0.18em] sm:tracking-[0.28em] text-[9px] sm:text-[11px] font-bold">
+                <LotusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8B2635]" />
                 <span>Our Story</span>
               </div>
 
-              <h2 className="font-serif-luxury text-3xl sm:text-4xl lg:text-[50px] font-normal text-[#2A0E11] leading-[1.1] tracking-tight">
-                From Friendship<br className="hidden lg:block" /> to a Dream
+              <h2 className="font-serif-luxury text-base sm:text-3xl lg:text-[50px] font-normal text-[#2A0E11] leading-snug sm:leading-[1.1] tracking-tight">
+                From Friendship<br className="hidden sm:block" /> to a Dream
               </h2>
 
-              <GoldDivider />
+              <GoldDivider className="my-1.5 sm:my-5" />
 
-              <p className="text-sm text-[#5A4438] leading-[1.95] font-normal max-w-lg">
+              <p className="text-[11px] sm:text-sm text-[#5A4438] leading-relaxed sm:leading-[1.95] font-normal max-w-lg">
                 Sakhi By Maya&apos;s was born not in a boardroom, but in countless conversations between two friends who shared a love for sarees and a desire to create something meaningful.
               </p>
 
@@ -157,41 +151,41 @@ export default function About() {
                 </p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-1 sm:pt-2">
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-2 text-[#3D1418] hover:text-[#8B2635] text-[11px] font-bold tracking-[0.22em] uppercase group transition-colors duration-200"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 text-[#3D1418] hover:text-[#8B2635] text-[9px] sm:text-[11px] font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase group transition-colors duration-200"
                 >
                   <span>Read More</span>
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>
 
             {/* Right: Story Images */}
-            <div className="lg:col-span-7">
+            <div className="w-1/2 lg:w-auto lg:col-span-7">
 
-              {/* === MOBILE: Stacked card list === */}
-              <div className="space-y-4 lg:hidden">
+              {/* === MOBILE: Compact side-by-side card list === */}
+              <div className="space-y-2 sm:space-y-4 lg:hidden">
                 {storyCards.map((card, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-4 sm:gap-5 p-4 sm:p-5 rounded-[18px] bg-white border border-[rgba(180,140,110,0.12)] shadow-[0_12px_35px_rgba(0,0,0,0.05)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] transition-all duration-300 group"
+                    className="flex items-center gap-2 sm:gap-4 p-2 sm:p-4 rounded-[12px] sm:rounded-[18px] bg-white border border-[rgba(180,140,110,0.12)] shadow-[0_3px_12px_rgba(0,0,0,0.04)] sm:shadow-[0_12px_35px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-all duration-300 group"
                   >
-                    <div className="relative w-24 h-20 sm:w-32 sm:h-24 rounded-[12px] overflow-hidden flex-shrink-0">
+                    <div className="relative w-12 h-10 sm:w-28 sm:h-20 rounded-[8px] sm:rounded-[12px] overflow-hidden flex-shrink-0">
                       <Image
                         src={card.image}
                         alt={card.alt}
                         fill
                         className="object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                        sizes="(max-width: 640px) 96px, 128px"
+                        sizes="(max-width: 640px) 48px, 112px"
                       />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-serif-luxury text-lg sm:text-xl font-medium text-[#2A0E11] tracking-wide">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-serif-luxury text-[10px] sm:text-lg font-medium text-[#2A0E11] tracking-tight sm:tracking-wide leading-tight line-clamp-2">
                         {card.title}
                       </h3>
-                      <div className="w-10 h-px bg-[#C59B27]/50 mt-2" />
+                      <div className="w-5 sm:w-10 h-px bg-[#C59B27]/50 mt-1 sm:mt-2" />
                     </div>
                   </div>
                 ))}
