@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -51,11 +51,8 @@ export default function Navbar() {
           <Link href="/shop" className="hover:text-[#8B2635] transition-colors py-1">
             Shop
           </Link>
-          <Link href="/new-arrivals" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/shop?filter=new" className="hover:text-[#8B2635] transition-colors py-1">
             New Arrivals
-          </Link>
-          <Link href="/collections" className="hover:text-[#8B2635] transition-colors py-1">
-            Collections
           </Link>
           <Link href="/about#about" className="hover:text-[#8B2635] transition-colors py-1">
             About Us
@@ -146,18 +143,11 @@ export default function Navbar() {
               Shop
             </Link>
             <Link 
-              href="/new-arrivals" 
+              href="/shop?filter=new" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               New Arrivals
-            </Link>
-            <Link 
-              href="/collections" 
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
-            >
-              Collections
             </Link>
             <Link 
               href="/about#about" 
