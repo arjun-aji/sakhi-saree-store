@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -27,7 +27,6 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center group">
-            {/* Logo dimensions increased for premium visibility */}
             <div className="relative w-44 h-14 sm:w-56 sm:h-18 lg:w-64 lg:h-22">
               <Image 
                 src="/assets/logo.png" 
@@ -41,11 +40,11 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Desktop Navigation Links (Top Center Aligned) */}
+        {/* Center: Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center justify-center space-x-8 text-xs font-bold tracking-widest text-[#3D1418] uppercase">
           <Link 
             href="/" 
-            className="relative py-1 text-[#3D1418] font-bold after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#3D1418]"
+            className="hover:text-[#8B2635] transition-colors py-1"
           >
             Home
           </Link>
@@ -58,10 +57,10 @@ export default function Navbar() {
           <Link href="/collections" className="hover:text-[#8B2635] transition-colors py-1">
             Collections
           </Link>
-          <Link href="/about" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/about#about" className="hover:text-[#8B2635] transition-colors py-1">
             About Us
           </Link>
-          <Link href="/contact" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/about#contact" className="hover:text-[#8B2635] transition-colors py-1">
             Contact
           </Link>
         </nav>
@@ -115,7 +114,7 @@ export default function Navbar() {
         />
       )}
 
-      {/* Mobile Drawer Navigation Menu (w-1/2, h-screen, transparent skin color bg) */}
+      {/* Mobile Drawer Navigation Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed top-0 left-0 h-screen w-1/2 min-w-[200px] bg-[#F7EFE8]/95 backdrop-blur-md z-[99] shadow-2xl p-5 flex flex-col border-r border-[#E2D4C5]/60 animate-in slide-in-from-left duration-300">
           {/* Drawer Header */}
@@ -161,14 +160,14 @@ export default function Navbar() {
               Collections
             </Link>
             <Link 
-              href="/about" 
+              href="/about#about" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               About Us
             </Link>
             <Link 
-              href="/contact" 
+              href="/about#contact" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase hover:text-[#8B2635] transition-colors"
             >
