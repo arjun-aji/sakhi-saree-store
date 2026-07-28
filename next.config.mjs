@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  cleanDistDir: true,
+  onDemandEntries: {
+    // Keep dev pages in memory longer to prevent 404 chunk errors on fast refresh
+    maxInactiveAge: 60 * 1000,
+    pagesBufferLength: 5,
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

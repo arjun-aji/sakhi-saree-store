@@ -1,4 +1,5 @@
 import './globals.css';
+import { CartProvider } from '@/context/CartContext';
 
 export const metadata = {
   title: "Sakhi by Maya's | Premium Sarees & Kerala Ethnic Wear",
@@ -73,7 +74,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="antialiased bg-[#F7EFE8] text-[#2D2625] min-h-screen flex flex-col">
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

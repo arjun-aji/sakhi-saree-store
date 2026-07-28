@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Search, User, Heart, ShoppingBag } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { cartCount, wishlistCount } = useCart();
 
   return (
     <header className="w-full bg-transparent sticky top-0 z-50 transition-all duration-300">
@@ -51,7 +53,7 @@ export default function Navbar() {
           <Link href="/shop" className="hover:text-[#8B2635] transition-colors py-1">
             Shop
           </Link>
-          <Link href="/shop?filter=new" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/new-arrivals" className="hover:text-[#8B2635] transition-colors py-1">
             New Arrivals
           </Link>
           <Link href="/about#about" className="hover:text-[#8B2635] transition-colors py-1">
@@ -84,9 +86,11 @@ export default function Navbar() {
             className="p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
           >
             <Heart className="w-5 h-5 stroke-[1.75]" />
-            <span className="absolute -top-1 -right-1 bg-[#3D1418] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-              0
-            </span>
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#8B2635] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
+                {wishlistCount}
+              </span>
+            )}
           </Link>
           
           <Link 
@@ -95,9 +99,11 @@ export default function Navbar() {
             className="p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
           >
             <ShoppingBag className="w-5 h-5 stroke-[1.75]" />
-            <span className="absolute -top-1 -right-1 bg-[#3D1418] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
-              0
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-[#3D1418] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
 
@@ -143,7 +149,7 @@ export default function Navbar() {
               Shop
             </Link>
             <Link 
-              href="/shop?filter=new" 
+              href="/new-arrivals" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >

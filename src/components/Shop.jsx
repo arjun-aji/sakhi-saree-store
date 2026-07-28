@@ -3,12 +3,41 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
-import { ChevronDown, RotateCcw, X, ShieldCheck, Heart, Sparkles } from 'lucide-react';
-import ProductCard from './ProductCard';
-import ShopFilters from './ShopFilters';
-import ShopSidebarFilters from './ShopSidebarFilters';
-import { products } from '../data/products';
+import { useSearchParams, usePathname } from 'next/navigation';
+import { ChevronDown, RotateCcw, X, ShieldCheck, Heart, Sparkles, Truck, Package, RefreshCw, Award } from 'lucide-react';
+import ProductCard from '@/components/ProductCard';
+import ShopFilters from '@/components/ShopFilters';
+import ShopSidebarFilters from '@/components/ShopSidebarFilters';
+import { products } from '@/data/products';
+
+/* ── Delicate Floral Branch Vector Artwork for Hero ── */
+function FloralArtworkLeft() {
+  return (
+    <svg className="w-24 h-24 sm:w-36 sm:h-36 text-[#C59B27]/25 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1">
+      <path d="M10 90 Q 30 70, 40 40 Q 50 20, 80 10" />
+      <path d="M40 40 Q 60 50, 75 45" />
+      <circle cx="80" cy="10" r="3" fill="currentColor" opacity="0.4" />
+      <circle cx="75" cy="45" r="2.5" fill="currentColor" opacity="0.4" />
+      <path d="M30 70 Q 20 50, 15 40" />
+      <circle cx="15" cy="40" r="2" fill="currentColor" opacity="0.4" />
+      <path d="M50 20 Q 65 25, 70 20" />
+      <circle cx="70" cy="20" r="2" fill="currentColor" opacity="0.4" />
+    </svg>
+  );
+}
+
+function FloralArtworkRight() {
+  return (
+    <svg className="w-24 h-24 sm:w-36 sm:h-36 text-[#C59B27]/25 pointer-events-none transform -scale-x-100" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1">
+      <path d="M10 90 Q 30 70, 40 40 Q 50 20, 80 10" />
+      <path d="M40 40 Q 60 50, 75 45" />
+      <circle cx="80" cy="10" r="3" fill="currentColor" opacity="0.4" />
+      <circle cx="75" cy="45" r="2.5" fill="currentColor" opacity="0.4" />
+      <path d="M30 70 Q 20 50, 15 40" />
+      <circle cx="15" cy="40" r="2" fill="currentColor" opacity="0.4" />
+    </svg>
+  );
+}
 
 /* ── Lotus / Flower Icon ── */
 function FlowerIcon({ className = 'w-3.5 h-3.5' }) {
@@ -22,49 +51,33 @@ function FlowerIcon({ className = 'w-3.5 h-3.5' }) {
   );
 }
 
-/* ── Gold Line Divider with Diamond Dot ── */
-function GoldDivider({ className = 'my-4' }) {
-  return (
-    <div className={`flex items-center justify-center gap-3 ${className}`}>
-      <span className="h-[0.75px] w-16 sm:w-20 bg-[#C59B27]/40" />
-      <span className="text-[#C59B27] text-[10px]">✦</span>
-      <span className="h-[0.75px] w-16 sm:w-20 bg-[#C59B27]/40" />
-    </div>
-  );
-}
-
-/* ── Derive unique filter options ── */
-const CATEGORIES = [...new Set(products.map((p) => p.category))].sort();
-const FABRICS = [...new Set(products.map((p) => p.fabric))].sort();
-const COLORS = [...new Set(products.map((p) => p.color))].sort();
-
 const PAGE_SIZE = 12;
 
-export default function Shop() {
+export default function Shop({ isNewArrivalsPage = false }) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  // Determine mode
+  const isNewArrivals = isNewArrivalsPage || pathname?.includes('new-arrivals') || searchParams.get('filter') === 'new';
 
   /* ── Filter States ── */
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedFabric, setSelectedFabric] = useState('All');
   const [selectedColor, setSelectedColor] = useState('All');
   const [selectedPrice, setSelectedPrice] = useState(8999);
-  const [selectedSort, setSelectedSort] = useState('featured');
+  const [selectedSort, setSelectedSort] = useState('new');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
-
-  /* ── Read ?filter=new from URL ── */
-  useEffect(() => {
-    const filterParam = searchParams.get('filter');
-    if (filterParam === 'new') {
-      setSelectedSort('new');
-    } else {
-      setSelectedSort('featured');
-    }
-  }, [searchParams]);
+  const [showDesktopSidebar, setShowDesktopSidebar] = useState(true);
 
   /* ── Filtering + Sorting Logic ── */
   const filteredProducts = useMemo(() => {
     let result = [...products];
+
+    // If New Arrivals, filter by newest first or `isNew` flag
+    if (isNewArrivals) {
+      result.sort((a, b) => new Date(b.createdAt || '2026-07-01') - new Date(a.createdAt || '2026-07-01'));
+    }
 
     if (selectedCategory !== 'All') {
       result = result.filter((p) => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || p.category === selectedCategory);
@@ -82,17 +95,6 @@ export default function Shop() {
       result = result.filter((p) => p.price <= selectedPrice);
     }
 
-    if (selectedSort === 'new') {
-      result = result.filter((p) => p.isNew);
-      if (result.length === 0) {
-        result = [...products].filter((p) => 
-          (selectedCategory === 'All' || p.category === selectedCategory) &&
-          (selectedFabric === 'All' || p.fabric === selectedFabric) &&
-          (selectedColor === 'All' || p.color === selectedColor)
-        );
-      }
-    }
-
     switch (selectedSort) {
       case 'price_asc':
         result.sort((a, b) => a.price - b.price);
@@ -103,16 +105,17 @@ export default function Shop() {
       case 'bestselling':
         result.sort((a, b) => (b.isBestSeller ? 1 : 0) - (a.isBestSeller ? 1 : 0));
         break;
-      case 'popularity':
+      case 'featured':
         result.sort((a, b) => (b.isBestSeller || b.isNew ? 1 : 0) - (a.isBestSeller || a.isNew ? 1 : 0));
         break;
       case 'new':
       default:
+        result.sort((a, b) => new Date(b.createdAt || '2026-07-01') - new Date(a.createdAt || '2026-07-01'));
         break;
     }
 
     return result;
-  }, [selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort]);
+  }, [selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort, isNewArrivals]);
 
   /* ── Reset visible count when filters change ── */
   useEffect(() => {
@@ -134,99 +137,116 @@ export default function Shop() {
     setSelectedFabric('All');
     setSelectedColor('All');
     setSelectedPrice(8999);
-    setSelectedSort('featured');
+    setSelectedSort('new');
   };
 
   return (
     <div className="w-full bg-[#F7EFE8]">
 
       {/* ================================================================ */}
-      {/* 1. SHOP HERO SECTION (Centered layout matching reference)        */}
+      {/* 1. HERO SECTION WITH BREADCRUMB & FLORAL ARTWORK                */}
       {/* ================================================================ */}
-      <section className="w-full bg-[#F7EFE8] pt-6 sm:pt-10 pb-4 px-3 sm:px-6 text-center">
-        <div className="max-w-3xl mx-auto space-y-1">
-          {/* Subtitle */}
+      <section className="relative w-full bg-[#F7EFE8] pt-4 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-8 overflow-hidden text-center">
+        
+        {/* Decorative Background Floral Artwork */}
+        <div className="absolute top-0 left-0 p-2 sm:p-4 opacity-70">
+          <FloralArtworkLeft />
+        </div>
+        <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-70">
+          <FloralArtworkRight />
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-2 relative z-10">
+          
+          {/* Breadcrumb */}
+          <nav className="flex justify-start sm:justify-center items-center gap-2 text-[11px] sm:text-xs text-[#8A786D] mb-2 font-medium">
+            <Link href="/" className="hover:text-[#3D1418] transition-colors">Home</Link>
+            <span>&gt;</span>
+            <span className="text-[#3D1418] font-semibold">{isNewArrivals ? 'New Arrivals' : 'Shop'}</span>
+          </nav>
+
+          {/* Subtitle Badge */}
           <div className="inline-flex items-center justify-center gap-1.5 text-[#8B5A3C] uppercase tracking-[0.25em] text-[10px] sm:text-[11px] font-bold">
-            <span>SHOP</span>
-            <FlowerIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#C59B27]" />
+            <span>{isNewArrivals ? 'NEW ARRIVALS' : 'OUR COLLECTION'}</span>
+            <FlowerIcon className="w-3.5 h-3.5 text-[#C59B27]" />
           </div>
 
-          {/* Heading */}
-          <h1 className="font-serif-luxury text-2xl sm:text-4xl lg:text-[50px] font-normal text-[#2A0E11] leading-tight tracking-tight">
-            Our Saree Collection
+          {/* Main Serif Heading */}
+          <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[54px] font-normal text-[#2A0E11] leading-tight tracking-tight">
+            {isNewArrivals ? 'New Arrivals' : 'Shop Collection'}
           </h1>
 
           {/* Tagline */}
-          <p className="font-serif-luxury text-[11px] sm:text-base text-[#5A4438] italic font-normal">
-            Handpicked sarees that celebrate tradition, elegance and you.
+          <p className="font-serif-luxury text-xs sm:text-base text-[#5A4438] italic font-normal max-w-xl mx-auto">
+            {isNewArrivals
+              ? 'Freshly handpicked sarees, crafted with love and tradition.'
+              : 'Handpicked sarees that celebrate tradition, elegance and you.'}
           </p>
 
-          {/* Gold Divider */}
-          <GoldDivider className="mt-2" />
         </div>
       </section>
 
       {/* ================================================================ */}
-      {/* 2. MAIN LAYOUT (Permanent Left Sidebar on Desktop lg+)           */}
+      {/* 2. MAIN CONTENT LAYOUT (Desktop Sidebar + Grid)                 */}
       {/* ================================================================ */}
-      <section className="w-full pb-8 sm:pb-12 px-2.5 sm:px-6 lg:px-8">
-        <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-5 lg:gap-6">
+      <section className="w-full pb-8 sm:pb-12 px-3 sm:px-6 lg:px-8">
+        <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-5 lg:gap-6 items-start">
 
-          {/* DESKTOP PERMANENT SIDEBAR (Hidden on mobile/tablet) */}
-          <div className="hidden lg:block w-[250px] flex-shrink-0">
-            <div className="sticky top-24">
-              <ShopSidebarFilters
-                selectedCategory={selectedCategory}
-                selectedFabric={selectedFabric}
-                selectedColor={selectedColor}
-                selectedPrice={selectedPrice}
-                onCategoryChange={setSelectedCategory}
-                onFabricChange={setSelectedFabric}
-                onColorChange={setSelectedColor}
-                onPriceChange={setSelectedPrice}
-                onApplyFilters={() => {}}
-              />
+          {/* DESKTOP SIDEBAR (Collapsible with Toggle) */}
+          {showDesktopSidebar && (
+            <div className="hidden lg:block w-[260px] flex-shrink-0 transition-all duration-300">
+              <div className="sticky top-24">
+                <ShopSidebarFilters
+                  selectedCategory={selectedCategory}
+                  selectedFabric={selectedFabric}
+                  selectedColor={selectedColor}
+                  selectedPrice={selectedPrice}
+                  onCategoryChange={setSelectedCategory}
+                  onFabricChange={setSelectedFabric}
+                  onColorChange={setSelectedColor}
+                  onPriceChange={setSelectedPrice}
+                  onApplyFilters={() => {}}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* MAIN CONTENT AREA */}
-          <div className="flex-1 min-w-0">
+          {/* MAIN PRODUCT GRID AREA */}
+          <div className="flex-1 w-full min-w-0">
 
-            {/* Top Filter Bar */}
+            {/* Filter / Sort Top Bar */}
             <ShopFilters
-              categories={CATEGORIES}
-              fabrics={FABRICS}
-              colors={COLORS}
-              selectedCategory={selectedCategory}
-              selectedFabric={selectedFabric}
-              selectedColor={selectedColor}
+              totalProductsCount={filteredProducts.length}
+              visibleProductsCount={visibleProducts.length}
               selectedSort={selectedSort}
-              onCategoryChange={setSelectedCategory}
-              onFabricChange={setSelectedFabric}
-              onColorChange={setSelectedColor}
               onSortChange={setSelectedSort}
-              onResetFilters={handleReset}
               onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
+              showDesktopSidebar={showDesktopSidebar}
+              onToggleDesktopSidebar={() => setShowDesktopSidebar(!showDesktopSidebar)}
               activeFilterCount={activeFilterCount}
             />
 
-            {/* PRODUCT GRID: 6 columns desktop, 4 columns tablet, 3 columns mobile */}
+            {/* PRODUCT GRID: 6 columns desktop, 4 columns tablet, 2 columns mobile */}
             {visibleProducts.length > 0 ? (
-              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-1.5 sm:gap-3 lg:gap-3.5">
+              <div
+                className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 ${
+                  showDesktopSidebar ? 'lg:grid-cols-6' : 'lg:grid-cols-6'
+                } gap-2.5 sm:gap-3.5 lg:gap-4`}
+              >
                 {visibleProducts.map((product) => (
                   <ProductCard key={product.id} {...product} />
                 ))}
               </div>
             ) : (
               /* Empty State */
-              <div className="text-center py-12 bg-[#F3EADF]/60 rounded-xl border border-[#E5DACD]">
-                <p className="font-serif-luxury text-lg text-[#2A0E11] mb-1.5">No Sarees Found</p>
-                <p className="text-xs text-[#8B5A3C] mb-3">Try clearing active filters to see all sarees.</p>
+              <div className="text-center py-14 bg-[#F3EADF]/60 rounded-xl border border-[#E5DACD] my-4">
+                <p className="font-serif-luxury text-xl text-[#2A0E11] mb-2">No Sarees Found</p>
+                <p className="text-xs text-[#8B5A3C] mb-4">Try adjusting your filters to see more sarees.</p>
                 <button
                   onClick={handleReset}
-                  className="inline-flex items-center gap-1.5 bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-widest uppercase px-4 py-2 rounded-md shadow-xs hover:bg-[#5B1D23] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-md shadow-xs hover:bg-[#5B1D23] transition-colors"
                 >
-                  <RotateCcw className="w-3 h-3" />
+                  <RotateCcw className="w-3.5 h-3.5" />
                   Clear Filters
                 </button>
               </div>
@@ -234,13 +254,13 @@ export default function Shop() {
 
             {/* LOAD MORE BUTTON */}
             {hasMore && (
-              <div className="text-center mt-6 sm:mt-8">
+              <div className="text-center mt-8 sm:mt-10">
                 <button
                   onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                  className="inline-flex items-center justify-center gap-1.5 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] text-[10px] sm:text-xs font-semibold tracking-[0.2em] uppercase px-6 sm:px-8 py-2 sm:py-2.5 rounded-md transition-all shadow-2xs group"
+                  className="inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] hover:text-[#8B2635] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
                 >
                   <span>LOAD MORE</span>
-                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#3D1418] group-hover:translate-y-0.5 transition-transform" />
+                  <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-y-0.5 transition-transform" />
                 </button>
               </div>
             )}
@@ -251,96 +271,48 @@ export default function Shop() {
       </section>
 
       {/* ================================================================ */}
-      {/* 3. PROMOTIONAL BANNER SECTION (Sleek Horizontal Layout)           */}
+      {/* 3. PROMOTIONAL BANNER SECTION                                    */}
       {/* ================================================================ */}
-      <section className="w-full pb-6 sm:pb-10 px-2.5 sm:px-6 lg:px-8">
-        <div className="max-w-[1400px] mx-auto">
+      <section className="w-full pb-8 sm:pb-12 px-3 sm:px-6 lg:px-8">
+        <div className="max-w-[1440px] mx-auto">
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          <div className="bg-[#F3EADF] border border-[#E5DACD] rounded-2xl p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xs">
             
-            {/* Horizontal Promo Banner */}
-            <div className="w-full lg:col-span-7 bg-[#F3EADF] border border-[#E5DACD] rounded-xl p-3.5 sm:p-6 flex flex-row items-center justify-between gap-3 relative overflow-hidden shadow-2xs">
-              
-              {/* Background watermark */}
-              <div className="absolute bottom-0 left-0 text-[#C59B27]/15 pointer-events-none p-1">
-                <svg className="w-20 h-20" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.75">
-                  <path d="M20 80 Q 40 50, 70 30" />
-                  <circle cx="70" cy="30" r="3" />
-                </svg>
-              </div>
-
-              {/* Left Text */}
-              <div className="flex-1 min-w-0 space-y-0.5 sm:space-y-1 relative z-10">
-                <h2 className="font-serif-luxury text-sm sm:text-2xl lg:text-3xl text-[#2A0E11] font-normal leading-tight tracking-tight">
-                  Timeless Elegance, Delivered to You
-                </h2>
-                <p className="text-[10px] sm:text-xs text-[#5A4438] font-medium">
-                  Free shipping on orders above ₹1499
-                </p>
-                <p className="text-[9px] sm:text-[11px] text-[#4A3B32] pt-0.5 font-normal">
-                  Secure Packaging &nbsp;•&nbsp; Easy Returns &nbsp;•&nbsp; 100% Quality Assured
-                </p>
-              </div>
-
-              {/* Right Sakhi Box Graphic */}
-              <div className="flex-shrink-0 relative z-10 pl-2">
-                <div className="w-28 sm:w-44 lg:w-52 h-16 sm:h-24 bg-[#F9F5F0] rounded-lg border border-[#E2D4C5] p-2 flex flex-col items-center justify-center text-center shadow-sm hover:scale-102 transition-transform">
-                  <div className="relative w-16 sm:w-24 h-5 sm:h-7 mb-0.5">
-                    <Image
-                      src="/assets/logo.png"
-                      alt="Sakhi Box Packaging"
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="text-[6.5px] sm:text-[8px] text-[#8B5A3C] uppercase tracking-widest font-semibold">
-                    Handcrafted Saree Box
-                  </span>
-                </div>
-              </div>
-
+            {/* Background floral watermark */}
+            <div className="absolute bottom-0 left-0 text-[#C59B27]/10 pointer-events-none">
+              <svg className="w-40 h-40" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="0.5">
+                <circle cx="50" cy="50" r="45" />
+                <path d="M20 80 Q 50 20, 80 80" />
+              </svg>
             </div>
 
-            {/* 4 Feature Columns on Right (Desktop Only lg:grid) */}
-            <div className="hidden lg:grid lg:col-span-5 grid-cols-4 gap-2 text-center bg-[#F3EADF] border border-[#E5DACD] rounded-xl p-4 items-center">
-              <div className="p-2 space-y-1">
-                <FlowerIcon className="w-5 h-5 mx-auto text-[#8B2635]" />
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
-                  AUTHENTIC & HANDPICKED
-                </h4>
-                <p className="text-[9px] text-[#5A4438] leading-tight">
-                  Carefully selected weavers for authenticity and quality.
-                </p>
-              </div>
+            {/* Left Promotional Text */}
+            <div className="flex-1 space-y-1.5 text-center sm:text-left relative z-10">
+              <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl text-[#2A0E11] font-normal leading-tight">
+                Timeless Elegance, Delivered to You
+              </h2>
+              <p className="text-xs sm:text-sm text-[#5A4438] font-medium">
+                Free shipping on orders above ₹1499
+              </p>
+              <p className="text-[11px] sm:text-xs text-[#8A786D] pt-1">
+                Secure Packaging &nbsp;•&nbsp; Easy Returns &nbsp;•&nbsp; 100% Quality Assured
+              </p>
+            </div>
 
-              <div className="p-2 space-y-1">
-                <Sparkles className="w-5 h-5 mx-auto text-[#8B2635]" />
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
-                  CRAFTSMANSHIP FIRST
-                </h4>
-                <p className="text-[9px] text-[#5A4438] leading-tight">
-                  We support skilled weavers and preserve traditional art.
-                </p>
-              </div>
-
-              <div className="p-2 space-y-1">
-                <ShieldCheck className="w-5 h-5 mx-auto text-[#8B2635]" />
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
-                  QUALITY YOU CAN TRUST
-                </h4>
-                <p className="text-[9px] text-[#5A4438] leading-tight">
-                  Every detail meets our promise of premium quality.
-                </p>
-              </div>
-
-              <div className="p-2 space-y-1">
-                <Heart className="w-5 h-5 mx-auto text-[#8B2635]" />
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
-                  MADE WITH LOVE
-                </h4>
-                <p className="text-[9px] text-[#5A4438] leading-tight">
-                  More than just sarees, we deliver emotion and elegance.
-                </p>
+            {/* Right Sakhi Luxury Box Packaging Graphic */}
+            <div className="flex-shrink-0 relative z-10">
+              <div className="w-48 sm:w-56 lg:w-64 h-24 sm:h-28 bg-[#F9F5F0] rounded-xl border border-[#E2D4C5] p-3 flex flex-col items-center justify-center text-center shadow-md hover:scale-102 transition-transform">
+                <div className="relative w-28 sm:w-32 h-8 sm:h-10 mb-1">
+                  <Image
+                    src="/assets/logo.png"
+                    alt="Sakhi Packaging Box"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-[9px] text-[#8B5A3C] uppercase tracking-widest font-bold">
+                  Handcrafted Saree Box
+                </span>
               </div>
             </div>
 
@@ -350,38 +322,42 @@ export default function Shop() {
       </section>
 
       {/* ================================================================ */}
-      {/* 4. DARK FEATURE STRIP AT BOTTOM (Mobile & Tablet View)            */}
+      {/* 4. BOTTOM 4-FEATURE STRIP (Mobile & Tablet View)                 */}
       {/* ================================================================ */}
-      <section className="w-full bg-[#2A0E11] text-[#F7EFE8] border-t border-[#3D1418] py-3.5 px-3 block lg:hidden">
+      <section className="w-full bg-[#F3EADF] border-t border-[#E5DACD] py-5 px-3 block lg:hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-4 gap-1 text-center divide-x divide-[#3D1418]/80 items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center items-center">
             
-            <div className="flex flex-col items-center justify-center p-1">
-              <FlowerIcon className="w-4 h-4 text-[#C59B27] mb-1" />
-              <span className="text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider text-[#F7EFE8] leading-tight">
-                AUTHENTIC & HANDPICKED
+            <div className="flex flex-col items-center p-2 space-y-1">
+              <Truck className="w-5 h-5 text-[#C59B27]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+                FREE SHIPPING
               </span>
+              <span className="text-[9.5px] text-[#5A4438]">Above ₹1499</span>
             </div>
 
-            <div className="flex flex-col items-center justify-center p-1">
-              <Sparkles className="w-4 h-4 text-[#C59B27] mb-1" />
-              <span className="text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider text-[#F7EFE8] leading-tight">
-                CRAFTSMANSHIP FIRST
+            <div className="flex flex-col items-center p-2 space-y-1">
+              <Package className="w-5 h-5 text-[#C59B27]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+                SECURE PACKAGING
               </span>
+              <span className="text-[9.5px] text-[#5A4438]">Safe & Premium</span>
             </div>
 
-            <div className="flex flex-col items-center justify-center p-1">
-              <ShieldCheck className="w-4 h-4 text-[#C59B27] mb-1" />
-              <span className="text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider text-[#F7EFE8] leading-tight">
-                QUALITY YOU CAN TRUST
+            <div className="flex flex-col items-center p-2 space-y-1">
+              <RefreshCw className="w-5 h-5 text-[#C59B27]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+                EASY RETURNS
               </span>
+              <span className="text-[9.5px] text-[#5A4438]">Hassle-free</span>
             </div>
 
-            <div className="flex flex-col items-center justify-center p-1">
-              <Heart className="w-4 h-4 text-[#C59B27] mb-1" />
-              <span className="text-[8.5px] sm:text-[10px] font-bold uppercase tracking-wider text-[#F7EFE8] leading-tight">
-                MADE WITH LOVE
+            <div className="flex flex-col items-center p-2 space-y-1">
+              <Award className="w-5 h-5 text-[#C59B27]" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+                QUALITY ASSURED
               </span>
+              <span className="text-[9.5px] text-[#5A4438]">Premium Sarees</span>
             </div>
 
           </div>
@@ -392,7 +368,7 @@ export default function Shop() {
       {/* MOBILE / TABLET SLIDE-OUT FILTER DRAWER                         */}
       {/* ================================================================ */}
       {isMobileDrawerOpen && (
-        <div className="fixed inset-0 z-[100] flex">
+        <div className="fixed inset-0 z-[100] flex lg:hidden">
           {/* Backdrop Overlay */}
           <div
             onClick={() => setIsMobileDrawerOpen(false)}
@@ -403,7 +379,7 @@ export default function Shop() {
           <div className="relative w-4/5 max-w-xs bg-[#F7EFE8] h-full shadow-2xl overflow-y-auto p-4 z-10 flex flex-col justify-between animate-in slide-in-from-left duration-300">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-[#E5DACD] mb-3">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#3D1418]">FILTERS</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-[#3D1418]">FILTERS & SORT</span>
                 <button
                   type="button"
                   onClick={() => setIsMobileDrawerOpen(false)}

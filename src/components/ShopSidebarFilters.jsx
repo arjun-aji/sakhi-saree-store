@@ -55,24 +55,15 @@ export default function ShopSidebarFilters({
 
   return (
     <aside className="w-full bg-[#F7EFE8] border border-[#E5DACD] rounded-xl p-4 sm:p-5 text-[#3D1418] text-xs font-sans shadow-2xs">
-      
-      {/* Sidebar Header */}
-      <div className="pb-3 border-b border-[#E5DACD]">
-        <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.2em] text-[#3D1418]">
-          <span>FILTER BY</span>
-          <span className="text-[#C59B27] text-[10px]">✦</span>
-        </div>
-      </div>
-
       <div className="divide-y divide-[#E5DACD]/70 space-y-4">
-
-        {/* 1. CATEGORY SECTION */}
-        <div className="pt-4">
+        
+        {/* 1. CATEGORIES SECTION */}
+        <div>
           <button
             onClick={() => toggleSection('category')}
             className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#3D1418] py-1"
           >
-            <span>CATEGORY</span>
+            <span>CATEGORIES</span>
             {openSections.category ? <ChevronUp className="w-3.5 h-3.5 opacity-70" /> : <ChevronDown className="w-3.5 h-3.5 opacity-70" />}
           </button>
 
@@ -82,10 +73,11 @@ export default function ShopSidebarFilters({
                 <label key={cat.value} className="flex items-center justify-between text-xs text-[#5A4438] cursor-pointer hover:text-[#8B2635] transition-colors group">
                   <div className="flex items-center gap-2">
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="category_filter"
                       checked={selectedCategory === cat.value}
-                      onChange={() => onCategoryChange(selectedCategory === cat.value ? 'All' : cat.value)}
-                      className="w-3.5 h-3.5 rounded border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#8B2635]"
+                      onChange={() => onCategoryChange(cat.value)}
+                      className="w-3.5 h-3.5 border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#2A0E11]"
                     />
                     <span className={selectedCategory === cat.value ? 'font-bold text-[#2A0E11]' : ''}>{cat.label}</span>
                   </div>
@@ -115,7 +107,7 @@ export default function ShopSidebarFilters({
                       type="checkbox"
                       checked={selectedFabric === fab.value}
                       onChange={() => onFabricChange(selectedFabric === fab.value ? 'All' : fab.value)}
-                      className="w-3.5 h-3.5 rounded border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#8B2635]"
+                      className="w-3.5 h-3.5 rounded border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#2A0E11]"
                     />
                     <span className={selectedFabric === fab.value ? 'font-bold text-[#2A0E11]' : ''}>{fab.label}</span>
                   </div>
@@ -144,9 +136,9 @@ export default function ShopSidebarFilters({
                   type="button"
                   onClick={() => onColorChange(selectedColor === color.name ? 'All' : color.name)}
                   aria-label={color.name}
-                  className={`w-6 h-6 rounded-full mx-auto transition-transform hover:scale-115 relative flex items-center justify-center ${
+                  className={`w-6 h-6 rounded-full mx-auto transition-transform hover:scale-110 relative flex items-center justify-center ${
                     color.border ? 'border border-[#C59B27]' : ''
-                  } ${selectedColor === color.name ? 'ring-2 ring-offset-2 ring-[#8B2635]' : ''}`}
+                  } ${selectedColor === color.name ? 'ring-2 ring-offset-2 ring-[#2A0E11]' : ''}`}
                   style={{ backgroundColor: color.hex }}
                 />
               ))}

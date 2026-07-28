@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
-import AnnouncementBar from '../../components/AnnouncementBar';
-import Navbar from '../../components/Navbar';
-import Shop from '../../components/Shop';
+import AnnouncementBar from '@/components/AnnouncementBar';
+import Navbar from '@/components/Navbar';
+import Shop from '@/components/Shop';
 
 export const metadata = {
   title: "Shop Handcrafted Sarees | Sakhi By Maya's",
@@ -38,7 +38,7 @@ export default function ShopPage() {
       {/* Footer */}
       <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} SAKHI BY MAYA'S. ALL RIGHTS RESERVED.</p>
+          <p>© 2026 SAKHI BY MAYA'S. ALL RIGHTS RESERVED.</p>
           <p className="text-[11px] opacity-75">TRADITION WOVEN WITH LOVE</p>
         </div>
       </footer>

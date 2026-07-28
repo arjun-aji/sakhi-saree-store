@@ -1,16 +1,15 @@
-import React from "react";
-import AnnouncementBar from "@/components/AnnouncementBar";
-import Navbar from "@/components/Navbar";
-import About from "@/components/About";
-import Contact from "@/components/Contact";
+import React, { Suspense } from 'react';
+import AnnouncementBar from '@/components/AnnouncementBar';
+import Navbar from '@/components/Navbar';
+import Cart from '@/components/Cart';
 
 export const metadata = {
-  title: "Contact Us | Sakhi By Maya's",
+  title: "Shopping Cart | Sakhi By Maya's",
   description:
-    "Get in touch with Sakhi By Maya's for inquiries, styling advice, and order assistance.",
+    "Review your handpicked sarees, apply discount coupons, and proceed to secure checkout at Sakhi By Maya's.",
 };
 
-export default function ContactPage() {
+export default function CartPage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
       {/* Top Announcement Bar */}
@@ -21,13 +20,19 @@ export default function ContactPage() {
         <Navbar />
       </div>
 
-      {/* Main Continuous Scrollable Content */}
+      {/* Main Content Area */}
       <main className="flex-grow">
-        {/* About Section */}
-        <About />
-
-        {/* Contact Section (Starts from Promises) */}
-        <Contact />
+        <Suspense
+          fallback={
+            <div className="w-full py-24 text-center">
+              <p className="font-serif-luxury text-xl text-[#3D1418] animate-pulse">
+                Loading Shopping Cart...
+              </p>
+            </div>
+          }
+        >
+          <Cart />
+        </Suspense>
       </main>
 
       {/* Footer */}
