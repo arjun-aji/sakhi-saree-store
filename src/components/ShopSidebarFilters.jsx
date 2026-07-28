@@ -54,8 +54,8 @@ export default function ShopSidebarFilters({
   ];
 
   return (
-    <aside className="w-full bg-[#F7EFE8] border border-[#E5DACD] rounded-xl p-4 sm:p-5 text-[#3D1418] text-xs font-sans shadow-2xs">
-      <div className="divide-y divide-[#E5DACD]/70 space-y-4">
+    <aside className="w-full text-[#3D1418] text-xs font-sans">
+      <div className="divide-y divide-[#E5DACD] space-y-4">
         
         {/* 1. CATEGORIES SECTION */}
         <div>

@@ -16,7 +16,7 @@ export default function Navbar() {
       {/* ========================================================= */}
       {/* MAIN NAVBAR CONTAINER                                     */}
       {/* ========================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-3 flex items-center justify-between w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1 sm:py-1.5 flex items-center justify-between w-full">
         
         {/* Left: Hamburger menu (mobile) + Increased Logo Size */}
         <div className="flex items-center gap-3">
@@ -29,7 +29,7 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center group">
-            <div className="relative w-44 h-14 sm:w-56 sm:h-18 lg:w-64 lg:h-22">
+            <div className="relative w-32 h-9 sm:w-40 sm:h-11 lg:w-48 lg:h-13">
               <Image 
                 src="/assets/logo.png" 
                 alt="Sakhi By Maya's" 
@@ -45,21 +45,21 @@ export default function Navbar() {
         {/* Center: Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center justify-center space-x-8 text-xs font-bold tracking-widest text-[#3D1418] uppercase">
           <Link 
-            href="/" 
+            href="/#home" 
             className="hover:text-[#8B2635] transition-colors py-1"
           >
             Home
           </Link>
-          <Link href="/shop" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#shop" className="hover:text-[#8B2635] transition-colors py-1">
             Shop
           </Link>
-          <Link href="/new-arrivals" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#new-arrivals" className="hover:text-[#8B2635] transition-colors py-1">
             New Arrivals
           </Link>
-          <Link href="/about#about" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#about" className="hover:text-[#8B2635] transition-colors py-1">
             About Us
           </Link>
-          <Link href="/about#contact" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#contact" className="hover:text-[#8B2635] transition-colors py-1">
             Contact
           </Link>
         </nav>
@@ -135,35 +135,35 @@ export default function Navbar() {
           {/* Drawer Navigation Links */}
           <nav className="flex flex-col space-y-4">
             <Link 
-              href="/" 
+              href="/#home" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               Home
             </Link>
             <Link 
-              href="/shop" 
+              href="/#shop" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               Shop
             </Link>
             <Link 
-              href="/new-arrivals" 
+              href="/#new-arrivals" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               New Arrivals
             </Link>
             <Link 
-              href="/about#about" 
+              href="/#about" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               About Us
             </Link>
             <Link 
-              href="/about#contact" 
+              href="/#contact" 
               onClick={() => setMobileMenuOpen(false)}
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase hover:text-[#8B2635] transition-colors"
             >

@@ -146,38 +146,31 @@ export default function Shop({ isNewArrivalsPage = false }) {
       {/* ================================================================ */}
       {/* 1. HERO SECTION WITH BREADCRUMB & FLORAL ARTWORK                */}
       {/* ================================================================ */}
-      <section className="relative w-full bg-[#F7EFE8] pt-4 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-8 overflow-hidden text-center">
+      <section className="relative w-full bg-[#F7EFE8] pt-2 sm:pt-3 pb-2 sm:pb-3 px-4 sm:px-8 overflow-hidden text-center">
         
         {/* Decorative Background Floral Artwork */}
-        <div className="absolute top-0 left-0 p-2 sm:p-4 opacity-70">
+        <div className="absolute top-0 left-0 p-2 sm:p-3 opacity-70">
           <FloralArtworkLeft />
         </div>
-        <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-70">
+        <div className="absolute top-0 right-0 p-2 sm:p-3 opacity-70">
           <FloralArtworkRight />
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-2 relative z-10">
+        <div className="max-w-4xl mx-auto space-y-0.5 relative z-10">
           
-          {/* Breadcrumb */}
-          <nav className="flex justify-start sm:justify-center items-center gap-2 text-[11px] sm:text-xs text-[#8A786D] mb-2 font-medium">
-            <Link href="/" className="hover:text-[#3D1418] transition-colors">Home</Link>
-            <span>&gt;</span>
-            <span className="text-[#3D1418] font-semibold">{isNewArrivals ? 'New Arrivals' : 'Shop'}</span>
-          </nav>
-
           {/* Subtitle Badge */}
-          <div className="inline-flex items-center justify-center gap-1.5 text-[#8B5A3C] uppercase tracking-[0.25em] text-[10px] sm:text-[11px] font-bold">
+          <div className="inline-flex items-center justify-center gap-1.5 text-[#8B5A3C] uppercase tracking-[0.25em] text-[10px] font-bold">
             <span>{isNewArrivals ? 'NEW ARRIVALS' : 'OUR COLLECTION'}</span>
-            <FlowerIcon className="w-3.5 h-3.5 text-[#C59B27]" />
+            <FlowerIcon className="w-3 h-3 text-[#C59B27]" />
           </div>
 
           {/* Main Serif Heading */}
-          <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[54px] font-normal text-[#2A0E11] leading-tight tracking-tight">
+          <h1 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-normal text-[#2A0E11] leading-tight tracking-tight">
             {isNewArrivals ? 'New Arrivals' : 'Shop Collection'}
           </h1>
 
           {/* Tagline */}
-          <p className="font-serif-luxury text-xs sm:text-base text-[#5A4438] italic font-normal max-w-xl mx-auto">
+          <p className="font-serif-luxury text-[11px] sm:text-sm text-[#5A4438] italic font-normal max-w-xl mx-auto">
             {isNewArrivals
               ? 'Freshly handpicked sarees, crafted with love and tradition.'
               : 'Handpicked sarees that celebrate tradition, elegance and you.'}
@@ -189,13 +182,13 @@ export default function Shop({ isNewArrivalsPage = false }) {
       {/* ================================================================ */}
       {/* 2. MAIN CONTENT LAYOUT (Desktop Sidebar + Grid)                 */}
       {/* ================================================================ */}
-      <section className="w-full pb-8 sm:pb-12 px-3 sm:px-6 lg:px-8">
-        <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-5 lg:gap-6 items-start">
+      <section className="w-full pb-4 sm:pb-6 px-3 sm:px-6 lg:px-8">
+        <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row gap-4 lg:gap-5 items-start">
 
           {/* DESKTOP SIDEBAR (Collapsible with Toggle) */}
           {showDesktopSidebar && (
-            <div className="hidden lg:block w-[260px] flex-shrink-0 transition-all duration-300">
-              <div className="sticky top-24">
+            <div className="hidden lg:block w-[200px] flex-shrink-0 transition-all duration-300">
+              <div className="sticky top-14">
                 <ShopSidebarFilters
                   selectedCategory={selectedCategory}
                   selectedFabric={selectedFabric}
@@ -226,12 +219,12 @@ export default function Shop({ isNewArrivalsPage = false }) {
               activeFilterCount={activeFilterCount}
             />
 
-            {/* PRODUCT GRID: 6 columns desktop, 4 columns tablet, 2 columns mobile */}
+            {/* PRODUCT GRID: 6 columns desktop, 3 tablet, 2 mobile */}
             {visibleProducts.length > 0 ? (
               <div
-                className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 ${
+                className={`grid grid-cols-2 sm:grid-cols-3 ${
                   showDesktopSidebar ? 'lg:grid-cols-6' : 'lg:grid-cols-6'
-                } gap-2.5 sm:gap-3.5 lg:gap-4`}
+                } gap-x-2.5 gap-y-4 sm:gap-x-3 sm:gap-y-5`}
               >
                 {visibleProducts.map((product) => (
                   <ProductCard key={product.id} {...product} />
@@ -273,10 +266,10 @@ export default function Shop({ isNewArrivalsPage = false }) {
       {/* ================================================================ */}
       {/* 3. PROMOTIONAL BANNER SECTION                                    */}
       {/* ================================================================ */}
-      <section className="w-full pb-8 sm:pb-12 px-3 sm:px-6 lg:px-8">
+      <section className="w-full pb-4 sm:pb-6 px-3 sm:px-6 lg:px-8">
         <div className="max-w-[1440px] mx-auto">
           
-          <div className="bg-[#F3EADF] border border-[#E5DACD] rounded-2xl p-5 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xs">
+          <div className="bg-[#F3EADF] border border-[#E5DACD] rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden shadow-2xs">
             
             {/* Background floral watermark */}
             <div className="absolute bottom-0 left-0 text-[#C59B27]/10 pointer-events-none">

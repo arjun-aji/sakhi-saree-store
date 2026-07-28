@@ -14,7 +14,7 @@ export default function ShopFilters({
   activeFilterCount = 0,
 }) {
   return (
-    <div className="w-full mb-4 sm:mb-6">
+    <div className="w-full mb-2 sm:mb-3">
       
       {/* DESKTOP TOP BAR (lg+) */}
       <div className="hidden lg:flex items-center justify-between w-full pb-2">

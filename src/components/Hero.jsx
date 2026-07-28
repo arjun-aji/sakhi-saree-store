@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -6,13 +8,31 @@ import NewArrivalsPreview from './NewArrivalsPreview';
 import FeatureBar from './FeatureBar';
 
 export default function Hero() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    // If preloader already done (e.g. hot reload / subsequent visits), show immediately
+    const handleDone = () => setVisible(true);
+
+    // Listen for preloader-done event
+    window.addEventListener('preloader-done', handleDone);
+
+    // Fallback: if preloader is already finished (page already loaded), show after tiny delay
+    const fallback = setTimeout(() => setVisible(true), 2700);
+
+    return () => {
+      window.removeEventListener('preloader-done', handleDone);
+      clearTimeout(fallback);
+    };
+  }, []);
+
   return (
     <section className="relative w-full bg-[#F7EFE8] overflow-hidden">
 
       {/* ========================================================= */}
-      {/* MOBILE HERO VIEW (Matches 2nd Picture Layout Exactly)      */}
+      {/* MOBILE HERO VIEW                                          */}
       {/* ========================================================= */}
-      <div className="block md:hidden relative w-full min-h-screen flex flex-col justify-between pb-6 pt-24 px-4">
+      <div className="block md:hidden relative w-full min-h-[calc(100vh-56px)] flex flex-col justify-between pb-6 pt-8 px-4">
 
         {/* Mobile Full Background Image */}
         <div className="absolute inset-0 z-0">
@@ -27,8 +47,12 @@ export default function Hero() {
           />
         </div>
 
-        {/* Mobile Content Layer (Pushed down to avoid Navbar overlap) */}
-        <div className="relative z-10 space-y-4">
+        {/* Mobile Content Layer — animated in after preloader */}
+        <div
+          className={`relative z-10 space-y-4 transition-all duration-700 ease-out ${
+            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}
+        >
           {/* Tagline */}
           <div className="flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -79,11 +103,15 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Mobile Spacer to reveal Model Image in center of background */}
+        {/* Mobile Spacer */}
         <div className="relative z-10 h-48 sm:h-64 my-2" />
 
         {/* Mobile New Arrivals & Feature Bar at Bottom */}
-        <div className="relative z-10 space-y-4">
+        <div
+          className={`relative z-10 space-y-4 transition-all duration-700 ease-out delay-200 ${
+            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}
+        >
           <NewArrivalsPreview />
           <FeatureBar />
         </div>
@@ -107,10 +135,15 @@ export default function Hero() {
           />
         </div>
 
-        {/* Desktop Content Overlay (Pushed down to avoid Navbar overlap) */}
-        <div className="relative z-10 max-w-7xl mx-auto w-full min-h-screen px-6 lg:px-8 pt-32 pb-8 flex flex-col justify-between">
-          <div className="max-w-xl space-y-6 pt-10">
+        {/* Desktop Content Overlay */}
+        <div className="relative z-10 max-w-7xl mx-auto w-full min-h-[calc(100vh-56px)] px-6 lg:px-8 pt-12 pb-8 flex flex-col justify-between">
 
+          {/* Main content — animated in after preloader */}
+          <div
+            className={`max-w-xl space-y-6 pt-10 transition-all duration-700 ease-out ${
+              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            }`}
+          >
             {/* Tagline */}
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -162,13 +195,17 @@ export default function Hero() {
             <div className="pt-4">
               <NewArrivalsPreview />
             </div>
-
           </div>
 
-          {/* Desktop Feature Bar at Bottom */}
-          <div className="mt-12">
+          {/* Desktop Feature Bar at Bottom — slight delay */}
+          <div
+            className={`mt-12 transition-all duration-700 ease-out delay-300 ${
+              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}
+          >
             <FeatureBar />
           </div>
+
         </div>
       </div>
 
