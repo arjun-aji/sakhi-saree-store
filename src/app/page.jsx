@@ -44,24 +44,10 @@ export default function HomePage() {
             </div>
           }
         >
-          <Shop />
+          <Shop isEmbedded={true} />
         </Suspense>
       </section>
 
-      {/* ── SECTION 3: NEW ARRIVALS ── */}
-      <section id="new-arrivals" className="w-full scroll-mt-24">
-        <Suspense
-          fallback={
-            <div className="w-full py-24 text-center">
-              <p className="font-serif-luxury text-xl text-[#3D1418] animate-pulse">
-                Loading New Arrivals...
-              </p>
-            </div>
-          }
-        >
-          <Shop isNewArrivalsPage={true} />
-        </Suspense>
-      </section>
 
       {/* ── SECTION 4: ABOUT ── */}
       <section id="about" className="w-full scroll-mt-24">

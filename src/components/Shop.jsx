@@ -53,7 +53,7 @@ function FlowerIcon({ className = 'w-3.5 h-3.5' }) {
 
 const PAGE_SIZE = 12;
 
-export default function Shop({ isNewArrivalsPage = false }) {
+export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -65,7 +65,7 @@ export default function Shop({ isNewArrivalsPage = false }) {
   const [selectedFabric, setSelectedFabric] = useState('All');
   const [selectedColor, setSelectedColor] = useState('All');
   const [selectedPrice, setSelectedPrice] = useState(8999);
-  const [selectedSort, setSelectedSort] = useState('new');
+  const [selectedSort, setSelectedSort] = useState('bestselling');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [showDesktopSidebar, setShowDesktopSidebar] = useState(true);
@@ -245,17 +245,29 @@ export default function Shop({ isNewArrivalsPage = false }) {
               </div>
             )}
 
-            {/* LOAD MORE BUTTON */}
-            {hasMore && (
+            {/* BOTTOM BUTTON: Explore (embedded) or Load More (standalone) */}
+            {isEmbedded ? (
               <div className="text-center mt-8 sm:mt-10">
-                <button
-                  onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                <Link
+                  href="/shop"
                   className="inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] hover:text-[#8B2635] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
                 >
-                  <span>LOAD MORE</span>
-                  <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-y-0.5 transition-transform" />
-                </button>
+                  <span>EXPLORE OUR STORE</span>
+                  <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-x-0.5 transition-transform rotate-[-90deg]" />
+                </Link>
               </div>
+            ) : (
+              hasMore && (
+                <div className="text-center mt-8 sm:mt-10">
+                  <button
+                    onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                    className="inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] hover:text-[#8B2635] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
+                  >
+                    <span>LOAD MORE</span>
+                    <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-y-0.5 transition-transform" />
+                  </button>
+                </div>
+              )
             )}
 
           </div>

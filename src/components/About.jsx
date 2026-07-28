@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+
 
 /* ── Decorative Lotus SVG Icon ── */
 function LotusIcon({ className = 'w-4 h-4' }) {
@@ -151,15 +151,7 @@ export default function About() {
                 </p>
               </div>
 
-              <div className="pt-1 sm:pt-2">
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-1.5 sm:gap-2 text-[#3D1418] hover:text-[#8B2635] text-[9px] sm:text-[11px] font-bold tracking-[0.18em] sm:tracking-[0.22em] uppercase group transition-colors duration-200"
-                >
-                  <span>Read More</span>
-                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
+
             </div>
 
             {/* Right: Story Images */}
