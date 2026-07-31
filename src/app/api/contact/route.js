@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import connectDB from '@/lib/db';
+import Contact from '@/models/Contact';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +19,25 @@ export async function POST(request) {
     console.log('Message:', message);
     console.log('------------------------------------------------------------');
 
+    // Connect to database
+    await connectDB();
+
+    // Create a new contact submission record
+    const newContact = await Contact.create({
+      name,
+      email,
+      phone,
+      subject,
+      message,
+    });
+
+    console.log('Saved contact submission to MongoDB with ID:', newContact._id);
+
     return NextResponse.json({
       success: true,
-      message: 'Contact message received successfully for jajithks01@gmail.com',
-      recipient: 'jajithks01@gmail.com'
+      message: 'Contact message received and saved successfully',
+      recipient: 'jajithks01@gmail.com',
+      id: newContact._id
     });
   } catch (error) {
     console.error('Contact API Error:', error);
@@ -30,3 +47,4 @@ export async function POST(request) {
     );
   }
 }
+

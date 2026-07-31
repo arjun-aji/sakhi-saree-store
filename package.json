@@ -16,7 +16,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "cloudinary": "^2.10.0",
     "lucide-react": "^1.26.0",
+    "mongoose": "^9.9.0",
     "next": "15.2.8",
     "react": "19.0.0",
     "react-dom": "19.0.0"

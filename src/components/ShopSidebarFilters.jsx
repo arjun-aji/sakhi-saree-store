@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function ShopSidebarFilters({
@@ -21,37 +21,79 @@ export default function ShopSidebarFilters({
     price: true,
   });
 
-  const toggleSection = (section) => {
-    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const categories = [
+  const [categories, setCategories] = useState([
     { label: 'All Sarees', value: 'All', count: 48 },
     { label: 'Silk Sarees', value: 'Silk Sarees', count: 20 },
     { label: 'Kanjivaram', value: 'Kanjivaram', count: 12 },
     { label: 'Banarasi', value: 'Banarasi', count: 8 },
     { label: 'Cotton Sarees', value: 'Cotton Sarees', count: 6 },
     { label: 'Tussar Sarees', value: 'Tussar Sarees', count: 2 },
-  ];
+  ]);
 
-  const fabrics = [
+  const [fabrics, setFabrics] = useState([
     { label: 'Silk', value: 'Silk', count: 28 },
     { label: 'Kanjivaram Silk', value: 'Kanjivaram Silk', count: 14 },
     { label: 'Banarasi Silk', value: 'Banarasi Silk', count: 8 },
     { label: 'Cotton', value: 'Cotton', count: 6 },
     { label: 'Tussar', value: 'Tussar', count: 2 },
-  ];
+  ]);
 
-  const colorSwatches = [
-    { name: 'Red', hex: '#8B2635' },
-    { name: 'Purple', hex: '#4A154B' },
-    { name: 'Green', hex: '#1E5631' },
-    { name: 'Blue', hex: '#1B365D' },
-    { name: 'Yellow', hex: '#D4AF37' },
-    { name: 'Pink', hex: '#E8A598' },
+  const [colors, setColors] = useState([
+    { name: 'Red', hex: '#8B2635', border: false },
+    { name: 'Purple', hex: '#4A154B', border: false },
+    { name: 'Green', hex: '#1E5631', border: false },
+    { name: 'Blue', hex: '#1B365D', border: false },
+    { name: 'Yellow', hex: '#D4AF37', border: false },
+    { name: 'Pink', hex: '#E8A598', border: false },
     { name: 'Cream', hex: '#F5ECE4', border: true },
-    { name: 'Black', hex: '#2A0E11' },
-  ];
+    { name: 'Black', hex: '#2A0E11', border: false },
+  ]);
+
+  const toggleSection = (section) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  useEffect(() => {
+    async function loadDynamicFilters() {
+      try {
+        const configRes = await fetch('/api/filter-config');
+        const configData = await configRes.json();
+        
+        const prodRes = await fetch('/api/products');
+        const prodData = await prodRes.json();
+
+        if (configData.success) {
+          let loadedCats = configData.categories;
+          let loadedFabs = configData.fabrics;
+
+          if (prodData.success) {
+            const allProducts = prodData.products;
+
+            // Compute actual counts dynamically
+            loadedCats = loadedCats.map(cat => {
+              const count = cat.value === 'All' 
+                ? allProducts.length 
+                : allProducts.filter(p => p.category === cat.value).length;
+              return { ...cat, count };
+            });
+
+            loadedFabs = loadedFabs.map(fab => {
+              const count = allProducts.filter(p => p.fabric && p.fabric.toLowerCase().includes(fab.value.toLowerCase())).length;
+              return { ...fab, count };
+            });
+          }
+
+          setCategories(loadedCats);
+          setFabrics(loadedFabs);
+          setColors(configData.colors);
+        }
+      } catch (err) {
+        console.error('Failed to fetch dynamic sidebar filter options:', err);
+      }
+    }
+    loadDynamicFilters();
+  }, []);
+
 
   return (
     <aside className="w-full text-[#3D1418] text-xs font-sans">
@@ -130,7 +172,7 @@ export default function ShopSidebarFilters({
 
           {openSections.color && (
             <div className="mt-3 grid grid-cols-4 gap-2.5">
-              {colorSwatches.map((color) => (
+              {colors.map((color) => (
                 <button
                   key={color.name}
                   type="button"
