@@ -22,10 +22,25 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     return [
+      // Admin Utility endpoints handled natively by Vercel serverless functions
+      {
+        source: '/api/admin/seed',
+        destination: '/api/admin/seed',
+      },
+      {
+        source: '/api/upload',
+        destination: '/api/upload',
+      },
+      {
+        source: '/api/coupons',
+        destination: '/api/coupons',
+      },
+      // Backend core routes proxied to the Render Express backend
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/:path*`,
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },

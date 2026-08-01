@@ -21,7 +21,7 @@ export async function POST(request) {
   try {
     await connectDB();
     const data = await request.json();
-    const { _id, name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, stock } = data;
+    const { _id, name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, stock, description, images, gridImage } = data;
 
     if (!name || !image || !price || !category) {
       return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 });
@@ -33,7 +33,7 @@ export async function POST(request) {
       // Update
       const updatedProduct = await Product.findByIdAndUpdate(
         _id,
-        { name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, slug, stock },
+        { name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, slug, stock, description, images, gridImage },
         { new: true, runValidators: true }
       );
       if (!updatedProduct) {
@@ -43,7 +43,7 @@ export async function POST(request) {
     } else {
       // Create
       const newProduct = await Product.create({
-        name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, slug, stock
+        name, image, price, originalPrice, badge, isNew, isBestSeller, category, fabric, color, slug, stock, description, images, gridImage
       });
       return NextResponse.json({ success: true, product: newProduct });
     }

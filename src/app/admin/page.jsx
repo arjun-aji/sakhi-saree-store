@@ -66,7 +66,7 @@ export default function AdminDashboard() {
 
   // Form States
   const [productForm, setProductForm] = useState({
-    name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: ''
+    name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: ''
   });
   const [couponForm, setCouponForm] = useState({
     code: '', discountType: 'Percentage', discountValue: '', expiryDate: '', active: true
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
       if (data.success) {
         showNotification(editingProduct ? 'Product updated successfully' : 'Product created successfully');
         setEditingProduct(null);
-        setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '' });
+        setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
         setSubTab('');
         fetchData();
       } else {
@@ -843,7 +843,7 @@ export default function AdminDashboard() {
                         onClick={() => {
                           setSubTab('add-product');
                           setEditingProduct(null);
-                          setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '' });
+                          setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
                         }}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 ${
                           subTab === 'add-product' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
@@ -936,7 +936,10 @@ export default function AdminDashboard() {
                                           stock: p.stock || 10,
                                           isNew: p.isNew || false,
                                           isBestSeller: p.isBestSeller || false,
-                                          badge: p.badge || ''
+                                          badge: p.badge || '',
+                                          description: p.description || '',
+                                          images: p.images || [],
+                                          gridImage: p.gridImage || ''
                                         });
                                         setSubTab('add-product');
                                       }}
@@ -1052,6 +1055,17 @@ export default function AdminDashboard() {
                               />
                             </div>
                           </div>
+
+                          <div className="mt-4">
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Saree Description</label>
+                            <textarea 
+                              placeholder="Describe the weave, borders, patterns, and style of this saree..."
+                              value={productForm.description || ''}
+                              onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
+                              rows={4}
+                              className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                            />
+                          </div>
                         </div>
 
                         {/* Image uploads column */}
@@ -1093,6 +1107,142 @@ export default function AdminDashboard() {
                                 className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
                               />
                             </div>
+                          </div>
+
+                          {/* Grid Image */}
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Grid / Hover Image (Optional)</label>
+                            <div className="flex gap-2">
+                              <input 
+                                type="text"
+                                placeholder="Paste grid image URL or upload file"
+                                value={productForm.gridImage || ''}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, gridImage: e.target.value }))}
+                                className="flex-1 p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                              />
+                              <div className="relative border border-[#E2D4C5] hover:border-[#2A0E11] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
+                                <input 
+                                  type="file" 
+                                  onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    setUploadingImage(true);
+                                    const reader = new FileReader();
+                                    reader.readAsDataURL(file);
+                                    reader.onloadend = async () => {
+                                      try {
+                                        const res = await fetch('/api/upload', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ image: reader.result })
+                                        });
+                                        const data = await res.json();
+                                        if (data.success) {
+                                          setProductForm(prev => ({ ...prev, gridImage: data.url }));
+                                          showNotification('Grid image uploaded successfully!');
+                                        } else {
+                                          showNotification(data.error || 'Upload failed', 'error');
+                                        }
+                                      } catch (err) {
+                                        showNotification('Upload failed', 'error');
+                                      } finally {
+                                        setUploadingImage(false);
+                                      }
+                                    };
+                                  }}
+                                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                  accept="image/*"
+                                />
+                                <span>Upload</span>
+                              </div>
+                            </div>
+                            {productForm.gridImage && (
+                              <div className="mt-2 flex items-center gap-2">
+                                <img src={productForm.gridImage} alt="Grid Preview" className="w-10 h-12 object-cover rounded border border-[#E2D4C5]" />
+                                <span className="text-[10px] text-[#8C7A6B] truncate flex-1">{productForm.gridImage}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Multiple Gallery Images */}
+                          <div>
+                            <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Additional Gallery Images</label>
+                            
+                            {/* Input to add url or upload */}
+                            <div className="flex gap-2 mb-2">
+                              <input 
+                                type="text"
+                                id="new-gallery-image-url"
+                                placeholder="Paste extra image URL or upload"
+                                className="flex-1 p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                              />
+                              <div className="relative border border-[#E2D4C5] hover:border-[#2A0E11] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
+                                <input 
+                                  type="file" 
+                                  onChange={async (e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    setUploadingImage(true);
+                                    const reader = new FileReader();
+                                    reader.readAsDataURL(file);
+                                    reader.onloadend = async () => {
+                                      try {
+                                        const res = await fetch('/api/upload', {
+                                          method: 'POST',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ image: reader.result })
+                                        });
+                                        const data = await res.json();
+                                        if (data.success) {
+                                          setProductForm(prev => ({ ...prev, images: [...(prev.images || []), data.url] }));
+                                          showNotification('Gallery image added successfully!');
+                                        } else {
+                                          showNotification(data.error || 'Upload failed', 'error');
+                                        }
+                                      } catch (err) {
+                                        showNotification('Upload failed', 'error');
+                                      } finally {
+                                        setUploadingImage(false);
+                                      }
+                                    };
+                                  }}
+                                  className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                  accept="image/*"
+                                />
+                                <span>Upload</span>
+                              </div>
+                              <button 
+                                type="button"
+                                onClick={() => {
+                                  const input = document.getElementById('new-gallery-image-url');
+                                  if (input && input.value) {
+                                    setProductForm(prev => ({ ...prev, images: [...(prev.images || []), input.value] }));
+                                    input.value = '';
+                                  }
+                                }}
+                                className="bg-[#2A0E11] text-[#F7EFE8] px-3.5 rounded text-xs font-semibold hover:bg-[#3D1418]"
+                              >
+                                Add
+                              </button>
+                            </div>
+
+                            {/* Previews grid */}
+                            {productForm.images && productForm.images.length > 0 && (
+                              <div className="grid grid-cols-4 gap-2 mt-2 p-2 border border-[#E2D4C5]/40 rounded bg-[#FAF7F2]/20">
+                                {productForm.images.map((url, idx) => (
+                                  <div key={idx} className="relative group aspect-square rounded border border-[#E2D4C5] overflow-hidden bg-white">
+                                    <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
+                                    <button 
+                                      type="button"
+                                      onClick={() => setProductForm(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
+                                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
 
                           {/* Image preview frame */}

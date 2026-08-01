@@ -31,6 +31,9 @@ export async function POST() {
       color: p.color || 'Mixed',
       slug: p.slug || p.name.toLowerCase().replace(/ /g, '-'),
       stock: Math.floor(Math.random() * 20) + 5,
+      description: `Experience the timeless elegance of the ${p.name}. Intricately handwoven with premium ${p.fabric || 'Silk Blend'}, this saree displays standard heritage motifs, a rich pallu, and an opulent border. Ideal for bridal trousseaus, festivals, and royal family gatherings.`,
+      images: [p.image, p.image],
+      gridImage: p.image,
     }));
     const seededProducts = await Product.insertMany(formattedProducts);
     console.log(`Seeded ${seededProducts.length} products`);

@@ -55,6 +55,9 @@ const ProductSchema = new mongoose.Schema({
   color: String,
   slug: String,
   stock: Number,
+  description: String,
+  images: [String],
+  gridImage: String,
 }, { timestamps: true });
 
 const OrderSchema = new mongoose.Schema({
@@ -187,6 +190,26 @@ app.post('/api/orders', async (req, res) => {
       status: 'Pending',
     });
     res.status(201).json({ success: true, order: newOrder });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.put('/api/orders', async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    if (!id || !status) {
+      return res.status(400).json({ success: false, error: 'Missing ID or status' });
+    }
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+    res.json({ success: true, order: updatedOrder });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
