@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   Heart,
   Trash2,
@@ -20,7 +21,7 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { products } from '@/data/products';
+import { products as localProducts } from '@/data/products';
 
 /* ── Delicate Floral Branch Vector Artwork for Cart Hero ── */
 function FloralArtworkRight() {
@@ -39,6 +40,7 @@ function FloralArtworkRight() {
 const FREE_SHIPPING_THRESHOLD = 1499;
 
 export default function Cart() {
+  const router = useRouter();
   const { cartItems, updateQuantity, removeFromCart, addToCart, toggleWishlist, wishlistItems } = useCart();
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(600); // Default WELCOME10 coupon active
@@ -47,6 +49,45 @@ export default function Cart() {
   const [couponSuccess, setCouponSuccess] = useState('WELCOME10 applied (-₹600)');
   const [recommendationIndex, setRecommendationIndex] = useState(0);
   const [addedRecId, setAddedRecId] = useState(null);
+
+  const handleProceedToCheckout = (e) => {
+    e.preventDefault();
+    const session = localStorage.getItem('sakhi_user_session');
+    if (session) {
+      router.push('/checkout');
+    } else {
+      router.push('/profile?redirect=/checkout');
+    }
+  };
+
+  /* ── Product State & Loading for recommendations ── */
+  const [productsList, setProductsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products)) {
+          const normalized = data.products.map((p) => ({
+            ...p,
+            id: p._id,
+          }));
+          setProductsList(normalized);
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching products for cart page, falling back to local data:', err);
+      }
+
+      // Fallback to static products
+      setProductsList(localProducts);
+      setIsLoading(false);
+    }
+    loadProducts();
+  }, []);
 
   /* ── Calculations ── */
   const subtotal = useMemo(() => {
@@ -88,8 +129,10 @@ export default function Cart() {
   };
 
   /* Filter out products currently in cart for recommendation strip */
-  const currentCartIds = cartItems.map((item) => item.id);
-  const recommendations = products.filter((p) => !currentCartIds.includes(p.id)).slice(0, 8);
+  const recommendations = useMemo(() => {
+    const currentCartIds = cartItems.map((item) => item.id);
+    return productsList.filter((p) => !currentCartIds.includes(p.id)).slice(0, 8);
+  }, [productsList, cartItems]);
 
   const handlePrevRec = () => {
     setRecommendationIndex((prev) => (prev > 0 ? prev - 1 : 0));
@@ -320,58 +363,74 @@ export default function Cart() {
 
                     {/* Recommendation Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
-                      {recommendations.slice(recommendationIndex, recommendationIndex + 4).map((rec) => (
-                        <div
-                          key={rec.id}
-                          className="bg-[#F3EADF]/80 hover:bg-[#F3EADF] border border-[#E5DACD] rounded-lg p-2 flex flex-col justify-between transition-all group"
-                        >
-                          <div>
-                            <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-[#EFE6DD] mb-1.5">
-                              <Image
-                                src={rec.image}
-                                alt={rec.name}
-                                fill
-                                className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                              />
+                      {isLoading ? (
+                        Array.from({ length: 4 }).map((_, idx) => (
+                          <div
+                            key={idx}
+                            className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-lg p-2 flex flex-col justify-between animate-pulse"
+                          >
+                            <div className="relative aspect-[4/3] w-full bg-[#EFE6DD] mb-1.5 rounded-md" />
+                            <div className="h-3 bg-[#EFE6DD] w-3/4 mb-1.5 rounded-xs" />
+                            <div className="flex items-center justify-between mt-1">
+                              <div className="h-4 bg-[#EFE6DD] w-1/3 rounded-xs" />
+                              <div className="h-6 bg-[#EFE6DD] w-1/3 rounded-sm" />
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        recommendations.slice(recommendationIndex, recommendationIndex + 4).map((rec) => (
+                          <div
+                            key={rec.id}
+                            className="bg-[#F3EADF]/80 hover:bg-[#F3EADF] border border-[#E5DACD] rounded-lg p-2 flex flex-col justify-between transition-all group"
+                          >
+                            <div>
+                              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-[#EFE6DD] mb-1.5">
+                                <Image
+                                  src={rec.image}
+                                  alt={rec.name}
+                                  fill
+                                  className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => toggleWishlist(rec.id)}
+                                  aria-label="Toggle Wishlist"
+                                  className="absolute top-1.5 right-1.5 p-1 bg-[#F7EFE8]/80 rounded-full text-[#3D1418] hover:text-[#8B2635]"
+                                >
+                                  <Heart
+                                    className={`w-3 h-3 stroke-[1.75] ${
+                                      wishlistItems.includes(rec.id) ? 'fill-[#8B2635] text-[#8B2635]' : 'text-[#3D1418]'
+                                    }`}
+                                  />
+                                </button>
+                              </div>
+                              <h4 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#2A0E11] line-clamp-1 group-hover:text-[#8B2635] transition-colors">
+                                {rec.name}
+                              </h4>
+                            </div>
+
+                            <div className="mt-1 flex items-center justify-between">
+                              <p className="font-serif-luxury text-xs sm:text-sm font-bold text-[#2A0E11]">
+                                ₹{rec.price.toLocaleString('en-IN')}
+                              </p>
                               <button
                                 type="button"
-                                onClick={() => toggleWishlist(rec.id)}
-                                aria-label="Toggle Wishlist"
-                                className="absolute top-1.5 right-1.5 p-1 bg-[#F7EFE8]/80 rounded-full text-[#3D1418] hover:text-[#8B2635]"
+                                onClick={() => handleAddRecommendation(rec)}
+                                className="inline-flex items-center gap-1 bg-[#2A0E11] text-[#F7EFE8] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#3D1418] transition-colors"
                               >
-                                <Heart
-                                  className={`w-3 h-3 stroke-[1.75] ${
-                                    wishlistItems.includes(rec.id) ? 'fill-[#8B2635] text-[#8B2635]' : 'text-[#3D1418]'
-                                  }`}
-                                />
+                                {addedRecId === rec.id ? (
+                                  <Check className="w-3 h-3 text-white" />
+                                ) : (
+                                  <>
+                                    <span>ADD</span>
+                                    <ShoppingCart className="w-2.5 h-2.5" />
+                                  </>
+                                )}
                               </button>
                             </div>
-                            <h4 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#2A0E11] line-clamp-1 group-hover:text-[#8B2635] transition-colors">
-                              {rec.name}
-                            </h4>
                           </div>
-
-                          <div className="mt-1 flex items-center justify-between">
-                            <p className="font-serif-luxury text-xs sm:text-sm font-bold text-[#2A0E11]">
-                              ₹{rec.price.toLocaleString('en-IN')}
-                            </p>
-                            <button
-                              type="button"
-                              onClick={() => handleAddRecommendation(rec)}
-                              className="inline-flex items-center gap-1 bg-[#2A0E11] text-[#F7EFE8] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#3D1418] transition-colors"
-                            >
-                              {addedRecId === rec.id ? (
-                                <Check className="w-3 h-3 text-white" />
-                              ) : (
-                                <>
-                                  <span>ADD</span>
-                                  <ShoppingCart className="w-2.5 h-2.5" />
-                                </>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
@@ -476,13 +535,13 @@ export default function Cart() {
 
                   {/* Desktop Checkout Button */}
                   <div className="pt-2">
-                    <Link
-                      href="/checkout"
+                    <button
+                      onClick={handleProceedToCheckout}
                       className="w-full inline-flex items-center justify-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-[0.2em] uppercase py-3.5 rounded-md transition-colors shadow-sm group"
                     >
                       <span>PROCEED TO CHECKOUT</span>
                       <ArrowRight className="w-4 h-4 text-[#F7EFE8] group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                    </button>
 
                     <div className="flex items-center justify-center gap-1.5 pt-2 text-[10.5px] text-[#8A786D] font-medium">
                       <Lock className="w-3 h-3 text-[#1E5631]" />
@@ -533,13 +592,13 @@ export default function Cart() {
               </span>
             </div>
 
-            <Link
-              href="/checkout"
+            <button
+              onClick={handleProceedToCheckout}
               className="flex-1 inline-flex items-center justify-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-wider uppercase py-3 rounded-md transition-colors shadow-xs"
             >
               <span>PROCEED TO CHECKOUT</span>
               <ArrowRight className="w-4 h-4" />
-            </Link>
+            </button>
           </div>
         </div>
       )}

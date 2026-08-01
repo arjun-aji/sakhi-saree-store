@@ -4,34 +4,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
-const DEFAULT_CART = [
-  {
-    id: 1,
-    name: 'Rose Gold Banarasi Silk Saree',
-    fabric: 'Banarasi Silk',
-    color: 'Rose Gold',
-    price: 2799,
-    originalPrice: 3599,
-    quantity: 1,
-    image: '/assets/about/story_tradition.jpg',
-    wishlisted: false,
-  },
-  {
-    id: 2,
-    name: 'Emerald Green Kanjivaram Saree',
-    fabric: 'Kanjivaram Silk',
-    color: 'Emerald Green',
-    price: 2999,
-    originalPrice: 3899,
-    quantity: 1,
-    image: '/assets/about/story_crafted.jpg',
-    wishlisted: false,
-  },
-];
-
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState(DEFAULT_CART);
-  const [wishlistItems, setWishlistItems] = useState([1, 2]);
+  const [cartItems, setCartItems] = useState([]);
+  const [wishlistItems, setWishlistItems] = useState([]);
 
   // Load cart from localStorage on mount (client-side)
   useEffect(() => {
@@ -119,6 +94,11 @@ export function CartProvider({ children }) {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  /* ── Clear Cart ── */
+  const clearCart = () => {
+    setCartItems([]);
+  };
+
   /* ── Toggle Wishlist ── */
   const toggleWishlist = (id) => {
     setWishlistItems((prev) => {
@@ -147,6 +127,7 @@ export function CartProvider({ children }) {
         updateQuantity,
         removeFromCart,
         toggleWishlist,
+        clearCart,
       }}
     >
       {children}

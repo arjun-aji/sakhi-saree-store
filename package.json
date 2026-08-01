@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
-    "dev:clean": "powershell -Command \"Remove-Item -Recurse -Force .next\" && next dev",
-    "clean": "powershell -Command \"Remove-Item -Recurse -Force .next\"",
+    "dev:clean": "rm -rf .next && next dev",
+    "clean": "rm -rf .next",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "server": "node backend.js",
+    "client": "next dev"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,8 @@
   "type": "module",
   "dependencies": {
     "cloudinary": "^2.10.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
     "lucide-react": "^1.26.0",
     "mongoose": "^9.9.0",
     "next": "15.2.8",

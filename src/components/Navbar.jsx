@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, Search, User, Heart, ShoppingBag } from 'lucide-react';
@@ -9,6 +9,17 @@ import { useCart } from '@/context/CartContext';
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartCount, wishlistCount } = useCart();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLogin = () => {
+      const session = localStorage.getItem('sakhi_user_session');
+      setIsLoggedIn(!!session);
+    };
+    checkLogin();
+    window.addEventListener('storage', checkLogin);
+    return () => window.removeEventListener('storage', checkLogin);
+  }, []);
 
   return (
     <header className="w-full bg-transparent sticky top-0 z-50 transition-all duration-300">
@@ -73,12 +84,16 @@ export default function Navbar() {
             <Search className="w-5 h-5 stroke-[1.75]" />
           </button>
           
-          <button 
+          <Link 
+            href="/profile"
             aria-label="Account" 
-            className="hidden sm:block p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200"
+            className="hidden sm:block p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
           >
             <User className="w-5 h-5 stroke-[1.75]" />
-          </button>
+            {isLoggedIn && (
+              <span className="absolute top-1.5 right-1.5 bg-[#C59B27] w-2 h-2 rounded-full ring-1 ring-[#F7EFE8] animate-pulse" />
+            )}
+          </Link>
           
           <Link 
             href="/wishlist" 

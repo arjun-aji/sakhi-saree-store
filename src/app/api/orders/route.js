@@ -43,3 +43,32 @@ export async function PUT(request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+// POST create new order
+export async function POST(request) {
+  try {
+    await connectDB();
+    const data = await request.json();
+    const { customerName, customerEmail, items, totalAmount } = data;
+
+    if (!customerName || !customerEmail || !items || !totalAmount) {
+      return NextResponse.json({ success: false, error: 'Missing required order details' }, { status: 400 });
+    }
+
+    const orderNumber = `SK-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newOrder = await Order.create({
+      orderNumber,
+      customerName,
+      customerEmail,
+      items,
+      totalAmount,
+      status: 'Pending'
+    });
+
+    return NextResponse.json({ success: true, order: newOrder });
+  } catch (error) {
+    console.error('POST Order Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}

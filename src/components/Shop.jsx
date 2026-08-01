@@ -8,7 +8,7 @@ import { ChevronDown, RotateCcw, X, ShieldCheck, Heart, Sparkles, Truck, Package
 import ProductCard from '@/components/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
 import ShopSidebarFilters from '@/components/ShopSidebarFilters';
-import { products } from '@/data/products';
+import { products as localProducts } from '@/data/products';
 
 /* ── Delicate Floral Branch Vector Artwork for Hero ── */
 function FloralArtworkLeft() {
@@ -60,6 +60,35 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
   // Determine mode
   const isNewArrivals = isNewArrivalsPage || pathname?.includes('new-arrivals') || searchParams.get('filter') === 'new';
 
+  /* ── Product State & Loading ── */
+  const [productsList, setProductsList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.products)) {
+          const normalized = data.products.map((p) => ({
+            ...p,
+            id: p._id,
+          }));
+          setProductsList(normalized);
+          setIsLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Error fetching products from database, falling back to local data:', err);
+      }
+
+      // Fallback to static products
+      setProductsList(localProducts);
+      setIsLoading(false);
+    }
+    loadProducts();
+  }, []);
+
   /* ── Filter States ── */
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedFabric, setSelectedFabric] = useState('All');
@@ -72,7 +101,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
   /* ── Filtering + Sorting Logic ── */
   const filteredProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...productsList];
 
     // If New Arrivals, filter by newest first or `isNew` flag
     if (isNewArrivals) {
@@ -80,15 +109,15 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
     }
 
     if (selectedCategory !== 'All') {
-      result = result.filter((p) => p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || p.category === selectedCategory);
+      result = result.filter((p) => p.category && (p.category.toLowerCase().includes(selectedCategory.toLowerCase()) || p.category === selectedCategory));
     }
 
     if (selectedFabric !== 'All') {
-      result = result.filter((p) => p.fabric.toLowerCase().includes(selectedFabric.toLowerCase()) || p.fabric === selectedFabric);
+      result = result.filter((p) => p.fabric && (p.fabric.toLowerCase().includes(selectedFabric.toLowerCase()) || p.fabric === selectedFabric));
     }
 
     if (selectedColor !== 'All') {
-      result = result.filter((p) => p.color.toLowerCase() === selectedColor.toLowerCase());
+      result = result.filter((p) => p.color && p.color.toLowerCase() === selectedColor.toLowerCase());
     }
 
     if (selectedPrice < 8999) {
@@ -115,7 +144,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
     }
 
     return result;
-  }, [selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort, isNewArrivals]);
+  }, [productsList, selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort, isNewArrivals]);
 
   /* ── Reset visible count when filters change ── */
   useEffect(() => {
@@ -220,7 +249,22 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
             />
 
             {/* PRODUCT GRID: 6 columns desktop, 3 tablet, 2 mobile */}
-            {visibleProducts.length > 0 ? (
+            {isLoading ? (
+              <div
+                className={`grid grid-cols-2 sm:grid-cols-3 ${
+                  showDesktopSidebar ? 'lg:grid-cols-6' : 'lg:grid-cols-6'
+                } gap-x-2.5 gap-y-4 sm:gap-x-3 sm:gap-y-5`}
+              >
+                {Array.from({ length: 12 }).map((_, idx) => (
+                  <div key={idx} className="flex flex-col border border-[#E5DACD] p-2 space-y-2 animate-pulse">
+                    <div className="relative aspect-[4/5] w-full bg-[#EFE6DD]" />
+                    <div className="h-3 bg-[#EFE6DD] w-3/4 rounded-xs" />
+                    <div className="h-3 bg-[#EFE6DD] w-1/2 rounded-xs" />
+                    <div className="h-7 bg-[#EFE6DD] w-full rounded-sm" />
+                  </div>
+                ))}
+              </div>
+            ) : visibleProducts.length > 0 ? (
               <div
                 className={`grid grid-cols-2 sm:grid-cols-3 ${
                   showDesktopSidebar ? 'lg:grid-cols-6' : 'lg:grid-cols-6'

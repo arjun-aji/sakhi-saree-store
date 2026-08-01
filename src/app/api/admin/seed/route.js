@@ -35,86 +35,8 @@ export async function POST() {
     const seededProducts = await Product.insertMany(formattedProducts);
     console.log(`Seeded ${seededProducts.length} products`);
 
-    // 2. Seed Mock Orders
+    // 2. Clear Orders (keeping it empty for clean user testing)
     await Order.deleteMany({});
-    const sampleOrders = [
-      {
-        orderNumber: 'SK-2026-001',
-        customerName: 'Aishwarya Sen',
-        customerEmail: 'aishwarya.sen@example.com',
-        items: [
-          {
-            productId: seededProducts[0]._id,
-            name: seededProducts[0].name,
-            price: seededProducts[0].price,
-            quantity: 1,
-            image: seededProducts[0].image
-          }
-        ],
-        totalAmount: seededProducts[0].price,
-        status: 'Delivered',
-        createdAt: new Date('2026-07-15')
-      },
-      {
-        orderNumber: 'SK-2026-002',
-        customerName: 'Priya Nair',
-        customerEmail: 'priya.nair@example.com',
-        items: [
-          {
-            productId: seededProducts[1]._id,
-            name: seededProducts[1].name,
-            price: seededProducts[1].price,
-            quantity: 1,
-            image: seededProducts[1].image
-          },
-          {
-            productId: seededProducts[2]._id,
-            name: seededProducts[2].name,
-            price: seededProducts[2].price,
-            quantity: 1,
-            image: seededProducts[2].image
-          }
-        ],
-        totalAmount: seededProducts[1].price + seededProducts[2].price,
-        status: 'Processing',
-        createdAt: new Date('2026-07-28')
-      },
-      {
-        orderNumber: 'SK-2026-003',
-        customerName: 'Meera Krishnan',
-        customerEmail: 'meera.k@example.com',
-        items: [
-          {
-            productId: seededProducts[3]._id,
-            name: seededProducts[3].name,
-            price: seededProducts[3].price,
-            quantity: 2,
-            image: seededProducts[3].image
-          }
-        ],
-        totalAmount: seededProducts[3].price * 2,
-        status: 'Pending',
-        createdAt: new Date('2026-07-30')
-      },
-      {
-        orderNumber: 'SK-2026-004',
-        customerName: 'Anjali Menon',
-        customerEmail: 'anjali.m@example.com',
-        items: [
-          {
-            productId: seededProducts[4]._id,
-            name: seededProducts[4].name,
-            price: seededProducts[4].price,
-            quantity: 1,
-            image: seededProducts[4].image
-          }
-        ],
-        totalAmount: seededProducts[4].price,
-        status: 'Shipped',
-        createdAt: new Date('2026-07-25')
-      }
-    ];
-    await Order.insertMany(sampleOrders);
 
     // 3. Seed Reviews
     await Review.deleteMany({});
