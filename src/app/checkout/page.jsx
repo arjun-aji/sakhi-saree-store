@@ -82,62 +82,101 @@ export default function CheckoutPage() {
     setPaymentDetails((prev) => ({ ...prev, [name]: value }));
   };
 
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
   const handlePlaceOrderClick = (e) => {
     e.preventDefault();
     if (cartItems.length === 0) return;
-    
-    // Switch to Payment Gateway view
     setIsPaying(true);
   };
 
   const handleCompletePaymentSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
+
+    if (!window.Razorpay) {
+      alert("Secure payment portal is loading. Please try again in a moment.");
+      return;
+    }
+
     setPaymentProcessing(true);
 
-    // Simulate Payment Gateway loading delay
-    setTimeout(async () => {
-      try {
-        // Map cart items for backend schema
-        const formattedItems = cartItems.map((item) => ({
-          productId: item.id.toString().match(/^[0-9a-fA-F]{24}$/) ? item.id : undefined,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-        }));
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_5p7zZfR1vV3a9t",
+      amount: finalTotal * 100, // paise
+      currency: "INR",
+      name: "Sakhi By Maya's",
+      description: "Secure Saree Checkout",
+      image: "/assets/logo.png",
+      handler: async function (response) {
+        setPaymentProcessing(true);
+        try {
+          const formattedItems = cartItems.map((item) => ({
+            productId: item.id.toString().match(/^[0-9a-fA-F]{24}$/) ? item.id : undefined,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+          }));
 
-        const orderData = {
-          customerName: `${formData.firstName} ${formData.lastName}`,
-          customerEmail: formData.email,
-          items: formattedItems,
-          totalAmount: finalTotal,
-        };
+          const orderData = {
+            customerName: `${formData.firstName} ${formData.lastName}`,
+            customerEmail: formData.email,
+            items: formattedItems,
+            totalAmount: finalTotal,
+            paymentId: response.razorpay_payment_id || "mock_gateway_token"
+          };
 
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(orderData),
-        });
+          const res = await fetch("/api/orders", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          });
 
-        const data = await res.json();
-
-        if (data.success) {
-          setOrderSuccess(data.order);
-          clearCart();
-        } else {
-          alert(data.error || 'Failed to place order. Please try again.');
+          const data = await res.json();
+          if (data.success) {
+            setOrderSuccess(data.order);
+            clearCart();
+          } else {
+            alert(data.error || "Failed to record order. Please contact support.");
+            setIsPaying(false);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Connection error. Order could not be placed.");
           setIsPaying(false);
+        } finally {
+          setPaymentProcessing(false);
         }
-      } catch (err) {
-        console.error('Checkout API error:', err);
-        alert('An error occurred during order submission. Please try again.');
-        setIsPaying(false);
-      } finally {
-        setPaymentProcessing(false);
-      }
-    }, 2500);
+      },
+      modal: {
+        ondismiss: function () {
+          setPaymentProcessing(false);
+        }
+      },
+      prefill: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        contact: formData.phone,
+      },
+      theme: {
+        color: "#2A0E11",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   if (orderSuccess) {
@@ -433,131 +472,48 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Portal Input Right */}
-            <div className="md:col-span-7 p-6 sm:p-8 space-y-6 relative">
-              {paymentProcessing && (
-                <div className="absolute inset-0 bg-[#F3EADF]/95 backdrop-blur-xs flex flex-col items-center justify-center space-y-3 z-30 animate-in fade-in duration-200">
-                  <Loader2 className="w-10 h-10 text-[#8B2635] animate-spin" />
-                  <p className="text-xs font-bold uppercase tracking-widest text-[#2A0E11] animate-pulse">
-                    Processing Transaction...
-                  </p>
-                  <p className="text-[10px] text-[#8A786D]">Please do not refresh or close this tab.</p>
-                </div>
-              )}
 
-              <div className="flex gap-4 border-b border-[#E5DACD] pb-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('card')}
-                  className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-                    paymentMethod === 'card' ? 'text-[#2A0E11] border-b-2 border-[#2A0E11]' : 'text-[#8A786D]'
-                  }`}
-                >
-                  Credit / Debit Card
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('upi')}
-                  className={`pb-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-                    paymentMethod === 'upi' ? 'text-[#2A0E11] border-b-2 border-[#2A0E11]' : 'text-[#8A786D]'
-                  }`}
-                >
-                  UPI Payment
-                </button>
+            {/* Portal Input Right */}
+            <div className="md:col-span-7 p-6 sm:p-8 space-y-6 flex flex-col justify-center items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#C59B27]/10 flex items-center justify-center text-[#C59B27] mb-2 animate-pulse">
+                <Lock className="w-8 h-8" />
+              </div>
+              <div className="space-y-2 max-w-sm">
+                <h3 className="font-serif-luxury text-lg font-bold text-[#2A0E11]">Secure Payment Gateway</h3>
+                <p className="text-xs text-[#8A786D] leading-relaxed">
+                  Your transaction is secured with industry-grade 256-bit encryption. Card, Net Banking, and UPI credentials are never seen or stored on our servers.
+                </p>
               </div>
 
-              <form onSubmit={handleCompletePaymentSubmit} className="space-y-4">
-                {paymentMethod === 'card' ? (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Cardholder Name</label>
-                      <input
-                        required
-                        type="text"
-                        placeholder="Name on card"
-                        className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11]"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Card Number</label>
-                      <input
-                        required
-                        type="text"
-                        name="cardNo"
-                        placeholder="4111 2222 3333 4444"
-                        value={paymentDetails.cardNo}
-                        onChange={handlePaymentInputChange}
-                        maxLength={19}
-                        className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] font-mono"
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Expiry Date</label>
-                        <input
-                          required
-                          type="text"
-                          name="expiry"
-                          placeholder="MM/YY"
-                          value={paymentDetails.expiry}
-                          onChange={handlePaymentInputChange}
-                          maxLength={5}
-                          className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">CVV Code</label>
-                        <input
-                          required
-                          type="password"
-                          name="cvv"
-                          placeholder="•••"
-                          value={paymentDetails.cvv}
-                          onChange={handlePaymentInputChange}
-                          maxLength={3}
-                          className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">UPI ID / VPA Address</label>
-                      <input
-                        required
-                        type="text"
-                        name="upiId"
-                        placeholder="yourname@upi"
-                        value={paymentDetails.upiId}
-                        onChange={handlePaymentInputChange}
-                        className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11]"
-                      />
-                    </div>
-                    <span className="text-[10px] text-[#8A786D] block">
-                      A payment request will be sent to your active UPI mobile app.
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="submit"
-                    className="flex-1 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-wider uppercase py-3 rounded-md transition-colors"
-                  >
-                    Pay ₹{finalTotal.toLocaleString('en-IN')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setIsPaying(false)}
-                    className="border border-[#C5B9AD] text-[#3D1418] hover:bg-[#3D1418]/5 text-xs font-bold tracking-wider uppercase px-5 py-3 rounded-md transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+              <div className="w-full space-y-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleCompletePaymentSubmit}
+                  disabled={paymentProcessing}
+                  className="w-full bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] py-3.5 text-xs font-bold tracking-widest uppercase transition-all rounded shadow-md flex items-center justify-center gap-2"
+                >
+                  {paymentProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Opening Secure Portal...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Pay Securely ₹{finalTotal.toLocaleString('en-IN')}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsPaying(false)}
+                  disabled={paymentProcessing}
+                  className="w-full border border-[#C5B9AD] text-[#3D1418] hover:bg-[#3D1418]/5 text-xs font-bold tracking-widest uppercase py-3 rounded transition-colors"
+                >
+                  Go Back
+                </button>
+              </div>
+            </div></div>
         )}
       </main>
     </div>

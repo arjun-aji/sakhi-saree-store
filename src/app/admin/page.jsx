@@ -43,6 +43,7 @@ export default function AdminDashboard() {
   const [blogs, setBlogs] = useState([]);
   const [faqs, setFaqs] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [filterConfig, setFilterConfig] = useState({
     categories: [],
     fabrics: [],
@@ -121,6 +122,11 @@ export default function AdminDashboard() {
       const msgRes = await fetch('/api/contact-messages');
       const msgData = await msgRes.json();
       if (msgData.success) setMessages(msgData.messages);
+
+      // Fetch Customers
+      const custRes = await fetch('/api/customers');
+      const custData = await custRes.json();
+      if (custData.success) setCustomers(custData.customers);
 
       // Fetch Filter Config
       const filterRes = await fetch('/api/filter-config');
@@ -422,7 +428,7 @@ export default function AdminDashboard() {
   const totalRevenue = orders.reduce((sum, order) => order.status !== 'Cancelled' ? sum + order.totalAmount : sum, 0);
   const totalOrdersCount = orders.length;
   const pendingOrdersCount = orders.filter(o => o.status === 'Pending').length;
-  const customersCount = new Set(orders.map(o => o.customerEmail)).size;
+  const customersCount = customers.length || new Set(orders.map(o => o.customerEmail)).size;
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#2D2625] flex flex-col md:flex-row antialiased font-sans">
@@ -1622,18 +1628,24 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody>
-                        {Array.from(new Set(orders.map(o => o.customerEmail))).map((email) => {
-                          const customerOrders = orders.filter(o => o.customerEmail === email);
-                          const customerName = customerOrders[0]?.customerName || 'N/A';
+                        {customers.map((c) => {
+                          const customerOrders = orders.filter(o => o.customerEmail && o.customerEmail.toLowerCase() === c.email.toLowerCase());
                           const totalSpent = customerOrders.reduce((sum, o) => o.status !== 'Cancelled' ? sum + o.totalAmount : sum, 0);
                           const orderCount = customerOrders.length;
+                          const createdDate = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'July 2026';
                           return (
-                            <tr key={email} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/20 transition">
-                              <td className="p-4 font-bold text-[#2A0E11]">{customerName}</td>
-                              <td className="p-4 text-[#8C7A6B]">{email}</td>
+                            <tr key={c._id || c.email} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/20 transition">
+                              <td className="p-4 font-bold text-[#2A0E11]">{c.name}</td>
+                              <td className="p-4 text-[#8C7A6B]">
+                                <div className="space-y-0.5">
+                                  <div>{c.email}</div>
+                                  {c.phone && <div className="text-[10px] text-[#A59483]">📞 {c.phone}</div>}
+                                  {c.address && <div className="text-[10px] text-[#A59483]">📍 {c.address}, {c.city || ''}</div>}
+                                </div>
+                              </td>
                               <td className="p-4 font-medium">{orderCount} order(s)</td>
                               <td className="p-4 font-bold text-[#2A0E11]">₹{totalSpent.toLocaleString()}</td>
-                              <td className="p-4 text-xs text-[#8C7A6B]">July 2026</td>
+                              <td className="p-4 text-xs text-[#8C7A6B]">{createdDate}</td>
                             </tr>
                           );
                         })}

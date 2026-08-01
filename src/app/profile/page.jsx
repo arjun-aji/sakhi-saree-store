@@ -81,35 +81,64 @@ function ProfileContent() {
     if (!loginEmail) return;
 
     try {
-      // Find orders matching this email to retrieve their past profile details
-      const res = await fetch('/api/orders');
-      const data = await res.json();
-      
-      let userDetails = {
-        name: 'Valued Customer',
-        email: loginEmail,
-        phone: '',
-        address: '',
-        city: '',
-        state: '',
-        pincode: '',
-      };
+      // 1. Try to find the customer in the database first
+      const custRes = await fetch('/api/customers');
+      const custData = await custRes.json();
+      let userDetails = null;
 
-      if (data.success && Array.isArray(data.orders)) {
-        const pastOrder = data.orders.find(
-          (o) => o.customerEmail && o.customerEmail.toLowerCase() === loginEmail.toLowerCase()
-        );
-        if (pastOrder) {
+      if (custData.success && Array.isArray(custData.customers)) {
+        const found = custData.customers.find(c => c.email.toLowerCase() === loginEmail.toLowerCase());
+        if (found) {
           userDetails = {
-            name: pastOrder.customerName || 'Valued Customer',
-            email: loginEmail,
-            phone: pastOrder.phone || '',
-            address: pastOrder.address || '',
-            city: pastOrder.city || '',
-            state: pastOrder.state || '',
-            pincode: pastOrder.pincode || '',
+            name: found.name,
+            email: found.email,
+            phone: found.phone || '',
+            address: found.address || '',
+            city: found.city || '',
+            state: found.state || '',
+            pincode: found.pincode || '',
           };
         }
+      }
+
+      // 2. If not found in customers database, check past orders list
+      if (!userDetails) {
+        const res = await fetch('/api/orders');
+        const data = await res.json();
+        
+        userDetails = {
+          name: 'Valued Customer',
+          email: loginEmail,
+          phone: '',
+          address: '',
+          city: '',
+          state: '',
+          pincode: '',
+        };
+
+        if (data.success && Array.isArray(data.orders)) {
+          const pastOrder = data.orders.find(
+            (o) => o.customerEmail && o.customerEmail.toLowerCase() === loginEmail.toLowerCase()
+          );
+          if (pastOrder) {
+            userDetails = {
+              name: pastOrder.customerName || 'Valued Customer',
+              email: loginEmail,
+              phone: pastOrder.phone || '',
+              address: pastOrder.address || '',
+              city: pastOrder.city || '',
+              state: pastOrder.state || '',
+              pincode: pastOrder.pincode || '',
+            };
+          }
+        }
+        
+        // 3. Save this customer to database so they are registered
+        await fetch('/api/customers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userDetails)
+        });
       }
 
       localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
@@ -131,17 +160,37 @@ function ProfileContent() {
     setSignupData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSignupSubmit = (e) => {
+  const handleSignupSubmit = async (e) => {
     e.preventDefault();
     if (!signupData.name || !signupData.email) return;
 
-    localStorage.setItem('sakhi_user_session', JSON.stringify(signupData));
-    setUserSession(signupData);
-    setOrders([]); // New user has no orders
-
-    // Handle redirect if needed
-    if (redirectUrl) {
-      router.push(redirectUrl);
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signupData)
+      });
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const userDetails = {
+          name: data.customer.name,
+          email: data.customer.email,
+          phone: data.customer.phone || '',
+          address: data.customer.address || '',
+          city: data.customer.city || '',
+          state: data.customer.state || '',
+          pincode: data.customer.pincode || '',
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
+        setUserSession(userDetails);
+        setOrders([]);
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        }
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      setAuthError('An error occurred during signup. Please try again.');
     }
   };
 
@@ -162,11 +211,32 @@ function ProfileContent() {
     setEditData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSaveEdit = () => {
-    localStorage.setItem('sakhi_user_session', JSON.stringify(editData));
-    setUserSession(editData);
-    setIsEditing(false);
-    loadCustomerOrders(editData.email);
+  const handleSaveEdit = async () => {
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editData)
+      });
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const userDetails = {
+          name: data.customer.name,
+          email: data.customer.email,
+          phone: data.customer.phone || '',
+          address: data.customer.address || '',
+          city: data.customer.city || '',
+          state: data.customer.state || '',
+          pincode: data.customer.pincode || '',
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
+        setUserSession(userDetails);
+        setIsEditing(false);
+        loadCustomerOrders(userDetails.email);
+      }
+    } catch (err) {
+      console.error('Save profile error:', err);
+    }
   };
 
   return (

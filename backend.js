@@ -111,6 +111,16 @@ const ContactMessageSchema = new mongoose.Schema({
   message: { type: String, required: true },
 }, { timestamps: true });
 
+const CustomerSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  phone: String,
+  address: String,
+  city: String,
+  state: String,
+  pincode: String,
+}, { timestamps: true });
+
 const Product = mongoose.models.Product || mongoose.model('Product', ProductSchema);
 const Order = mongoose.models.Order || mongoose.model('Order', OrderSchema);
 const FilterConfig = mongoose.models.FilterConfig || mongoose.model('FilterConfig', FilterConfigSchema);
@@ -118,6 +128,34 @@ const Review = mongoose.models.Review || mongoose.model('Review', ReviewSchema);
 const Blog = mongoose.models.Blog || mongoose.model('Blog', BlogSchema);
 const FAQ = mongoose.models.FAQ || mongoose.model('FAQ', FAQSchema);
 const ContactMessage = mongoose.models.ContactMessage || mongoose.model('ContactMessage', ContactMessageSchema);
+const Customer = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
+
+// Customers Endpoints
+app.get('/api/customers', async (req, res) => {
+  try {
+    const customers = await Customer.find({}).sort({ createdAt: -1 });
+    res.json({ success: true, customers });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/customers', async (req, res) => {
+  try {
+    const { name, email, phone, address, city, state, pincode } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ success: false, error: 'Missing name or email' });
+    }
+    const customer = await Customer.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      { name, phone, address, city, state, pincode },
+      { new: true, upsert: true }
+    );
+    res.json({ success: true, customer });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // 5. REST API Endpoints
 
