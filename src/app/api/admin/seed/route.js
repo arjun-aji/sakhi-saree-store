@@ -7,6 +7,7 @@ import Coupon from '@/models/Coupon';
 import Blog from '@/models/Blog';
 import FAQ from '@/models/FAQ';
 import FilterConfig from '@/models/FilterConfig';
+import Customer from '@/models/Customer';
 import { products } from '@/data/products';
 
 export const dynamic = 'force-dynamic';
@@ -38,8 +39,53 @@ export async function POST() {
     const seededProducts = await Product.insertMany(formattedProducts);
     console.log(`Seeded ${seededProducts.length} products`);
 
-    // 2. Clear Orders (keeping it empty for clean user testing)
+    // 2. Seed Mock Orders
     await Order.deleteMany({});
+    const sampleOrders = [
+      {
+        orderNumber: 'SK-2026-9481',
+        customerName: 'Divya R.',
+        customerEmail: 'divya@example.com',
+        phone: '+91 91234 56789',
+        address: 'Flat 4B, Sky Towers, MG Road',
+        city: 'Bangalore',
+        state: 'Karnataka',
+        pincode: '560001',
+        items: [
+          {
+            name: seededProducts[0].name,
+            price: seededProducts[0].price,
+            quantity: 1,
+            image: seededProducts[0].image
+          }
+        ],
+        totalAmount: seededProducts[0].price,
+        status: 'Delivered',
+        createdAt: new Date('2026-07-15')
+      },
+      {
+        orderNumber: 'SK-2026-1035',
+        customerName: 'Sruthy Thomas',
+        customerEmail: 'sruthy@example.com',
+        phone: '+91 99887 76655',
+        address: 'Thomas Villa, Lake View Road',
+        city: 'Kottayam',
+        state: 'Kerala',
+        pincode: '686002',
+        items: [
+          {
+            name: seededProducts[1].name,
+            price: seededProducts[1].price,
+            quantity: 1,
+            image: seededProducts[1].image
+          }
+        ],
+        totalAmount: seededProducts[1].price,
+        status: 'Processing',
+        createdAt: new Date('2026-07-28')
+      }
+    ];
+    await Order.insertMany(sampleOrders);
 
     // 3. Seed Reviews
     await Review.deleteMany({});
@@ -160,9 +206,42 @@ export async function POST() {
     };
     await FilterConfig.create(defaultFilters);
 
+    // 8. Seed Customer profiles
+    await Customer.deleteMany({});
+    const sampleCustomers = [
+      {
+        name: 'Maya Nair',
+        email: 'maya@sakhi.com',
+        phone: '+91 98765 43210',
+        address: 'Villa 10, Palm Grove',
+        city: 'Kochi',
+        state: 'Kerala',
+        pincode: '682001'
+      },
+      {
+        name: 'Divya R.',
+        email: 'divya@example.com',
+        phone: '+91 91234 56789',
+        address: 'Flat 4B, Sky Towers, MG Road',
+        city: 'Bangalore',
+        state: 'Karnataka',
+        pincode: '560001'
+      },
+      {
+        name: 'Sruthy Thomas',
+        email: 'sruthy@example.com',
+        phone: '+91 99887 76655',
+        address: 'Thomas Villa, Lake View Road',
+        city: 'Kottayam',
+        state: 'Kerala',
+        pincode: '686002'
+      }
+    ];
+    await Customer.insertMany(sampleCustomers);
+
     return NextResponse.json({
       success: true,
-      message: 'Database seeded successfully with products, orders, reviews, coupons, blogs, FAQs, and filters'
+      message: 'Database seeded successfully with products, orders, reviews, coupons, blogs, FAQs, filters, and customers'
     });
   } catch (error) {
     console.error('Seeder Error:', error);
