@@ -255,7 +255,7 @@ app.post('/api/reviews', async (req, res) => {
 });
 
 // Start Express Server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Backend Server listening at http://localhost:${PORT}`);
+  console.log(`Backend Server listening at port ${PORT}`);
 });
