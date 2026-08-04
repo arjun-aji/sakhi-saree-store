@@ -27,7 +27,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative w-full bg-[#F7EFE8] overflow-hidden">
+    <section className={`relative w-full bg-[#F7EFE8] overflow-hidden transition-opacity duration-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
 
       {/* ========================================================= */}
       {/* MOBILE HERO VIEW                                          */}
@@ -48,11 +48,7 @@ export default function Hero() {
         </div>
 
         {/* Mobile Content Layer — animated in after preloader */}
-        <div
-          className={`relative z-10 space-y-4 transition-all duration-700 ease-out ${
-            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
-          }`}
-        >
+        <div className="relative z-10 space-y-4">
           {/* Tagline */}
           <div className="flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -119,11 +115,7 @@ export default function Hero() {
         <div className="relative z-10 h-48 sm:h-64 my-2" />
 
         {/* Mobile New Arrivals & Feature Bar at Bottom */}
-        <div
-          className={`relative z-10 space-y-4 transition-all duration-700 ease-out delay-200 ${
-            visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
+        <div className="relative z-10 space-y-4">
           <NewArrivalsPreview />
           <FeatureBar />
         </div>
@@ -151,11 +143,7 @@ export default function Hero() {
         <div className="relative z-10 max-w-7xl mx-auto w-full min-h-[calc(100vh-56px)] px-6 lg:px-8 pt-12 pb-8 flex flex-col justify-between">
 
           {/* Main content — animated in after preloader */}
-          <div
-            className={`max-w-xl space-y-6 pt-10 transition-all duration-700 ease-out ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
+          <div className="max-w-xl space-y-6 pt-10">
             {/* Tagline */}
             <div className="flex items-center gap-2">
               <svg className="w-4 h-4 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -222,11 +210,7 @@ export default function Hero() {
           </div>
 
           {/* Desktop Feature Bar at Bottom — slight delay */}
-          <div
-            className={`mt-12 transition-all duration-700 ease-out delay-300 ${
-              visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-            }`}
-          >
+          <div className="mt-12">
             <FeatureBar />
           </div>
 
