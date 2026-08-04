@@ -193,6 +193,52 @@ export default function CheckoutPage() {
     rzp.open();
   };
 
+  const getWhatsAppCheckoutUrl = () => {
+    const itemsText = cartItems
+      .map((item) => `- ${item.name} (Qty: ${item.quantity}) - ₹${(item.price * item.quantity).toLocaleString('en-IN')}`)
+      .join('\n');
+    const shippingText = `Shipping Details:\n- Name: ${formData.firstName} ${formData.lastName}\n- Phone: ${formData.phone}\n- Email: ${formData.email}\n- Address: ${formData.address}, ${formData.city}, ${formData.state} - ${formData.pincode}`;
+    
+    const text = `Hi! I would like to place an order. Here are my details:\n\n${itemsText}\n\nSubtotal: ₹${subtotal.toLocaleString('en-IN')}\nDiscount: ₹${discount.toLocaleString('en-IN')}\nTotal: ₹${finalTotal.toLocaleString('en-IN')}\n\n${shippingText}\n\n(Note: Payment Gateway is under construction. Please help me complete this order.)`;
+    return `https://wa.me/919746598789?text=${encodeURIComponent(text)}`;
+  };
+
+  const handleWhatsAppOrderSubmit = async () => {
+    try {
+      const formattedItems = cartItems.map((item) => ({
+        productId: item.id.toString().match(/^[0-9a-fA-F]{24}$/) ? item.id : undefined,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+      }));
+
+      const orderData = {
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+        items: formattedItems,
+        totalAmount: finalTotal,
+        paymentId: "whatsapp_pending"
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setOrderSuccess(data.order);
+        clearCart();
+      }
+    } catch (err) {
+      console.error("Error creating background order:", err);
+    }
+  };
+
   if (orderSuccess) {
     return (
       <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
@@ -461,8 +507,8 @@ export default function CheckoutPage() {
             {/* Details Left */}
             <div className="md:col-span-5 bg-[#6A2B15] text-[#FFFFF0] p-6 space-y-6 flex flex-col justify-between">
               <div>
-                <span className="text-[9px] uppercase tracking-widest text-[#C59B27] font-bold block">SECURE CONNECTION</span>
-                <h3 className="font-serif-luxury text-2xl font-normal mt-1 leading-tight">Sakhi Bill Pay</h3>
+                <span className="text-[9px] uppercase tracking-widest text-[#C59B27] font-bold block">NOTICE</span>
+                <h3 className="font-serif-luxury text-2xl font-normal mt-1 leading-tight">Sakhi Checkout</h3>
                 
                 <div className="space-y-4 pt-8 text-xs text-[#FAF7EC]">
                   <div className="flex justify-between border-b border-white/10 pb-2">
@@ -481,47 +527,40 @@ export default function CheckoutPage() {
               </div>
 
               <div className="flex items-center gap-2 text-[10px] opacity-75">
-                <Lock className="w-4 h-4 text-[#C59B27]" />
-                <span>PCI-DSS Compliant Gateway</span>
+                <ShieldCheck className="w-4 h-4 text-[#C59B27]" />
+                <span>Order via WhatsApp Support</span>
               </div>
             </div>
 
 
             {/* Portal Input Right */}
             <div className="md:col-span-7 p-6 sm:p-8 space-y-6 flex flex-col justify-center items-center text-center">
-              <div className="w-16 h-16 rounded-full bg-[#C59B27]/10 flex items-center justify-center text-[#C59B27] mb-2 animate-pulse">
-                <Lock className="w-8 h-8" />
+              <div className="w-16 h-16 rounded-full bg-[#B84D28]/10 flex items-center justify-center text-[#B84D28] mb-2">
+                <Sparkles className="w-8 h-8 animate-pulse" />
               </div>
               <div className="space-y-2 max-w-sm">
-                <h3 className="font-serif-luxury text-lg font-bold text-[#6A2B15]">Secure Payment Gateway</h3>
+                <h3 className="font-serif-luxury text-lg font-bold text-[#6A2B15]">Gateway Under Construction</h3>
                 <p className="text-xs text-[#8A786D] leading-relaxed">
-                  Your transaction is secured with industry-grade 256-bit encryption. Card, Net Banking, and UPI credentials are never seen or stored on our servers.
+                  Our online payment gateway is currently undergoing setup. Please click below to proceed with your order details on WhatsApp.
                 </p>
               </div>
 
               <div className="w-full space-y-3 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCompletePaymentSubmit}
-                  disabled={paymentProcessing}
-                  className="w-full bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] py-3.5 text-xs font-bold tracking-widest uppercase transition-all rounded shadow-md flex items-center justify-center gap-2"
+                <a
+                  href={getWhatsAppCheckoutUrl()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={handleWhatsAppOrderSubmit}
+                  className="w-full bg-[#1E5631] hover:bg-[#153e22] text-[#FFFFF0] py-3.5 text-xs font-bold tracking-widest uppercase transition-all rounded shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  {paymentProcessing ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Opening Secure Portal...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Pay Securely ₹{finalTotal.toLocaleString('en-IN')}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
+                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436.002 9.858-4.417 9.86-9.86.001-2.636-1.024-5.115-2.887-6.979C16.578 1.9 14.102.875 11.467.875 6.03.875 1.61 5.293 1.608 10.73c-.001 1.758.465 3.479 1.352 5.016l-.995 3.634 3.72-.976zm11.385-6.85c-.288-.144-1.702-.84-1.965-.936-.264-.096-.456-.144-.648.144-.192.288-.744.936-.912 1.128-.168.192-.336.216-.624.072-.288-.144-1.219-.449-2.322-1.432-.858-.766-1.438-1.711-1.606-1.999-.168-.288-.018-.444.126-.586.13-.128.288-.336.432-.504.144-.168.192-.288.288-.48.096-.192.048-.36-.024-.504-.072-.144-.648-1.56-.888-2.136-.234-.564-.471-.487-.648-.496-.168-.008-.36-.01-.552-.01s-.504.072-.768.36c-.264.288-1.008.984-1.008 2.4s1.032 2.784 1.176 2.976c.144.192 2.032 3.102 4.921 4.347.687.296 1.224.473 1.64.605.69.22 1.318.19 1.815.115.552-.083 1.702-.696 1.942-1.368.24-.672.24-1.248.168-1.368-.072-.12-.264-.192-.552-.336z"/>
+                  </svg>
+                  <span>Proceed with WhatsApp</span>
+                </a>
                 <button
                   type="button"
                   onClick={() => setIsPaying(false)}
-                  disabled={paymentProcessing}
                   className="w-full border border-[#C5B9AD] text-[#8C3B1F] hover:bg-[#8C3B1F]/5 text-xs font-bold tracking-widest uppercase py-3 rounded transition-colors"
                 >
                   Go Back
