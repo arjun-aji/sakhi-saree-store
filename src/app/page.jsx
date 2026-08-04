@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import Preloader from '@/components/Preloader';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import Navbar from '@/components/Navbar';
@@ -60,10 +61,22 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418]">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 SAKHI BY MAYA&apos;S. ALL RIGHTS RESERVED.</p>
-          <p className="text-[11px] opacity-75">TRADITION WOVEN WITH LOVE</p>
+      <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-8 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418]">
+        <div className="max-w-7xl mx-auto flex flex-col gap-6">
+          <div className="flex flex-wrap justify-center gap-6 text-[#EFE6DD]/80">
+            <Link href="/#home" className="hover:text-white transition-colors">Home</Link>
+            <Link href="/#shop" className="hover:text-white transition-colors">Shop</Link>
+            <Link href="/new-arrivals" className="hover:text-white transition-colors">New Arrivals</Link>
+            <Link href="/blogs" className="hover:text-white transition-colors">Blog</Link>
+            <Link href="/faqs" className="hover:text-white transition-colors">FAQs</Link>
+            <Link href="/#about" className="hover:text-white transition-colors">About Us</Link>
+            <Link href="/#contact" className="hover:text-white transition-colors">Contact</Link>
+          </div>
+          <div className="h-[0.5px] w-full bg-[#3D1418]" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#EFE6DD]/70">
+            <p>© 2026 SAKHI BY MAYA&apos;S. ALL RIGHTS RESERVED.</p>
+            <p className="opacity-75">TRADITION WOVEN WITH LOVE</p>
+          </div>
         </div>
       </footer>
     </div>

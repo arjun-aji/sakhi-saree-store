@@ -70,6 +70,12 @@ export default function Navbar() {
           <Link href="/#about" className="hover:text-[#8B2635] transition-colors py-1">
             About Us
           </Link>
+          <Link href="/blogs" className="hover:text-[#8B2635] transition-colors py-1">
+            Blog
+          </Link>
+          <Link href="/faqs" className="hover:text-[#8B2635] transition-colors py-1">
+            FAQs
+          </Link>
           <Link href="/#contact" className="hover:text-[#8B2635] transition-colors py-1">
             Contact
           </Link>
@@ -176,6 +182,20 @@ export default function Navbar() {
               className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
             >
               About Us
+            </Link>
+            <Link 
+              href="/blogs" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              Blog
+            </Link>
+            <Link 
+              href="/faqs" 
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+            >
+              FAQs
             </Link>
             <Link 
               href="/#contact" 
