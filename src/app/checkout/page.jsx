@@ -69,7 +69,7 @@ export default function CheckoutPage() {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, [cartItems]);
 
-  const [couponCode, setCouponCode] = useState('WELCOME10');
+  const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
@@ -79,8 +79,8 @@ export default function CheckoutPage() {
       setCouponCode(savedCode);
       setDiscount(Number(savedDiscount));
     } else {
-      setDiscount(subtotal > 0 ? 600 : 0);
-      setCouponCode('WELCOME10');
+      setDiscount(0);
+      setCouponCode('');
     }
   }, [subtotal]);
 

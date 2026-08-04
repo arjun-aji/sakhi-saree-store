@@ -43,10 +43,10 @@ export default function Cart() {
   const router = useRouter();
   const { cartItems, updateQuantity, removeFromCart, addToCart, toggleWishlist, wishlistItems } = useCart();
   const [couponCode, setCouponCode] = useState('');
-  const [discount, setDiscount] = useState(600); // Default WELCOME10 coupon active
-  const [appliedCoupon, setAppliedCoupon] = useState('WELCOME10');
+  const [discount, setDiscount] = useState(0); 
+  const [appliedCoupon, setAppliedCoupon] = useState('');
   const [couponError, setCouponError] = useState('');
-  const [couponSuccess, setCouponSuccess] = useState('WELCOME10 applied (-₹600)');
+  const [couponSuccess, setCouponSuccess] = useState('');
   const [recommendationIndex, setRecommendationIndex] = useState(0);
   const [addedRecId, setAddedRecId] = useState(null);
   const [dbCoupons, setDbCoupons] = useState([]);
@@ -110,11 +110,6 @@ export default function Cart() {
 
     loadProducts();
     loadCoupons();
-
-    if (!localStorage.getItem('sakhi_coupon_code')) {
-      localStorage.setItem('sakhi_coupon_code', 'WELCOME10');
-      localStorage.setItem('sakhi_coupon_discount', '600');
-    }
   }, []);
 
   /* ── Calculations ── */
@@ -182,7 +177,7 @@ export default function Cart() {
       localStorage.setItem('sakhi_coupon_discount', String(disc));
       setCouponSuccess('Coupon SAKHI500 applied (-₹500)!');
     } else {
-      setCouponError('Invalid coupon code. Try WELCOME10 or SAKHI500.');
+      setCouponError('Invalid coupon code.');
     }
   };
 
