@@ -40,9 +40,9 @@ export default function FeatureBar() {
           return (
             <div 
               key={index} 
-              className="bg-[#3D1418] text-[#F7EFE8] rounded-lg p-1.5 flex flex-col items-center justify-center text-center border border-[#5B1D23]/80 shadow-md min-h-[72px]"
+              className="bg-[#8C3B1F] text-[#FFFFF0] rounded-lg p-1.5 flex flex-col items-center justify-center text-center border border-[#A34320]/80 shadow-md min-h-[72px]"
             >
-              <div className="w-6 h-6 rounded-full border border-[#D4AF37]/50 flex items-center justify-center bg-[#2A0E11]/60 mb-1">
+              <div className="w-6 h-6 rounded-full border border-[#D4AF37]/50 flex items-center justify-center bg-[#6A2B15]/60 mb-1">
                 <Icon className="w-3 h-3 text-[#D4AF37] stroke-[1.75]" />
               </div>
               <span className="text-[9px] font-bold tracking-tight uppercase leading-tight text-white">
@@ -56,8 +56,8 @@ export default function FeatureBar() {
       {/* ========================================================= */}
       {/* DESKTOP & TABLET VIEW: 4 Column Banner Container           */}
       {/* ========================================================= */}
-      <div className="hidden sm:block w-full bg-[#3D1418] text-[#F7EFE8] rounded-2xl p-4 lg:p-5 shadow-xl border border-[#5B1D23]/60">
-        <div className="grid grid-cols-4 gap-4 divide-x divide-[#5B1D23]/60">
+      <div className="hidden sm:block w-full bg-[#8C3B1F] text-[#FFFFF0] rounded-2xl p-4 lg:p-5 shadow-xl border border-[#A34320]/60">
+        <div className="grid grid-cols-4 gap-4 divide-x divide-[#A34320]/60">
           {features.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -65,14 +65,14 @@ export default function FeatureBar() {
                 key={index} 
                 className={`flex items-center gap-3 ${index !== 0 ? 'pl-4 lg:pl-6' : ''}`}
               >
-                <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0 bg-[#2A0E11]/40">
+                <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-full border border-[#D4AF37]/40 flex items-center justify-center flex-shrink-0 bg-[#6A2B15]/40">
                   <Icon className="w-5 h-5 text-[#D4AF37] stroke-[1.5]" />
                 </div>
                 <div className="flex flex-col">
                   <h3 className="text-xs lg:text-sm font-bold tracking-wider uppercase text-white">
                     {item.title}
                   </h3>
-                  <p className="text-[11px] text-[#EFE6DD]/80 font-normal mt-0.5">
+                  <p className="text-[11px] text-[#FAF7EC]/80 font-normal mt-0.5">
                     {item.description}
                   </p>
                 </div>

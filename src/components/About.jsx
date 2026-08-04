@@ -76,16 +76,16 @@ export default function About() {
             <div className="w-1/2 lg:w-auto lg:col-span-6 space-y-2 sm:space-y-4 lg:space-y-6">
               <div className="inline-flex items-center gap-1.5 sm:gap-2.5 text-[#8B5A3C] uppercase tracking-[0.18em] sm:tracking-[0.28em] text-[9px] sm:text-xs font-bold">
                 <span>About Us</span>
-                <LotusIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#8B2635]" />
+                <LotusIcon className="w-3 h-3 sm:w-4 sm:h-4 text-[#B84D28]" />
               </div>
 
-              <h1 className="font-serif-luxury text-base sm:text-5xl lg:text-[58px] font-normal text-[#2A0E11] leading-tight sm:leading-[1.06] tracking-tight">
+              <h1 className="font-serif-luxury text-base sm:text-5xl lg:text-[58px] font-normal text-[#6A2B15] leading-tight sm:leading-[1.06] tracking-tight">
                 Sakhi By Maya&apos;s
               </h1>
 
               <GoldDivider className="my-1.5 sm:my-4 lg:my-6" />
 
-              <p className="font-serif-luxury text-[11px] sm:text-xl lg:text-2xl text-[#3D1418] italic font-normal leading-snug sm:leading-relaxed">
+              <p className="font-serif-luxury text-[11px] sm:text-xl lg:text-2xl text-[#8C3B1F] italic font-normal leading-snug sm:leading-relaxed">
                 Where tradition meets timeless elegance.
               </p>
 
@@ -127,11 +127,11 @@ export default function About() {
             {/* Left: Story Text */}
             <div className="w-1/2 lg:w-auto lg:col-span-5 space-y-2 sm:space-y-4 lg:space-y-5">
               <div className="inline-flex items-center gap-1.5 sm:gap-2 text-[#8B5A3C] uppercase tracking-[0.18em] sm:tracking-[0.28em] text-[9px] sm:text-[11px] font-bold">
-                <LotusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#8B2635]" />
+                <LotusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B84D28]" />
                 <span>Our Story</span>
               </div>
 
-              <h2 className="font-serif-luxury text-base sm:text-3xl lg:text-[50px] font-normal text-[#2A0E11] leading-snug sm:leading-[1.1] tracking-tight">
+              <h2 className="font-serif-luxury text-base sm:text-3xl lg:text-[50px] font-normal text-[#6A2B15] leading-snug sm:leading-[1.1] tracking-tight">
                 From Friendship<br className="hidden sm:block" /> to a Dream
               </h2>
 
@@ -174,7 +174,7 @@ export default function About() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-serif-luxury text-[10px] sm:text-lg font-medium text-[#2A0E11] tracking-tight sm:tracking-wide leading-tight line-clamp-2">
+                      <h3 className="font-serif-luxury text-[10px] sm:text-lg font-medium text-[#6A2B15] tracking-tight sm:tracking-wide leading-tight line-clamp-2">
                         {card.title}
                       </h3>
                       <div className="w-5 sm:w-10 h-px bg-[#C59B27]/50 mt-1 sm:mt-2" />
@@ -197,7 +197,7 @@ export default function About() {
                       />
                     </div>
                     <div className="text-center mt-4 space-y-2">
-                      <h3 className="font-serif-luxury text-base font-medium text-[#2A0E11] tracking-wide">
+                      <h3 className="font-serif-luxury text-base font-medium text-[#6A2B15] tracking-wide">
                         {card.title}
                       </h3>
                       <div className="w-8 h-px bg-[#C59B27]/50 mx-auto" />

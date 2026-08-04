@@ -444,11 +444,11 @@ export default function AdminDashboard() {
       )}
 
       {/* Mobile Top Bar */}
-      <div className="flex md:hidden items-center justify-between bg-[#2A0E11] text-[#F7EFE8] px-4 py-3 border-b border-[#3D1418] sticky top-0 z-40">
+      <div className="flex md:hidden items-center justify-between bg-[#6A2B15] text-[#FFFFF0] px-4 py-3 border-b border-[#8C3B1F] sticky top-0 z-40">
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsMobileSidebarOpen(true)}
-            className="p-1.5 rounded hover:bg-[#3D1418] text-[#E3C397] transition-colors"
+            className="p-1.5 rounded hover:bg-[#8C3B1F] text-[#E3C397] transition-colors"
           >
             <Menu className="w-6 h-6" />
           </button>
@@ -456,7 +456,7 @@ export default function AdminDashboard() {
         </div>
         <button 
           onClick={fetchData} 
-          className="p-1.5 rounded bg-[#3D1418] text-[#E3C397] hover:bg-[#521C21] transition-colors"
+          className="p-1.5 rounded bg-[#8C3B1F] text-[#E3C397] hover:bg-[#521C21] transition-colors"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
@@ -472,15 +472,15 @@ export default function AdminDashboard() {
           ></div>
           
           {/* Drawer content */}
-          <aside className="relative w-64 bg-[#2A0E11] text-[#F7EFE8] flex flex-col z-50 shadow-2xl h-full">
-            <div className="p-4 border-b border-[#3D1418] flex items-center justify-between">
+          <aside className="relative w-64 bg-[#6A2B15] text-[#FFFFF0] flex flex-col z-50 shadow-2xl h-full">
+            <div className="p-4 border-b border-[#8C3B1F] flex items-center justify-between">
               <div className="flex flex-col">
                 <span className="font-serif tracking-widest text-[#E3C397] font-bold">SAKHI</span>
                 <span className="text-[9px] tracking-widest text-[#D6C4B0] uppercase font-semibold">CMS Drawer</span>
               </div>
               <button 
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="p-1.5 rounded hover:bg-[#3D1418] text-[#E3C397]"
+                className="p-1.5 rounded hover:bg-[#8C3B1F] text-[#E3C397]"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -513,8 +513,8 @@ export default function AdminDashboard() {
                     }}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-[#E3C397] text-[#2A0E11] font-bold shadow-md'
-                        : 'text-[#D6C4B0] hover:bg-[#3D1418] hover:text-[#F7EFE8]'
+                        ? 'bg-[#E3C397] text-[#6A2B15] font-bold shadow-md'
+                        : 'text-[#D6C4B0] hover:bg-[#8C3B1F] hover:text-[#FFFFF0]'
                     }`}
                   >
                     <Icon className="w-5 h-5 flex-shrink-0" />
@@ -524,7 +524,7 @@ export default function AdminDashboard() {
               })}
             </nav>
 
-            <div className="p-4 border-t border-[#3D1418] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
+            <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
               <span>Ver: 1.2.0</span>
               <button 
                 onClick={() => {
@@ -542,16 +542,16 @@ export default function AdminDashboard() {
       )}
 
       {/* ──── DESKTOP SIDEBAR ──── */}
-      <aside className="hidden md:flex w-64 bg-[#2A0E11] text-[#F7EFE8] flex-shrink-0 flex-col border-r border-[#3D1418]">
+      <aside className="hidden md:flex w-64 bg-[#6A2B15] text-[#FFFFF0] flex-shrink-0 flex-col border-r border-[#8C3B1F]">
         {/* Logo Banner */}
-        <div className="p-6 border-b border-[#3D1418] flex items-center justify-between">
+        <div className="p-6 border-b border-[#8C3B1F] flex items-center justify-between">
           <div className="flex flex-col">
             <h1 className="text-xl font-serif tracking-widest text-[#E3C397] font-bold">SAKHI</h1>
             <p className="text-[9px] tracking-widest text-[#D6C4B0] uppercase font-semibold">CMS &amp; Admin Panel</p>
           </div>
           <button 
             onClick={fetchData} 
-            className="p-1.5 rounded bg-[#3D1418] text-[#E3C397] hover:bg-[#521C21] transition-colors"
+            className="p-1.5 rounded bg-[#8C3B1F] text-[#E3C397] hover:bg-[#521C21] transition-colors"
             title="Refresh Data"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -584,8 +584,8 @@ export default function AdminDashboard() {
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
                   isActive
-                    ? 'bg-[#E3C397] text-[#2A0E11] font-bold shadow-md'
-                    : 'text-[#D6C4B0] hover:bg-[#3D1418] hover:text-[#F7EFE8]'
+                    ? 'bg-[#E3C397] text-[#6A2B15] font-bold shadow-md'
+                    : 'text-[#D6C4B0] hover:bg-[#8C3B1F] hover:text-[#FFFFF0]'
                 }`}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
@@ -596,7 +596,7 @@ export default function AdminDashboard() {
         </nav>
 
         {/* Admin Meta */}
-        <div className="p-4 border-t border-[#3D1418] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
+        <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
           <span>Ver: 1.2.0</span>
           <button 
             onClick={handleSeedDatabase}
@@ -612,9 +612,9 @@ export default function AdminDashboard() {
       <main className="flex-1 flex flex-col min-w-0">
         
         {/* Upper Header bar */}
-        <header className="hidden md:flex h-16 bg-white border-b border-[#E2D4C5]/60 items-center justify-between px-8 shadow-sm">
+        <header className="hidden md:flex h-16 bg-white border-b border-[#E5D9C8]/60 items-center justify-between px-8 shadow-sm">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-serif text-[#2A0E11] font-bold capitalize">
+            <h2 className="text-xl font-serif text-[#6A2B15] font-bold capitalize">
               {activeTab === 'contact' ? 'Contact Messages' : activeTab}
             </h2>
             {subTab && (
@@ -626,9 +626,9 @@ export default function AdminDashboard() {
           </div>
           <div className="flex items-center gap-4">
             {loading && <div className="text-xs text-[#9E2A2B] font-medium animate-pulse">Fetching changes...</div>}
-            <div className="w-px h-6 bg-[#E2D4C5]"></div>
+            <div className="w-px h-6 bg-[#E5D9C8]"></div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-[#2A0E11] text-[#E3C397] font-bold flex items-center justify-center text-xs">
+              <div className="w-8 h-8 rounded-full bg-[#6A2B15] text-[#E3C397] font-bold flex items-center justify-center text-xs">
                 M
               </div>
               <span className="text-sm font-medium hidden md:inline">Maya Nair (Admin)</span>
@@ -641,7 +641,7 @@ export default function AdminDashboard() {
           {loading && products.length === 0 ? (
             <div className="h-96 flex flex-col items-center justify-center gap-3 text-center">
               <RefreshCw className="w-10 h-10 text-[#9E2A2B] animate-spin" />
-              <p className="font-serif text-lg text-[#2A0E11] animate-pulse">Loading CMS Data Workspace...</p>
+              <p className="font-serif text-lg text-[#6A2B15] animate-pulse">Loading CMS Data Workspace...</p>
               <p className="text-xs text-[#7D6B5A]">If this takes too long, ensure your database connection is active or run the seeder.</p>
             </div>
           ) : (
@@ -652,37 +652,37 @@ export default function AdminDashboard() {
                   
                   {/* Stats Row */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex items-center justify-between">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Total Sales Revenue</p>
-                        <h3 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">₹{totalRevenue.toLocaleString()}</h3>
+                        <h3 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">₹{totalRevenue.toLocaleString()}</h3>
                       </div>
-                      <div className="p-3 bg-[#F4ECDF] rounded-lg text-[#2A0E11]">
+                      <div className="p-3 bg-[#F4ECDF] rounded-lg text-[#6A2B15]">
                         <LayoutDashboard className="w-6 h-6" />
                       </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex items-center justify-between">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Total Orders</p>
-                        <h3 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">{totalOrdersCount}</h3>
+                        <h3 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">{totalOrdersCount}</h3>
                       </div>
                       <div className="p-3 bg-[#EBF5EE] rounded-lg text-[#1E5E3A]">
                         <ShoppingCart className="w-6 h-6" />
                       </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex items-center justify-between">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Pending Orders</p>
-                        <h3 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">{pendingOrdersCount}</h3>
+                        <h3 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">{pendingOrdersCount}</h3>
                       </div>
                       <div className="p-3 bg-[#FCF0F0] rounded-lg text-[#9E2A2B]">
                         <Package className="w-6 h-6" />
                       </div>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex items-center justify-between">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex items-center justify-between">
                       <div>
                         <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Customers</p>
-                        <h3 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">{customersCount}</h3>
+                        <h3 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">{customersCount}</h3>
                       </div>
                       <div className="p-3 bg-[#EDEEF9] rounded-lg text-[#3F51B5]">
                         <Users className="w-6 h-6" />
@@ -691,24 +691,24 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Graphical Report Chart */}
-                  <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm">
+                  <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                       <div>
-                        <h3 className="text-lg font-serif text-[#2A0E11] font-bold">Sales Performance Matrix</h3>
+                        <h3 className="text-lg font-serif text-[#6A2B15] font-bold">Sales Performance Matrix</h3>
                         <p className="text-xs text-[#8C7A6B]">Monthly growth trends and metrics</p>
                       </div>
-                      <span className="text-xs font-semibold px-3 py-1 bg-[#F4ECDF] text-[#2A0E11] rounded-full uppercase tracking-wider">Live Tracker</span>
+                      <span className="text-xs font-semibold px-3 py-1 bg-[#F4ECDF] text-[#6A2B15] rounded-full uppercase tracking-wider">Live Tracker</span>
                     </div>
                     
                     {/* SVG Chart */}
-                    <div className="h-64 w-full bg-[#FAF7F2] rounded-lg p-4 flex flex-col justify-between border border-[#E2D4C5]/30">
+                    <div className="h-64 w-full bg-[#FAF7F2] rounded-lg p-4 flex flex-col justify-between border border-[#E5D9C8]/30">
                       <div className="flex-1 relative flex items-end">
                         {/* Grid lines */}
                         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-40">
-                          <div className="border-b border-[#E2D4C5]"></div>
-                          <div className="border-b border-[#E2D4C5]"></div>
-                          <div className="border-b border-[#E2D4C5]"></div>
-                          <div className="border-b border-[#E2D4C5]"></div>
+                          <div className="border-b border-[#E5D9C8]"></div>
+                          <div className="border-b border-[#E5D9C8]"></div>
+                          <div className="border-b border-[#E5D9C8]"></div>
+                          <div className="border-b border-[#E5D9C8]"></div>
                         </div>
                         
                         {/* SVG Drawing Graph */}
@@ -723,7 +723,7 @@ export default function AdminDashboard() {
                           <path
                             d="M 0,200 L 80,160 L 160,110 L 240,130 L 320,80 L 400,60 L 480,20"
                             fill="none"
-                            stroke="#2A0E11"
+                            stroke="#6A2B15"
                             strokeWidth="3.5"
                             strokeLinecap="round"
                           />
@@ -732,12 +732,12 @@ export default function AdminDashboard() {
                             {x: 80, y: 160}, {x: 160, y: 110}, {x: 240, y: 130},
                             {x: 320, y: 80}, {x: 400, y: 60}, {x: 480, y: 20}
                           ].map((pt, i) => (
-                            <circle key={i} cx={pt.x} cy={pt.y} r="5" fill="#E3C397" stroke="#2A0E11" strokeWidth="2" />
+                            <circle key={i} cx={pt.x} cy={pt.y} r="5" fill="#E3C397" stroke="#6A2B15" strokeWidth="2" />
                           ))}
 
                           <defs>
                             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                              <stop offset="0%" stopColor="#2A0E11" />
+                              <stop offset="0%" stopColor="#6A2B15" />
                               <stop offset="100%" stopColor="#FAF7F2" />
                             </linearGradient>
                           </defs>
@@ -745,7 +745,7 @@ export default function AdminDashboard() {
                       </div>
                       
                       {/* Months */}
-                      <div className="flex justify-between text-xs text-[#8C7A6B] font-medium pt-2 border-t border-[#E2D4C5]/50 px-2 mt-2">
+                      <div className="flex justify-between text-xs text-[#8C7A6B] font-medium pt-2 border-t border-[#E5D9C8]/50 px-2 mt-2">
                         <span>Jan</span>
                         <span>Feb</span>
                         <span>Mar</span>
@@ -760,15 +760,15 @@ export default function AdminDashboard() {
                   {/* Orders & Low Stock split */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Recent Orders log */}
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex flex-col">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex flex-col">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-serif text-[#2A0E11] font-bold">Recent Inbound Orders</h3>
+                        <h3 className="text-lg font-serif text-[#6A2B15] font-bold">Recent Inbound Orders</h3>
                         <button onClick={() => setActiveTab('orders')} className="text-xs text-[#9E2A2B] font-bold hover:underline">View All</button>
                       </div>
                       <div className="flex-1 overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b border-[#E2D4C5] text-left text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">
+                            <tr className="border-b border-[#E5D9C8] text-left text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">
                               <th className="py-2">Order #</th>
                               <th className="py-2">Customer</th>
                               <th className="py-2">Amount</th>
@@ -777,10 +777,10 @@ export default function AdminDashboard() {
                           </thead>
                           <tbody>
                             {orders.slice(0, 4).map((o) => (
-                              <tr key={o._id} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/40 transition">
-                                <td className="py-3 font-semibold text-[#2A0E11]">{o.orderNumber}</td>
+                              <tr key={o._id} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/40 transition">
+                                <td className="py-3 font-semibold text-[#6A2B15]">{o.orderNumber}</td>
                                 <td className="py-3 text-[#5C4D3E]">{o.customerName}</td>
-                                <td className="py-3 font-medium text-[#2A0E11]">₹{o.totalAmount}</td>
+                                <td className="py-3 font-medium text-[#6A2B15]">₹{o.totalAmount}</td>
                                 <td className="py-3">
                                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                                     o.status === 'Delivered' ? 'bg-green-100 text-green-800' :
@@ -799,9 +799,9 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Low Stock inventory tracker */}
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex flex-col">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex flex-col">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-serif text-[#2A0E11] font-bold">Inventory Alerts</h3>
+                        <h3 className="text-lg font-serif text-[#6A2B15] font-bold">Inventory Alerts</h3>
                         <button onClick={() => { setActiveTab('products'); setSubTab('inventory'); }} className="text-xs text-[#9E2A2B] font-bold hover:underline">Manage Stock</button>
                       </div>
                       <div className="space-y-4">
@@ -810,10 +810,10 @@ export default function AdminDashboard() {
                           return (
                             <div key={p._id} className="flex flex-col gap-1">
                               <div className="flex justify-between text-sm">
-                                <span className="font-medium text-[#2A0E11] truncate max-w-[250px]">{p.name}</span>
+                                <span className="font-medium text-[#6A2B15] truncate max-w-[250px]">{p.name}</span>
                                 <span className="text-xs font-semibold text-[#7D6B5A]">{p.stock} remaining</span>
                               </div>
-                              <div className="w-full h-2 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E2D4C5]/30">
+                              <div className="w-full h-2 bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E5D9C8]/30">
                                 <div 
                                   className={`h-full rounded-full ${
                                     p.stock <= 5 ? 'bg-[#9E2A2B]' : p.stock <= 10 ? 'bg-[#D97706]' : 'bg-[#1E5E3A]'
@@ -835,12 +835,12 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* Products Toolbar Header */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E2D4C5]/60 pb-6">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E5D9C8]/60 pb-6">
                     <div className="flex gap-2">
                       <button
                         onClick={() => setSubTab('')}
                         className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                          subTab === '' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                          subTab === '' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                         }`}
                       >
                         All Products
@@ -852,7 +852,7 @@ export default function AdminDashboard() {
                           setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
                         }}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 ${
-                          subTab === 'add-product' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                          subTab === 'add-product' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                         }`}
                       >
                         <Plus className="w-4 h-4" /> Add Product
@@ -860,7 +860,7 @@ export default function AdminDashboard() {
                       <button
                         onClick={() => setSubTab('inventory')}
                         className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                          subTab === 'inventory' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                          subTab === 'inventory' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                         }`}
                       >
                         Inventory Stock
@@ -875,7 +875,7 @@ export default function AdminDashboard() {
                           placeholder="Search products..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-9 pr-4 py-2 rounded-lg border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white w-64"
+                          className="pl-9 pr-4 py-2 rounded-lg border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white w-64"
                         />
                       </div>
                     )}
@@ -883,10 +883,10 @@ export default function AdminDashboard() {
 
                   {/* SubTab Views: All Products List */}
                   {subTab === '' && (
-                    <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm overflow-x-auto">
+                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E2D4C5]">
+                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
                             <th className="p-4 w-16">Preview</th>
                             <th className="p-4">Name</th>
                             <th className="p-4">Category</th>
@@ -900,21 +900,21 @@ export default function AdminDashboard() {
                           {products
                             .filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
                             .map((p) => (
-                              <tr key={p._id} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/20 transition">
+                              <tr key={p._id} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/20 transition">
                                 <td className="p-4">
                                   <img 
                                     src={p.image} 
                                     alt={p.name} 
-                                    className="w-12 h-14 object-cover rounded border border-[#E2D4C5]"
+                                    className="w-12 h-14 object-cover rounded border border-[#E5D9C8]"
                                     onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }}
                                   />
                                 </td>
-                                <td className="p-4 font-bold text-[#2A0E11]">
+                                <td className="p-4 font-bold text-[#6A2B15]">
                                   {p.name}
                                   {p.badge && <span className="ml-2 text-[9px] bg-[#9E2A2B] text-white px-1.5 py-0.5 rounded font-bold">{p.badge}</span>}
                                 </td>
                                 <td className="p-4 text-[#5C4D3E]">{p.category}</td>
-                                <td className="p-4 font-semibold text-[#2A0E11]">₹{p.price}</td>
+                                <td className="p-4 font-semibold text-[#6A2B15]">₹{p.price}</td>
                                 <td className="p-4 text-xs text-[#8C7A6B]">
                                   <div>{p.fabric || 'N/A'}</div>
                                   <div className="font-semibold">{p.color || 'Mixed'}</div>
@@ -972,8 +972,8 @@ export default function AdminDashboard() {
 
                   {/* SubTab Views: Add/Edit Saree Product Form */}
                   {subTab === 'add-product' && (
-                    <form onSubmit={saveProduct} className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
-                      <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b border-[#E2D4C5] pb-3">
+                    <form onSubmit={saveProduct} className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
+                      <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b border-[#E5D9C8] pb-3">
                         {editingProduct ? 'Edit Saree Specifications' : 'Add New Saree Product'}
                       </h3>
 
@@ -986,7 +986,7 @@ export default function AdminDashboard() {
                               required
                               value={productForm.name}
                               onChange={(e) => setProductForm(prev => ({ ...prev, name: e.target.value }))}
-                              className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                              className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                             />
                           </div>
 
@@ -998,7 +998,7 @@ export default function AdminDashboard() {
                                 required
                                 value={productForm.price}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, price: Number(e.target.value) }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                             <div>
@@ -1007,7 +1007,7 @@ export default function AdminDashboard() {
                                 type="number" 
                                 value={productForm.originalPrice}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, originalPrice: Number(e.target.value) }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                           </div>
@@ -1018,7 +1018,7 @@ export default function AdminDashboard() {
                               <select 
                                 value={productForm.category}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               >
                                 <option value="Banarasi">Banarasi Silk</option>
                                 <option value="Kanjivaram">Kanjivaram Silk</option>
@@ -1034,7 +1034,7 @@ export default function AdminDashboard() {
                                 placeholder="e.g. Kanjivaram Silk"
                                 value={productForm.fabric}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, fabric: e.target.value }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                           </div>
@@ -1047,7 +1047,7 @@ export default function AdminDashboard() {
                                 placeholder="e.g. Rose Gold"
                                 value={productForm.color}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, color: e.target.value }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                             <div>
@@ -1057,7 +1057,7 @@ export default function AdminDashboard() {
                                 required
                                 value={productForm.stock}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, stock: Number(e.target.value) }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                           </div>
@@ -1069,7 +1069,7 @@ export default function AdminDashboard() {
                               value={productForm.description || ''}
                               onChange={(e) => setProductForm(prev => ({ ...prev, description: e.target.value }))}
                               rows={4}
-                              className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                              className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                             />
                           </div>
                         </div>
@@ -1080,7 +1080,7 @@ export default function AdminDashboard() {
                             <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Saree Image Source</label>
                             
                             {/* Cloudinary Drag-Drop File Uploader */}
-                            <div className="border-2 border-dashed border-[#E2D4C5] hover:border-[#2A0E11] transition rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer relative bg-[#FAF7F2]">
+                            <div className="border-2 border-dashed border-[#E5D9C8] hover:border-[#6A2B15] transition rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer relative bg-[#FAF7F2]">
                               <input 
                                 type="file" 
                                 onChange={(e) => handleImageUpload(e, 'product')}
@@ -1091,12 +1091,12 @@ export default function AdminDashboard() {
                               {uploadingImage ? (
                                 <div className="space-y-2">
                                   <RefreshCw className="w-8 h-8 text-[#9E2A2B] animate-spin mx-auto" />
-                                  <p className="text-xs text-[#2A0E11] font-semibold">Uploading to Cloudinary...</p>
+                                  <p className="text-xs text-[#6A2B15] font-semibold">Uploading to Cloudinary...</p>
                                 </div>
                               ) : (
                                 <div className="space-y-2">
                                   <Upload className="w-8 h-8 text-[#8C7A6B] mx-auto" />
-                                  <p className="text-xs text-[#2A0E11] font-semibold">Upload Image File</p>
+                                  <p className="text-xs text-[#6A2B15] font-semibold">Upload Image File</p>
                                   <p className="text-[10px] text-[#A59483]">Supports JPG, PNG, WEBP (Uploaded directly to Cloudinary)</p>
                                 </div>
                               )}
@@ -1110,7 +1110,7 @@ export default function AdminDashboard() {
                                 placeholder="https://..."
                                 value={productForm.image}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, image: e.target.value }))}
-                                className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
                             </div>
                           </div>
@@ -1124,9 +1124,9 @@ export default function AdminDashboard() {
                                 placeholder="Paste grid image URL or upload file"
                                 value={productForm.gridImage || ''}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, gridImage: e.target.value }))}
-                                className="flex-1 p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="flex-1 p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
-                              <div className="relative border border-[#E2D4C5] hover:border-[#2A0E11] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
+                              <div className="relative border border-[#E5D9C8] hover:border-[#6A2B15] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
                                 <input 
                                   type="file" 
                                   onChange={async (e) => {
@@ -1164,7 +1164,7 @@ export default function AdminDashboard() {
                             </div>
                             {productForm.gridImage && (
                               <div className="mt-2 flex items-center gap-2">
-                                <img src={productForm.gridImage} alt="Grid Preview" className="w-10 h-12 object-cover rounded border border-[#E2D4C5]" />
+                                <img src={productForm.gridImage} alt="Grid Preview" className="w-10 h-12 object-cover rounded border border-[#E5D9C8]" />
                                 <span className="text-[10px] text-[#8C7A6B] truncate flex-1">{productForm.gridImage}</span>
                               </div>
                             )}
@@ -1180,9 +1180,9 @@ export default function AdminDashboard() {
                                 type="text"
                                 id="new-gallery-image-url"
                                 placeholder="Paste extra image URL or upload"
-                                className="flex-1 p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                                className="flex-1 p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               />
-                              <div className="relative border border-[#E2D4C5] hover:border-[#2A0E11] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
+                              <div className="relative border border-[#E5D9C8] hover:border-[#6A2B15] transition rounded px-3 flex items-center justify-center bg-[#FAF7F2] text-xs font-semibold cursor-pointer">
                                 <input 
                                   type="file" 
                                   onChange={async (e) => {
@@ -1226,7 +1226,7 @@ export default function AdminDashboard() {
                                     input.value = '';
                                   }
                                 }}
-                                className="bg-[#2A0E11] text-[#F7EFE8] px-3.5 rounded text-xs font-semibold hover:bg-[#3D1418]"
+                                className="bg-[#6A2B15] text-[#FFFFF0] px-3.5 rounded text-xs font-semibold hover:bg-[#8C3B1F]"
                               >
                                 Add
                               </button>
@@ -1234,9 +1234,9 @@ export default function AdminDashboard() {
 
                             {/* Previews grid */}
                             {productForm.images && productForm.images.length > 0 && (
-                              <div className="grid grid-cols-4 gap-2 mt-2 p-2 border border-[#E2D4C5]/40 rounded bg-[#FAF7F2]/20">
+                              <div className="grid grid-cols-4 gap-2 mt-2 p-2 border border-[#E5D9C8]/40 rounded bg-[#FAF7F2]/20">
                                 {productForm.images.map((url, idx) => (
-                                  <div key={idx} className="relative group aspect-square rounded border border-[#E2D4C5] overflow-hidden bg-white">
+                                  <div key={idx} className="relative group aspect-square rounded border border-[#E5D9C8] overflow-hidden bg-white">
                                     <img src={url} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
                                     <button 
                                       type="button"
@@ -1253,10 +1253,10 @@ export default function AdminDashboard() {
 
                           {/* Image preview frame */}
                           {productForm.image && (
-                            <div className="border border-[#E2D4C5] rounded p-2 flex items-center gap-3 bg-[#FAF7F2]/40">
-                              <img src={productForm.image} alt="Preview" className="w-14 h-16 object-cover rounded border border-[#E2D4C5]" />
+                            <div className="border border-[#E5D9C8] rounded p-2 flex items-center gap-3 bg-[#FAF7F2]/40">
+                              <img src={productForm.image} alt="Preview" className="w-14 h-16 object-cover rounded border border-[#E5D9C8]" />
                               <div className="truncate text-xs flex-1">
-                                <p className="font-semibold text-[#2A0E11]">Image Loaded:</p>
+                                <p className="font-semibold text-[#6A2B15]">Image Loaded:</p>
                                 <p className="text-[10px] text-[#8C7A6B] truncate">{productForm.image}</p>
                               </div>
                               <button 
@@ -1270,22 +1270,22 @@ export default function AdminDashboard() {
                           )}
 
                           {/* Checkboxes row */}
-                          <div className="flex gap-6 mt-2 border-t border-[#E2D4C5]/40 pt-4">
-                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#2A0E11]">
+                          <div className="flex gap-6 mt-2 border-t border-[#E5D9C8]/40 pt-4">
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#6A2B15]">
                               <input 
                                 type="checkbox" 
                                 checked={productForm.isNew}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, isNew: e.target.checked }))}
-                                className="rounded text-[#2A0E11] focus:ring-[#2A0E11] w-4 h-4"
+                                className="rounded text-[#6A2B15] focus:ring-[#6A2B15] w-4 h-4"
                               />
                               <span>Mark as New Saree</span>
                             </label>
-                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#2A0E11]">
+                            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#6A2B15]">
                               <input 
                                 type="checkbox" 
                                 checked={productForm.isBestSeller}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, isBestSeller: e.target.checked }))}
-                                className="rounded text-[#2A0E11] focus:ring-[#2A0E11] w-4 h-4"
+                                className="rounded text-[#6A2B15] focus:ring-[#6A2B15] w-4 h-4"
                               />
                               <span>Mark as Best Seller</span>
                             </label>
@@ -1297,23 +1297,23 @@ export default function AdminDashboard() {
                               value={productForm.badge}
                               onChange={(e) => setProductForm(prev => ({ ...prev, badge: e.target.value }))}
                               placeholder="e.g. NEW"
-                              className="w-full p-2.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-sm bg-white"
+                              className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                             />
                           </div>
                         </div>
                       </div>
 
-                      <div className="border-t border-[#E2D4C5] pt-6 flex justify-end gap-3">
+                      <div className="border-t border-[#E5D9C8] pt-6 flex justify-end gap-3">
                         <button 
                           type="button" 
                           onClick={() => { setSubTab(''); setEditingProduct(null); }}
-                          className="px-5 py-2.5 rounded-lg border border-[#E2D4C5] hover:bg-[#FAF7F2] text-sm font-medium"
+                          className="px-5 py-2.5 rounded-lg border border-[#E5D9C8] hover:bg-[#FAF7F2] text-sm font-medium"
                         >
                           Cancel
                         </button>
                         <button 
                           type="submit" 
-                          className="px-5 py-2.5 rounded-lg bg-[#2A0E11] text-white hover:bg-[#3D1418] text-sm font-medium"
+                          className="px-5 py-2.5 rounded-lg bg-[#6A2B15] text-white hover:bg-[#8C3B1F] text-sm font-medium"
                         >
                           Save Product Details
                         </button>
@@ -1323,17 +1323,17 @@ export default function AdminDashboard() {
 
                   {/* SubTab Views: Inventory Manager */}
                   {subTab === 'inventory' && (
-                    <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-6">
+                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
                       <div className="flex justify-between items-center mb-6">
                         <div>
-                          <h3 className="text-lg font-serif font-bold text-[#2A0E11]">Inventory Stock Control</h3>
+                          <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Inventory Stock Control</h3>
                           <p className="text-xs text-[#8C7A6B]">Modify item quantities across collections instantly</p>
                         </div>
                       </div>
 
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E2D4C5]">
+                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
                             <th className="p-4 w-16">Preview</th>
                             <th className="p-4">Name</th>
                             <th className="p-4">Category</th>
@@ -1344,11 +1344,11 @@ export default function AdminDashboard() {
                         </thead>
                         <tbody>
                           {products.map((p) => (
-                            <tr key={p._id} className="border-b border-[#E2D4C5]/40">
+                            <tr key={p._id} className="border-b border-[#E5D9C8]/40">
                               <td className="p-4">
                                 <img src={p.image} alt={p.name} className="w-10 h-12 object-cover rounded border" />
                               </td>
-                              <td className="p-4 font-medium text-[#2A0E11]">{p.name}</td>
+                              <td className="p-4 font-medium text-[#6A2B15]">{p.name}</td>
                               <td className="p-4 text-[#8C7A6B]">{p.category}</td>
                               <td className="p-4 font-bold">{p.stock}</td>
                               <td className="p-4">
@@ -1370,7 +1370,7 @@ export default function AdminDashboard() {
                                       });
                                       if (res.ok) fetchData();
                                     }}
-                                    className="px-2 py-1 bg-[#FAF7F2] border border-[#E2D4C5] rounded hover:bg-[#E2D4C5] font-semibold text-xs"
+                                    className="px-2 py-1 bg-[#FAF7F2] border border-[#E5D9C8] rounded hover:bg-[#E5D9C8] font-semibold text-xs"
                                   >
                                     -
                                   </button>
@@ -1398,7 +1398,7 @@ export default function AdminDashboard() {
                                       });
                                       if (res.ok) fetchData();
                                     }}
-                                    className="px-2 py-1 bg-[#FAF7F2] border border-[#E2D4C5] rounded hover:bg-[#E2D4C5] font-semibold text-xs"
+                                    className="px-2 py-1 bg-[#FAF7F2] border border-[#E5D9C8] rounded hover:bg-[#E5D9C8] font-semibold text-xs"
                                   >
                                     +
                                   </button>
@@ -1419,11 +1419,11 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* SubTabs selector */}
-                  <div className="flex gap-2 border-b border-[#E2D4C5]/60 pb-6">
+                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6">
                     <button
                       onClick={() => setSubTab('')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === '' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === '' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       Inbound Orders
@@ -1431,7 +1431,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => setSubTab('refunds')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === 'refunds' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === 'refunds' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       Returns &amp; Refunds
@@ -1439,10 +1439,10 @@ export default function AdminDashboard() {
                   </div>
 
                   {subTab === '' && (
-                    <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm overflow-x-auto">
+                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
-                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E2D4C5]">
+                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
                             <th className="p-4">Order Number</th>
                             <th className="p-4">Customer</th>
                             <th className="p-4">Email</th>
@@ -1454,12 +1454,12 @@ export default function AdminDashboard() {
                         </thead>
                         <tbody>
                           {orders.map((o) => (
-                            <tr key={o._id} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/20 transition">
-                              <td className="p-4 font-bold text-[#2A0E11]">{o.orderNumber}</td>
-                              <td className="p-4 text-[#2A0E11] font-semibold">{o.customerName}</td>
+                            <tr key={o._id} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/20 transition">
+                              <td className="p-4 font-bold text-[#6A2B15]">{o.orderNumber}</td>
+                              <td className="p-4 text-[#6A2B15] font-semibold">{o.customerName}</td>
                               <td className="p-4 text-[#8C7A6B]">{o.customerEmail}</td>
                               <td className="p-4">{o.items.length} Saree(s)</td>
-                              <td className="p-4 font-semibold text-[#2A0E11]">₹{o.totalAmount}</td>
+                              <td className="p-4 font-semibold text-[#6A2B15]">₹{o.totalAmount}</td>
                               <td className="p-4">
                                 <select 
                                   value={o.status}
@@ -1499,15 +1499,15 @@ export default function AdminDashboard() {
 
                   {/* Return Refund Simulator */}
                   {subTab === 'refunds' && (
-                    <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
-                      <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b border-[#E2D4C5] pb-3">Returns &amp; Refund Request Center</h3>
+                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
+                      <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b border-[#E5D9C8] pb-3">Returns &amp; Refund Request Center</h3>
                       <p className="text-sm text-[#8C7A6B]">Displaying recent user refund cases. Admin verification is required for processing bank credits.</p>
 
                       <div className="space-y-4">
                         <div className="p-4 rounded-lg border border-yellow-200 bg-yellow-50/40 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-[#2A0E11]">Case #RF-9943</span>
+                              <span className="font-bold text-[#6A2B15]">Case #RF-9943</span>
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">Return Pending</span>
                             </div>
                             <p className="text-xs text-[#5C4D3E] mt-1">Saree model: Rose Gold Banarasi Silk (Ordered by Priya Nair)</p>
@@ -1516,13 +1516,13 @@ export default function AdminDashboard() {
                           <div className="flex gap-2">
                             <button 
                               onClick={() => showNotification('Refund rejected. Saree tag policy violated.', 'error')}
-                              className="px-3 py-1.5 bg-white border border-[#E2D4C5] hover:bg-red-50 text-red-700 text-xs font-bold rounded"
+                              className="px-3 py-1.5 bg-white border border-[#E5D9C8] hover:bg-red-50 text-red-700 text-xs font-bold rounded"
                             >
                               Reject Case
                             </button>
                             <button 
                               onClick={() => showNotification('Refund processed successfully!')}
-                              className="px-3 py-1.5 bg-[#2A0E11] text-white hover:bg-[#3D1418] text-xs font-bold rounded"
+                              className="px-3 py-1.5 bg-[#6A2B15] text-white hover:bg-[#8C3B1F] text-xs font-bold rounded"
                             >
                               Approve &amp; Refund (₹2,799)
                             </button>
@@ -1532,7 +1532,7 @@ export default function AdminDashboard() {
                         <div className="p-4 rounded-lg border border-green-200 bg-green-50/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 opacity-75">
                           <div>
                             <div className="flex items-center gap-2">
-                              <span className="font-bold text-[#2A0E11]">Case #RF-9872</span>
+                              <span className="font-bold text-[#6A2B15]">Case #RF-9872</span>
                               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-800">Refund Credited</span>
                             </div>
                             <p className="text-xs text-[#5C4D3E] mt-1">Saree model: Beige Golden Zari Saree (Ordered by Aishwarya Sen)</p>
@@ -1547,7 +1547,7 @@ export default function AdminDashboard() {
                   {/* Order Details Modal overlay */}
                   {selectedOrder && (
                     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                      <div className="bg-white rounded-xl shadow-2xl border border-[#E2D4C5] w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
+                      <div className="bg-white rounded-xl shadow-2xl border border-[#E5D9C8] w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
                         <button 
                           onClick={() => setSelectedOrder(null)} 
                           className="absolute right-4 top-4 p-1.5 rounded hover:bg-[#FAF7F2]"
@@ -1555,18 +1555,18 @@ export default function AdminDashboard() {
                           <X className="w-5 h-5 text-[#8C7A6B]" />
                         </button>
 
-                        <h3 className="text-xl font-serif font-bold text-[#2A0E11] mb-2">Order Details</h3>
+                        <h3 className="text-xl font-serif font-bold text-[#6A2B15] mb-2">Order Details</h3>
                         <p className="text-xs text-[#8C7A6B]">Log summary for order: {selectedOrder.orderNumber}</p>
 
-                        <div className="grid grid-cols-2 gap-4 border-t border-b border-[#E2D4C5]/60 py-4 my-4 text-sm">
+                        <div className="grid grid-cols-2 gap-4 border-t border-b border-[#E5D9C8]/60 py-4 my-4 text-sm">
                           <div>
                             <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Customer Details</p>
-                            <p className="font-bold text-[#2A0E11] mt-1">{selectedOrder.customerName}</p>
+                            <p className="font-bold text-[#6A2B15] mt-1">{selectedOrder.customerName}</p>
                             <p className="text-xs text-[#5C4D3E]">{selectedOrder.customerEmail}</p>
                           </div>
                           <div>
                             <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Ship Date &amp; Status</p>
-                            <p className="font-bold text-[#2A0E11] mt-1">{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+                            <p className="font-bold text-[#6A2B15] mt-1">{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
                             <span className={`inline-block mt-1 px-2.5 py-0.5 rounded text-xs font-bold ${
                               selectedOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                             }`}>
@@ -1582,24 +1582,24 @@ export default function AdminDashboard() {
                               <div className="flex items-center gap-3">
                                 <img src={item.image} alt={item.name} className="w-10 h-12 object-cover rounded border" />
                                 <div>
-                                  <p className="text-sm font-semibold text-[#2A0E11]">{item.name}</p>
+                                  <p className="text-sm font-semibold text-[#6A2B15]">{item.name}</p>
                                   <p className="text-xs text-[#8C7A6B]">Qty: {item.quantity}</p>
                                 </div>
                               </div>
-                              <p className="font-bold text-[#2A0E11]">₹{(item.price * item.quantity).toLocaleString()}</p>
+                              <p className="font-bold text-[#6A2B15]">₹{(item.price * item.quantity).toLocaleString()}</p>
                             </div>
                           ))}
                         </div>
 
-                        <div className="flex justify-between items-center pt-4 mt-4 border-t border-[#E2D4C5]/60">
-                          <span className="font-bold text-[#2A0E11]">Grand Total</span>
+                        <div className="flex justify-between items-center pt-4 mt-4 border-t border-[#E5D9C8]/60">
+                          <span className="font-bold text-[#6A2B15]">Grand Total</span>
                           <span className="text-xl font-serif font-bold text-[#9E2A2B]">₹{selectedOrder.totalAmount.toLocaleString()}</span>
                         </div>
 
                         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#FAF7F2]">
                           <button 
                             onClick={() => setSelectedOrder(null)}
-                            className="px-4 py-2 bg-[#2A0E11] text-white hover:bg-[#3D1418] text-sm font-medium rounded-lg"
+                            className="px-4 py-2 bg-[#6A2B15] text-white hover:bg-[#8C3B1F] text-sm font-medium rounded-lg"
                           >
                             Close Details
                           </button>
@@ -1614,12 +1614,12 @@ export default function AdminDashboard() {
               {/* 4. CUSTOMERS WORKSPACE */}
               {activeTab === 'customers' && (
                 <div className="space-y-6 animate-fadeIn">
-                  <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-6">
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11] mb-4">Customer database</h3>
+                  <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] mb-4">Customer database</h3>
                     
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E2D4C5]">
+                        <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
                           <th className="p-4">Customer Name</th>
                           <th className="p-4">Email Address</th>
                           <th className="p-4">Orders Count</th>
@@ -1634,8 +1634,8 @@ export default function AdminDashboard() {
                           const orderCount = customerOrders.length;
                           const createdDate = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'July 2026';
                           return (
-                            <tr key={c._id || c.email} className="border-b border-[#E2D4C5]/40 hover:bg-[#FAF7F2]/20 transition">
-                              <td className="p-4 font-bold text-[#2A0E11]">{c.name}</td>
+                            <tr key={c._id || c.email} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/20 transition">
+                              <td className="p-4 font-bold text-[#6A2B15]">{c.name}</td>
                               <td className="p-4 text-[#8C7A6B]">
                                 <div className="space-y-0.5">
                                   <div>{c.email}</div>
@@ -1644,7 +1644,7 @@ export default function AdminDashboard() {
                                 </div>
                               </td>
                               <td className="p-4 font-medium">{orderCount} order(s)</td>
-                              <td className="p-4 font-bold text-[#2A0E11]">₹{totalSpent.toLocaleString()}</td>
+                              <td className="p-4 font-bold text-[#6A2B15]">₹{totalSpent.toLocaleString()}</td>
                               <td className="p-4 text-xs text-[#8C7A6B]">{createdDate}</td>
                             </tr>
                           );
@@ -1658,16 +1658,16 @@ export default function AdminDashboard() {
               {/* 5. REVIEWS WORKSPACE */}
               {activeTab === 'reviews' && (
                 <div className="space-y-6 animate-fadeIn">
-                  <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-6">
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11] mb-2">Review Management &amp; Moderation</h3>
+                  <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] mb-2">Review Management &amp; Moderation</h3>
                     <p className="text-xs text-[#8C7A6B] mb-6">Verify and approve reviews to be rendered on front-facing Saree collections.</p>
 
                     <div className="space-y-6">
                       {reviews.map((r) => (
-                        <div key={r._id} className="p-4 rounded-xl border border-[#E2D4C5]/50 flex justify-between items-start gap-4 hover:shadow-sm transition bg-[#FAF7F2]/10">
+                        <div key={r._id} className="p-4 rounded-xl border border-[#E5D9C8]/50 flex justify-between items-start gap-4 hover:shadow-sm transition bg-[#FAF7F2]/10">
                           <div className="space-y-2">
                             <div className="flex items-center gap-3">
-                              <span className="font-bold text-[#2A0E11]">{r.customerName}</span>
+                              <span className="font-bold text-[#6A2B15]">{r.customerName}</span>
                               <div className="flex text-yellow-500 font-bold text-xs">
                                 {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
                               </div>
@@ -1731,11 +1731,11 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* Marketing SubTabs */}
-                  <div className="flex gap-2 border-b border-[#E2D4C5]/60 pb-6">
+                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6">
                     <button
                       onClick={() => setSubTab('')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === '' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === '' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       Promo Coupons
@@ -1743,7 +1743,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => setSubTab('banners')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === 'banners' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === 'banners' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       Homepage Banners
@@ -1753,8 +1753,8 @@ export default function AdminDashboard() {
                   {subTab === '' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {/* Left: Create Form */}
-                      <form onSubmit={saveCoupon} className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm space-y-4 h-fit">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2">Add Coupon Code</h4>
+                      <form onSubmit={saveCoupon} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2">Add Coupon Code</h4>
                         
                         <div>
                           <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Coupon Code *</label>
@@ -1803,14 +1803,14 @@ export default function AdminDashboard() {
                           />
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-[#2A0E11] text-white rounded text-sm font-semibold hover:bg-[#3D1418] transition">
+                        <button type="submit" className="w-full py-2 bg-[#6A2B15] text-white rounded text-sm font-semibold hover:bg-[#8C3B1F] transition">
                           Add Coupon Code
                         </button>
                       </form>
 
                       {/* Right: List Table */}
-                      <div className="md:col-span-2 bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm overflow-x-auto">
-                        <h4 className="font-serif font-bold text-[#2A0E11] mb-4 border-b pb-2">Active Promo Codes</h4>
+                      <div className="md:col-span-2 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm overflow-x-auto">
+                        <h4 className="font-serif font-bold text-[#6A2B15] mb-4 border-b pb-2">Active Promo Codes</h4>
                         
                         <table className="w-full text-sm">
                           <thead>
@@ -1825,7 +1825,7 @@ export default function AdminDashboard() {
                           <tbody>
                             {coupons.map((c) => (
                               <tr key={c._id} className="border-b">
-                                <td className="py-3 font-bold text-[#2A0E11]">{c.code}</td>
+                                <td className="py-3 font-bold text-[#6A2B15]">{c.code}</td>
                                 <td className="py-3">
                                   {c.discountType === 'Percentage' ? `${c.discountValue}% Off` : `₹${c.discountValue} Off`}
                                 </td>
@@ -1854,15 +1854,15 @@ export default function AdminDashboard() {
 
                   {/* Homepage Banners Configurer */}
                   {subTab === 'banners' && (
-                    <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
-                      <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b pb-3">Homepage Carousel Banners</h3>
+                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
+                      <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-3">Homepage Carousel Banners</h3>
                       
                       <div className="space-y-4">
-                        <div className="border border-[#E2D4C5] rounded-lg p-4 flex gap-4 bg-[#FAF7F2]/35">
+                        <div className="border border-[#E5D9C8] rounded-lg p-4 flex gap-4 bg-[#FAF7F2]/35">
                           <img src="/assets/desktop/herodesk.jpeg" alt="Hero Banner" className="w-32 h-20 object-cover rounded border" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
                           <div className="flex-1 space-y-2">
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-800">Desktop Banner 1</span>
-                            <h4 className="font-serif font-bold text-sm text-[#2A0E11]">Bridal Kasavu Silk Collection</h4>
+                            <h4 className="font-serif font-bold text-sm text-[#6A2B15]">Bridal Kasavu Silk Collection</h4>
                             <p className="text-xs text-[#8C7A6B]">Active and rendering on main page header slider.</p>
                           </div>
                           <button className="px-3 py-1.5 border hover:bg-[#FAF7F2] rounded text-xs font-semibold h-fit self-center">Edit Slide</button>
@@ -1877,15 +1877,15 @@ export default function AdminDashboard() {
               {/* FILTER CONFIGURATION WORKSPACE */}
               {activeTab === 'filters' && (
                 <div className="space-y-8 animate-fadeIn">
-                  <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-6">
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11]">Dynamic Shop Filters Manager</h3>
+                  <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Dynamic Shop Filters Manager</h3>
                     <p className="text-xs text-[#8C7A6B] mb-6">Add, edit, or remove filter parameters that customers use to search sarees in the shop.</p>
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       
                       {/* 1. CATEGORIES COLUMN */}
-                      <div className="space-y-4 border-r border-[#E2D4C5]/40 pr-0 lg:pr-8">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2 flex justify-between items-center">
+                      <div className="space-y-4 border-r border-[#E5D9C8]/40 pr-0 lg:pr-8">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2 flex justify-between items-center">
                           <span>Saree Categories</span>
                           <span className="text-xs text-[#8C7A6B]">({filterConfig.categories.length})</span>
                         </h4>
@@ -1893,9 +1893,9 @@ export default function AdminDashboard() {
                         {/* List */}
                         <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                           {filterConfig.categories.map((cat, idx) => (
-                            <div key={idx} className="flex justify-between items-center p-2.5 rounded bg-[#FAF7F2]/45 border border-[#E2D4C5]/40 text-xs">
+                            <div key={idx} className="flex justify-between items-center p-2.5 rounded bg-[#FAF7F2]/45 border border-[#E5D9C8]/40 text-xs">
                               <div>
-                                <p className="font-bold text-[#2A0E11]">{cat.label}</p>
+                                <p className="font-bold text-[#6A2B15]">{cat.label}</p>
                                 <p className="text-[10px] text-[#8C7A6B]">Value: {cat.value}</p>
                               </div>
                               {cat.value !== 'All' && (
@@ -1915,7 +1915,7 @@ export default function AdminDashboard() {
 
                         {/* Add Form */}
                         <div className="pt-4 border-t border-[#FAF7F2] space-y-2">
-                          <p className="text-[11px] font-bold text-[#2A0E11] uppercase tracking-wider">Add Category</p>
+                          <p className="text-[11px] font-bold text-[#6A2B15] uppercase tracking-wider">Add Category</p>
                           <div className="grid grid-cols-2 gap-2">
                             <input 
                               type="text" 
@@ -1941,7 +1941,7 @@ export default function AdminDashboard() {
                               labelEl.value = '';
                               valEl.value = '';
                             }}
-                            className="w-full py-2 bg-[#2A0E11] text-white text-xs font-semibold rounded hover:bg-[#3D1418] transition flex items-center justify-center gap-1"
+                            className="w-full py-2 bg-[#6A2B15] text-white text-xs font-semibold rounded hover:bg-[#8C3B1F] transition flex items-center justify-center gap-1"
                           >
                             <Plus className="w-3.5 h-3.5" /> Add Category
                           </button>
@@ -1949,8 +1949,8 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* 2. FABRICS COLUMN */}
-                      <div className="space-y-4 border-r border-[#E2D4C5]/40 pr-0 lg:pr-8">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2 flex justify-between items-center">
+                      <div className="space-y-4 border-r border-[#E5D9C8]/40 pr-0 lg:pr-8">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2 flex justify-between items-center">
                           <span>Saree Fabrics</span>
                           <span className="text-xs text-[#8C7A6B]">({filterConfig.fabrics.length})</span>
                         </h4>
@@ -1958,9 +1958,9 @@ export default function AdminDashboard() {
                         {/* List */}
                         <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                           {filterConfig.fabrics.map((fab, idx) => (
-                            <div key={idx} className="flex justify-between items-center p-2.5 rounded bg-[#FAF7F2]/45 border border-[#E2D4C5]/40 text-xs">
+                            <div key={idx} className="flex justify-between items-center p-2.5 rounded bg-[#FAF7F2]/45 border border-[#E5D9C8]/40 text-xs">
                               <div>
-                                <p className="font-bold text-[#2A0E11]">{fab.label}</p>
+                                <p className="font-bold text-[#6A2B15]">{fab.label}</p>
                                 <p className="text-[10px] text-[#8C7A6B]">Value: {fab.value}</p>
                               </div>
                               <button 
@@ -1978,7 +1978,7 @@ export default function AdminDashboard() {
 
                         {/* Add Form */}
                         <div className="pt-4 border-t border-[#FAF7F2] space-y-2">
-                          <p className="text-[11px] font-bold text-[#2A0E11] uppercase tracking-wider">Add Fabric Type</p>
+                          <p className="text-[11px] font-bold text-[#6A2B15] uppercase tracking-wider">Add Fabric Type</p>
                           <div className="grid grid-cols-2 gap-2">
                             <input 
                               type="text" 
@@ -2004,7 +2004,7 @@ export default function AdminDashboard() {
                               labelEl.value = '';
                               valEl.value = '';
                             }}
-                            className="w-full py-2 bg-[#2A0E11] text-white text-xs font-semibold rounded hover:bg-[#3D1418] transition flex items-center justify-center gap-1"
+                            className="w-full py-2 bg-[#6A2B15] text-white text-xs font-semibold rounded hover:bg-[#8C3B1F] transition flex items-center justify-center gap-1"
                           >
                             <Plus className="w-3.5 h-3.5" /> Add Fabric
                           </button>
@@ -2013,7 +2013,7 @@ export default function AdminDashboard() {
 
                       {/* 3. COLORS COLUMN */}
                       <div className="space-y-4">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2 flex justify-between items-center">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2 flex justify-between items-center">
                           <span>Saree Colors</span>
                           <span className="text-xs text-[#8C7A6B]">({filterConfig.colors.length})</span>
                         </h4>
@@ -2021,14 +2021,14 @@ export default function AdminDashboard() {
                         {/* List */}
                         <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
                           {filterConfig.colors.map((color, idx) => (
-                            <div key={idx} className="flex justify-between items-center p-2 rounded bg-[#FAF7F2]/45 border border-[#E2D4C5]/40 text-xs">
+                            <div key={idx} className="flex justify-between items-center p-2 rounded bg-[#FAF7F2]/45 border border-[#E5D9C8]/40 text-xs">
                               <div className="flex items-center gap-2">
                                 <span 
                                   className="w-4 h-4 rounded-full border border-gray-300"
                                   style={{ backgroundColor: color.hex }}
                                 ></span>
                                 <div>
-                                  <p className="font-bold text-[#2A0E11] text-[11px]">{color.name}</p>
+                                  <p className="font-bold text-[#6A2B15] text-[11px]">{color.name}</p>
                                   <p className="text-[9px] text-[#8C7A6B]">{color.hex}</p>
                                 </div>
                               </div>
@@ -2047,7 +2047,7 @@ export default function AdminDashboard() {
 
                         {/* Add Form */}
                         <div className="pt-4 border-t border-[#FAF7F2] space-y-2">
-                          <p className="text-[11px] font-bold text-[#2A0E11] uppercase tracking-wider">Add Color Shade</p>
+                          <p className="text-[11px] font-bold text-[#6A2B15] uppercase tracking-wider">Add Color Shade</p>
                           <div className="grid grid-cols-2 gap-2">
                             <input 
                               type="text" 
@@ -2068,7 +2068,7 @@ export default function AdminDashboard() {
                             <input 
                               type="checkbox" 
                               id="new-col-border"
-                              className="rounded border-[#E2D4C5] focus:ring-[#2A0E11] text-[#2A0E11] w-3 h-3"
+                              className="rounded border-[#E5D9C8] focus:ring-[#6A2B15] text-[#6A2B15] w-3 h-3"
                             />
                             <span>Add border frame (for light colors)</span>
                           </label>
@@ -2085,7 +2085,7 @@ export default function AdminDashboard() {
                               hexEl.value = '';
                               borderEl.checked = false;
                             }}
-                            className="w-full py-2 bg-[#2A0E11] text-white text-xs font-semibold rounded hover:bg-[#3D1418] transition flex items-center justify-center gap-1"
+                            className="w-full py-2 bg-[#6A2B15] text-white text-xs font-semibold rounded hover:bg-[#8C3B1F] transition flex items-center justify-center gap-1"
                           >
                             <Plus className="w-3.5 h-3.5" /> Add Color
                           </button>
@@ -2102,11 +2102,11 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* Content Hub tabs */}
-                  <div className="flex gap-2 border-b border-[#E2D4C5]/60 pb-6">
+                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6">
                     <button
                       onClick={() => setSubTab('')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === '' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === '' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       Blog Posts
@@ -2114,7 +2114,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => setSubTab('faqs')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
-                        subTab === 'faqs' ? 'bg-[#2A0E11] text-white' : 'bg-white border border-[#E2D4C5]/80 hover:bg-[#FAF7F2]'
+                        subTab === 'faqs' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
                       FAQ Management
@@ -2124,8 +2124,8 @@ export default function AdminDashboard() {
                   {subTab === '' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {/* Add/Edit Blog */}
-                      <form onSubmit={saveBlog} className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm space-y-4 h-fit">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2">Create Blog Post</h4>
+                      <form onSubmit={saveBlog} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2">Create Blog Post</h4>
                         
                         <div>
                           <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Post Title *</label>
@@ -2154,7 +2154,7 @@ export default function AdminDashboard() {
                           <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Banner Image URL</label>
                           
                           {/* Cloudinary Drag-Drop File Uploader */}
-                          <div className="border-2 border-dashed border-[#E2D4C5] hover:border-[#2A0E11] transition rounded p-4 flex flex-col items-center justify-center text-center cursor-pointer relative bg-[#FAF7F2] mt-1">
+                          <div className="border-2 border-dashed border-[#E5D9C8] hover:border-[#6A2B15] transition rounded p-4 flex flex-col items-center justify-center text-center cursor-pointer relative bg-[#FAF7F2] mt-1">
                             <input 
                               type="file" 
                               onChange={(e) => handleImageUpload(e, 'blog')}
@@ -2163,7 +2163,7 @@ export default function AdminDashboard() {
                               disabled={uploadingImage}
                             />
                             <Upload className="w-5 h-5 text-[#8C7A6B] mx-auto" />
-                            <p className="text-[11px] text-[#2A0E11] font-semibold mt-1">Upload File (Cloudinary)</p>
+                            <p className="text-[11px] text-[#6A2B15] font-semibold mt-1">Upload File (Cloudinary)</p>
                           </div>
 
                           <input 
@@ -2197,7 +2197,7 @@ export default function AdminDashboard() {
                           ></textarea>
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-[#2A0E11] text-white rounded text-sm font-semibold hover:bg-[#3D1418] transition">
+                        <button type="submit" className="w-full py-2 bg-[#6A2B15] text-white rounded text-sm font-semibold hover:bg-[#8C3B1F] transition">
                           Publish Article
                         </button>
                       </form>
@@ -2205,10 +2205,10 @@ export default function AdminDashboard() {
                       {/* Blog Listing */}
                       <div className="md:col-span-2 space-y-4">
                         {blogs.map((b) => (
-                          <div key={b._id} className="bg-white p-4 rounded-xl border border-[#E2D4C5]/60 shadow-sm flex gap-4 items-center">
-                            <img src={b.image} alt={b.title} className="w-20 h-20 object-cover rounded border border-[#E2D4C5]" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
+                          <div key={b._id} className="bg-white p-4 rounded-xl border border-[#E5D9C8]/60 shadow-sm flex gap-4 items-center">
+                            <img src={b.image} alt={b.title} className="w-20 h-20 object-cover rounded border border-[#E5D9C8]" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-serif font-bold text-base text-[#2A0E11] truncate">{b.title}</h4>
+                              <h4 className="font-serif font-bold text-base text-[#6A2B15] truncate">{b.title}</h4>
                               <p className="text-xs text-[#8C7A6B] truncate">{b.summary}</p>
                               <p className="text-[10px] text-[#A59483] mt-1">Author: {b.author} | Published: {new Date(b.createdAt).toLocaleDateString()}</p>
                             </div>
@@ -2225,8 +2225,8 @@ export default function AdminDashboard() {
                   {subTab === 'faqs' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {/* FAQ Add Form */}
-                      <form onSubmit={saveFaq} className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm space-y-4 h-fit">
-                        <h4 className="font-serif font-bold text-[#2A0E11] border-b pb-2">Add FAQ Question</h4>
+                      <form onSubmit={saveFaq} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2">Add FAQ Question</h4>
                         
                         <div>
                           <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Question *</label>
@@ -2262,18 +2262,18 @@ export default function AdminDashboard() {
                           ></textarea>
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-[#2A0E11] text-white rounded text-sm font-semibold hover:bg-[#3D1418] transition">
+                        <button type="submit" className="w-full py-2 bg-[#6A2B15] text-white rounded text-sm font-semibold hover:bg-[#8C3B1F] transition">
                           Add FAQ
                         </button>
                       </form>
 
                       {/* FAQs list table */}
-                      <div className="md:col-span-2 bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm space-y-4">
+                      <div className="md:col-span-2 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4">
                         {faqs.map((f) => (
                           <div key={f._id} className="border-b border-[#FAF7F2] pb-3 flex justify-between items-start gap-4">
                             <div>
-                              <span className="text-[9px] font-bold bg-[#FAF7F2] text-[#2A0E11] border px-1.5 py-0.5 rounded uppercase tracking-wider">{f.category}</span>
-                              <h5 className="font-serif font-bold text-sm text-[#2A0E11] mt-2">{f.question}</h5>
+                              <span className="text-[9px] font-bold bg-[#FAF7F2] text-[#6A2B15] border px-1.5 py-0.5 rounded uppercase tracking-wider">{f.category}</span>
+                              <h5 className="font-serif font-bold text-sm text-[#6A2B15] mt-2">{f.question}</h5>
                               <p className="text-xs text-[#8C7A6B] mt-1">{f.answer}</p>
                             </div>
                             <button onClick={() => deleteFaq(f._id)} className="p-1 text-red-600 hover:bg-red-50 rounded">
@@ -2291,10 +2291,10 @@ export default function AdminDashboard() {
               {/* 8. CONTACT MESSAGES WORKSPACE */}
               {activeTab === 'contact' && (
                 <div className="space-y-6 animate-fadeIn">
-                  <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-6">
+                  <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
                     <div className="flex justify-between items-center mb-6">
                       <div>
-                        <h3 className="text-lg font-serif font-bold text-[#2A0E11]">Inbound Contact Inquiries</h3>
+                        <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Inbound Contact Inquiries</h3>
                         <p className="text-xs text-[#8C7A6B]">Displaying real-time customer questions synced from MongoDB database</p>
                       </div>
                       <span className="px-2.5 py-1 rounded bg-[#FCF0F0] text-[#9E2A2B] text-xs font-bold">{messages.length} Inquiry(s)</span>
@@ -2302,15 +2302,15 @@ export default function AdminDashboard() {
 
                     <div className="space-y-4">
                       {messages.map((m) => (
-                        <div key={m._id} className="p-4 border border-[#E2D4C5]/60 rounded-xl hover:shadow-sm transition bg-[#FAF7F2]/10 space-y-2">
+                        <div key={m._id} className="p-4 border border-[#E5D9C8]/60 rounded-xl hover:shadow-sm transition bg-[#FAF7F2]/10 space-y-2">
                           <div className="flex justify-between items-center">
                             <div>
-                              <span className="font-bold text-[#2A0E11] text-sm">{m.name}</span>
-                              <span className="mx-2 text-[#E2D4C5]">|</span>
+                              <span className="font-bold text-[#6A2B15] text-sm">{m.name}</span>
+                              <span className="mx-2 text-[#E5D9C8]">|</span>
                               <span className="text-xs font-medium text-[#7D6B5A]">{m.email}</span>
                               {m.phone && (
                                 <>
-                                  <span className="mx-2 text-[#E2D4C5]">|</span>
+                                  <span className="mx-2 text-[#E5D9C8]">|</span>
                                   <span className="text-xs text-[#8C7A6B]">Ph: {m.phone}</span>
                                 </>
                               )}
@@ -2327,8 +2327,8 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           
-                          <div className="text-xs bg-white border border-[#E2D4C5]/40 rounded p-3 text-[#5C4D3E] space-y-1">
-                            <p className="font-bold text-[#2A0E11] border-b pb-1 mb-1">Subject: {m.subject || 'No Subject'}</p>
+                          <div className="text-xs bg-white border border-[#E5D9C8]/40 rounded p-3 text-[#5C4D3E] space-y-1">
+                            <p className="font-bold text-[#6A2B15] border-b pb-1 mb-1">Subject: {m.subject || 'No Subject'}</p>
                             <p className="leading-relaxed whitespace-pre-wrap">{m.message}</p>
                           </div>
                         </div>
@@ -2345,34 +2345,34 @@ export default function AdminDashboard() {
               {activeTab === 'reports' && (
                 <div className="space-y-8 animate-fadeIn">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
                       <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Average Order Basket</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">₹3,450</h4>
+                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">₹3,450</h4>
                       <p className="text-[11px] text-green-700 mt-2 font-medium">↑ 12% vs last month</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
                       <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Conversion rate</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">3.12%</h4>
+                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">3.12%</h4>
                       <p className="text-[11px] text-green-700 mt-2 font-medium">↑ 0.4% vs last month</p>
                     </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm">
+                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
                       <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Return Rate percentage</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#2A0E11] mt-1">1.8%</h4>
+                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">1.8%</h4>
                       <p className="text-[11px] text-red-700 mt-2 font-medium">↓ 0.2% improvement</p>
                     </div>
                   </div>
 
-                  <div className="bg-white p-6 rounded-xl border border-[#E2D4C5]/60 shadow-sm space-y-4">
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11]">Monthly Revenue Target Reports</h3>
+                  <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4">
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Monthly Revenue Target Reports</h3>
                     <p className="text-xs text-[#8C7A6B]">Graphical projection metrics for Q3 2026 sales performance.</p>
                     <div className="h-60 bg-[#FAF7F2] rounded-lg p-6 flex flex-col justify-end border">
                       <div className="h-full flex items-end gap-10 justify-center">
-                        <div className="w-12 bg-[#3D1418] hover:bg-[#2A0E11] transition-all rounded-t-md h-[40%] text-center text-white text-[10px] py-1 font-bold">₹12k</div>
-                        <div className="w-12 bg-[#3D1418] hover:bg-[#2A0E11] transition-all rounded-t-md h-[55%] text-center text-white text-[10px] py-1 font-bold">₹18k</div>
-                        <div className="w-12 bg-[#3D1418] hover:bg-[#2A0E11] transition-all rounded-t-md h-[70%] text-center text-white text-[10px] py-1 font-bold">₹22k</div>
-                        <div className="w-12 bg-[#E3C397] hover:bg-[#c9a777] transition-all rounded-t-md h-[95%] text-center text-[#2A0E11] text-[10px] py-1 font-bold">₹31k</div>
+                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[40%] text-center text-white text-[10px] py-1 font-bold">₹12k</div>
+                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[55%] text-center text-white text-[10px] py-1 font-bold">₹18k</div>
+                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[70%] text-center text-white text-[10px] py-1 font-bold">₹22k</div>
+                        <div className="w-12 bg-[#E3C397] hover:bg-[#c9a777] transition-all rounded-t-md h-[95%] text-center text-[#6A2B15] text-[10px] py-1 font-bold">₹31k</div>
                       </div>
-                      <div className="flex justify-between border-t border-[#E2D4C5] pt-2 text-xs text-[#8C7A6B] font-semibold mt-2 px-10">
+                      <div className="flex justify-between border-t border-[#E5D9C8] pt-2 text-xs text-[#8C7A6B] font-semibold mt-2 px-10">
                         <span>April</span>
                         <span>May</span>
                         <span>June</span>
@@ -2385,18 +2385,18 @@ export default function AdminDashboard() {
 
               {/* 10. APP SETTINGS */}
               {activeTab === 'settings' && (
-                <div className="bg-white rounded-xl border border-[#E2D4C5]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-8 animate-fadeIn">
+                <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-8 animate-fadeIn">
                   
                   <div>
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b pb-2 mb-4">Payment Gateways</h3>
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Payment Gateways</h3>
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 border border-[#E2D4C5] rounded bg-[#FAF7F2]/30 space-y-2">
-                        <span className="text-xs font-bold text-[#2A0E11]">Razorpay API Integration</span>
+                      <div className="p-4 border border-[#E5D9C8] rounded bg-[#FAF7F2]/30 space-y-2">
+                        <span className="text-xs font-bold text-[#6A2B15]">Razorpay API Integration</span>
                         <input type="text" placeholder="Key ID: rzp_live_xxxxxxxx" className="w-full p-2 border text-xs bg-white rounded" />
                         <span className="text-[10px] text-green-700 font-bold block">● Connected &amp; Live</span>
                       </div>
-                      <div className="p-4 border border-[#E2D4C5] rounded bg-[#FAF7F2]/30 space-y-2">
-                        <span className="text-xs font-bold text-[#2A0E11]">Stripe Payments</span>
+                      <div className="p-4 border border-[#E5D9C8] rounded bg-[#FAF7F2]/30 space-y-2">
+                        <span className="text-xs font-bold text-[#6A2B15]">Stripe Payments</span>
                         <input type="password" value="sk_live_••••••••" disabled className="w-full p-2 border text-xs bg-gray-100 rounded" />
                         <span className="text-[10px] text-[#A59483] block">Sandbox Testing mode</span>
                       </div>
@@ -2404,29 +2404,29 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b pb-2 mb-4">Shipping Rates Settings</h3>
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Shipping Rates Settings</h3>
                     <div className="space-y-3 text-xs text-[#5C4D3E]">
                       <div className="flex justify-between border-b pb-2">
                         <span>Kerala State Local Shipping</span>
-                        <span className="font-bold text-[#2A0E11]">₹60</span>
+                        <span className="font-bold text-[#6A2B15]">₹60</span>
                       </div>
                       <div className="flex justify-between border-b pb-2">
                         <span>Pan-India Standard Shipping</span>
-                        <span className="font-bold text-[#2A0E11]">₹120</span>
+                        <span className="font-bold text-[#6A2B15]">₹120</span>
                       </div>
                       <div className="flex justify-between border-b pb-2">
                         <span>International Worldwide (DHL Express)</span>
-                        <span className="font-bold text-[#2A0E11]">₹1,500</span>
+                        <span className="font-bold text-[#6A2B15]">₹1,500</span>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-serif font-bold text-[#2A0E11] border-b pb-2 mb-4">Admin Users &amp; Roles</h3>
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Admin Users &amp; Roles</h3>
                     <div className="flex items-center gap-3 border p-3 rounded bg-[#FAF7F2]/45">
-                      <div className="w-8 h-8 rounded-full bg-[#3D1418] text-[#E3C397] flex items-center justify-center font-bold text-xs">M</div>
+                      <div className="w-8 h-8 rounded-full bg-[#8C3B1F] text-[#E3C397] flex items-center justify-center font-bold text-xs">M</div>
                       <div className="flex-1">
-                        <p className="text-xs font-bold text-[#2A0E11]">Maya Nair</p>
+                        <p className="text-xs font-bold text-[#6A2B15]">Maya Nair</p>
                         <p className="text-[10px] text-[#8C7A6B]">Store Owner (Super Admin)</p>
                       </div>
                       <span className="text-[10px] font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">Active</span>

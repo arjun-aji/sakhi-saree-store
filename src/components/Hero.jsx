@@ -27,7 +27,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className={`relative w-full bg-[#F7EFE8] overflow-hidden transition-opacity duration-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+    <section className={`relative w-full bg-[#FFFFF0] overflow-hidden transition-opacity duration-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
 
       {/* ========================================================= */}
       {/* MOBILE HERO VIEW                                          */}
@@ -51,22 +51,22 @@ export default function Hero() {
         <div className="relative z-10 space-y-4">
           {/* Tagline */}
           <div className="flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg className="w-3.5 h-3.5 text-[#8C3B1F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M12 3C10.5 6 7 8 7 12C7 15 9.5 17.5 12 19C14.5 17.5 17 15 17 12C17 8 13.5 6 12 3Z" />
               <path d="M12 19C9 18 4 15 4 10C4 8 5 6 7 5" />
               <path d="M12 19C15 18 20 15 20 10C20 8 19 6 17 5" />
             </svg>
-            <span className="text-[10px] tracking-[0.2em] font-bold text-[#3D1418] uppercase">
+            <span className="text-[10px] tracking-[0.2em] font-bold text-[#8C3B1F] uppercase">
               Tradition Woven With Love
             </span>
           </div>
 
           {/* Main Headline */}
           <div>
-            <h1 className="font-serif-luxury text-4xl sm:text-5xl font-normal text-[#3D1418] leading-[1.08] tracking-tight">
+            <h1 className="font-serif-luxury text-4xl sm:text-5xl font-normal text-[#8C3B1F] leading-[1.08] tracking-tight">
               Elegance <br />
               that speaks <br />
-              <span className="font-script text-5xl sm:text-6xl text-[#8B2635] font-normal inline-flex items-center gap-1 pl-1">
+              <span className="font-script text-5xl sm:text-6xl text-[#B84D28] font-normal inline-flex items-center gap-1 pl-1">
                 your story
                 <span className="text-2xl text-[#C59B27] font-light">♡</span>
               </span>
@@ -84,7 +84,7 @@ export default function Hero() {
           <div className="flex flex-col gap-2 pt-1 w-full max-w-[160px]">
             <Link
               href="/shop"
-              className="group inline-flex items-center justify-center gap-1.5 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm shadow-sm transition-all w-full text-center"
+              className="group inline-flex items-center justify-center gap-1.5 bg-[#8C3B1F] hover:bg-[#A34320] text-[#FFFFF0] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm shadow-sm transition-all w-full text-center"
             >
               <span>Shop Now</span>
               <ArrowRight className="w-3 h-3" />
@@ -92,7 +92,7 @@ export default function Hero() {
 
             <Link
               href="/collections"
-              className="inline-flex items-center justify-center border border-[#3D1418]/60 text-[#3D1418] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm bg-transparent w-full text-center mb-0.5"
+              className="inline-flex items-center justify-center border border-[#8C3B1F]/60 text-[#8C3B1F] text-[10px] font-bold tracking-widest uppercase py-2 rounded-sm bg-transparent w-full text-center mb-0.5"
             >
               Explore Collections
             </Link>
@@ -146,22 +146,22 @@ export default function Hero() {
           <div className="max-w-xl space-y-6 pt-10">
             {/* Tagline */}
             <div className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#3D1418]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg className="w-4 h-4 text-[#8C3B1F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M12 3C10.5 6 7 8 7 12C7 15 9.5 17.5 12 19C14.5 17.5 17 15 17 12C17 8 13.5 6 12 3Z" />
                 <path d="M12 19C9 18 4 15 4 10C4 8 5 6 7 5" />
                 <path d="M12 19C15 18 20 15 20 10C20 8 19 6 17 5" />
               </svg>
-              <span className="text-xs tracking-[0.25em] font-bold text-[#3D1418] uppercase">
+              <span className="text-xs tracking-[0.25em] font-bold text-[#8C3B1F] uppercase">
                 Tradition Woven With Love
               </span>
             </div>
 
             {/* Main Headline */}
             <div className="space-y-1">
-              <h1 className="font-serif-luxury text-6xl lg:text-7xl font-normal text-[#3D1418] leading-[1.08] tracking-tight">
+              <h1 className="font-serif-luxury text-6xl lg:text-7xl font-normal text-[#8C3B1F] leading-[1.08] tracking-tight">
                 Elegance <br />
                 that speaks <br />
-                <span className="font-script text-7xl lg:text-8xl text-[#8B2635] font-normal inline-flex items-center gap-2 pl-1">
+                <span className="font-script text-7xl lg:text-8xl text-[#B84D28] font-normal inline-flex items-center gap-2 pl-1">
                   your story
                   <span className="text-4xl text-[#C59B27] font-light">♡</span>
                 </span>
@@ -177,7 +177,7 @@ export default function Hero() {
             <div className="flex items-center gap-3 pt-1 flex-wrap">
               <Link
                 href="/shop"
-                className="group inline-flex items-center gap-3 bg-[#3D1418] hover:bg-[#5B1D23] text-[#F7EFE8] text-sm font-bold tracking-widest uppercase px-6 py-3.5 rounded-sm shadow-md transition-all duration-300 transform hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-3 bg-[#8C3B1F] hover:bg-[#A34320] text-[#FFFFF0] text-sm font-bold tracking-widest uppercase px-6 py-3.5 rounded-sm shadow-md transition-all duration-300 transform hover:-translate-y-0.5"
               >
                 <span>Shop Now</span>
                 <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -185,7 +185,7 @@ export default function Hero() {
 
               <Link
                 href="/collections"
-                className="inline-flex items-center justify-center border border-[#3D1418]/60 hover:border-[#3D1418] text-[#3D1418] hover:bg-[#3D1418]/5 text-sm font-bold tracking-widest uppercase px-6 py-3.5 rounded-sm transition-all duration-300"
+                className="inline-flex items-center justify-center border border-[#8C3B1F]/60 hover:border-[#8C3B1F] text-[#8C3B1F] hover:bg-[#8C3B1F]/5 text-sm font-bold tracking-widest uppercase px-6 py-3.5 rounded-sm transition-all duration-300"
               >
                 Explore Collections
               </Link>

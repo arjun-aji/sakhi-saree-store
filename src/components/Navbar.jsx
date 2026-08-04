@@ -34,7 +34,7 @@ export default function Navbar() {
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle Menu"
-            className="lg:hidden p-1.5 text-[#3D1418] hover:bg-[#3D1418]/10 rounded-md transition-colors"
+            className="lg:hidden p-1.5 text-[#8C3B1F] hover:bg-[#8C3B1F]/10 rounded-md transition-colors"
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -54,38 +54,38 @@ export default function Navbar() {
         </div>
 
         {/* Center: Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center justify-center space-x-8 text-xs font-bold tracking-widest text-[#3D1418] uppercase">
+        <nav className="hidden lg:flex items-center justify-center space-x-8 text-xs font-bold tracking-widest text-[#8C3B1F] uppercase">
           <Link 
             href="/#home" 
-            className="hover:text-[#8B2635] transition-colors py-1"
+            className="hover:text-[#B84D28] transition-colors py-1"
           >
             Home
           </Link>
-          <Link href="/#shop" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#shop" className="hover:text-[#B84D28] transition-colors py-1">
             Shop
           </Link>
-          <Link href="/new-arrivals" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/new-arrivals" className="hover:text-[#B84D28] transition-colors py-1">
             New Arrivals
           </Link>
-          <Link href="/#about" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#about" className="hover:text-[#B84D28] transition-colors py-1">
             About Us
           </Link>
-          <Link href="/blogs" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/blogs" className="hover:text-[#B84D28] transition-colors py-1">
             Blog
           </Link>
-          <Link href="/faqs" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/faqs" className="hover:text-[#B84D28] transition-colors py-1">
             FAQs
           </Link>
-          <Link href="/#contact" className="hover:text-[#8B2635] transition-colors py-1">
+          <Link href="/#contact" className="hover:text-[#B84D28] transition-colors py-1">
             Contact
           </Link>
         </nav>
 
         {/* Right: Action Utility Icons */}
-        <div className="flex items-center space-x-2.5 sm:space-x-4 text-[#3D1418]">
+        <div className="flex items-center space-x-2.5 sm:space-x-4 text-[#8C3B1F]">
           <button 
             aria-label="Search" 
-            className="p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200"
+            className="p-1.5 hover:text-[#B84D28] hover:bg-[#8C3B1F]/10 rounded-full transition-all duration-200"
           >
             <Search className="w-5 h-5 stroke-[1.75]" />
           </button>
@@ -93,22 +93,22 @@ export default function Navbar() {
           <Link 
             href="/profile"
             aria-label="Account" 
-            className="hidden sm:block p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
+            className="hidden sm:block p-1.5 hover:text-[#B84D28] hover:bg-[#8C3B1F]/10 rounded-full transition-all duration-200 relative"
           >
             <User className="w-5 h-5 stroke-[1.75]" />
             {isLoggedIn && (
-              <span className="absolute top-1.5 right-1.5 bg-[#C59B27] w-2 h-2 rounded-full ring-1 ring-[#F7EFE8] animate-pulse" />
+              <span className="absolute top-1.5 right-1.5 bg-[#C59B27] w-2 h-2 rounded-full ring-1 ring-[#FFFFF0] animate-pulse" />
             )}
           </Link>
           
           <Link 
             href="/wishlist" 
             aria-label="Wishlist" 
-            className="p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
+            className="p-1.5 hover:text-[#B84D28] hover:bg-[#8C3B1F]/10 rounded-full transition-all duration-200 relative"
           >
             <Heart className="w-5 h-5 stroke-[1.75]" />
             {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#8B2635] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
+              <span className="absolute -top-1 -right-1 bg-[#B84D28] text-[#FFFFF0] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
                 {wishlistCount}
               </span>
             )}
@@ -117,11 +117,11 @@ export default function Navbar() {
           <Link 
             href="/cart" 
             aria-label="Shopping Bag" 
-            className="p-1.5 hover:text-[#8B2635] hover:bg-[#3D1418]/10 rounded-full transition-all duration-200 relative"
+            className="p-1.5 hover:text-[#B84D28] hover:bg-[#8C3B1F]/10 rounded-full transition-all duration-200 relative"
           >
             <ShoppingBag className="w-5 h-5 stroke-[1.75]" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-[#3D1418] text-[#F7EFE8] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
+              <span className="absolute -top-1 -right-1 bg-[#8C3B1F] text-[#FFFFF0] text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-in zoom-in duration-200">
                 {cartCount}
               </span>
             )}
@@ -140,13 +140,13 @@ export default function Navbar() {
 
       {/* Mobile Drawer Navigation Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed top-0 left-0 h-screen w-1/2 min-w-[200px] bg-[#F7EFE8]/95 backdrop-blur-md z-[99] shadow-2xl p-5 flex flex-col border-r border-[#E2D4C5]/60 animate-in slide-in-from-left duration-300">
+        <div className="lg:hidden fixed top-0 left-0 h-screen w-1/2 min-w-[200px] bg-[#FFFFF0]/95 backdrop-blur-md z-[99] shadow-2xl p-5 flex flex-col border-r border-[#E5D9C8]/60 animate-in slide-in-from-left duration-300">
           {/* Drawer Header */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#E2D4C5]/40 mb-6">
-            <span className="text-[10px] tracking-[0.2em] font-bold text-[#3D1418] uppercase">Menu</span>
+          <div className="flex items-center justify-between pb-3 border-b border-[#E5D9C8]/40 mb-6">
+            <span className="text-[10px] tracking-[0.2em] font-bold text-[#8C3B1F] uppercase">Menu</span>
             <button 
               onClick={() => setMobileMenuOpen(false)}
-              className="p-1 hover:bg-[#3D1418]/10 rounded-md text-[#3D1418] transition-colors"
+              className="p-1 hover:bg-[#8C3B1F]/10 rounded-md text-[#8C3B1F] transition-colors"
               aria-label="Close Menu"
             >
               <X className="w-5 h-5" />
@@ -158,49 +158,49 @@ export default function Navbar() {
             <Link 
               href="/#home" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               Home
             </Link>
             <Link 
               href="/#shop" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               Shop
             </Link>
             <Link 
               href="/new-arrivals" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               New Arrivals
             </Link>
             <Link 
               href="/#about" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               About Us
             </Link>
             <Link 
               href="/blogs" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               Blog
             </Link>
             <Link 
               href="/faqs" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase pb-2 border-b border-[#E2D4C5]/20 hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase pb-2 border-b border-[#E5D9C8]/20 hover:text-[#B84D28] transition-colors"
             >
               FAQs
             </Link>
             <Link 
               href="/#contact" 
               onClick={() => setMobileMenuOpen(false)}
-              className="text-xs font-bold tracking-widest text-[#3D1418] uppercase hover:text-[#8B2635] transition-colors"
+              className="text-xs font-bold tracking-widest text-[#8C3B1F] uppercase hover:text-[#B84D28] transition-colors"
             >
               Contact
             </Link>

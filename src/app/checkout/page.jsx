@@ -185,7 +185,7 @@ export default function CheckoutPage() {
         contact: formData.phone,
       },
       theme: {
-        color: "#2A0E11",
+        color: "#6A2B15",
       },
     };
 
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
 
   if (orderSuccess) {
     return (
-      <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
+      <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
         <AnnouncementBar />
         <Navbar />
         <main className="flex-grow flex items-center justify-center px-4 py-16">
@@ -206,33 +206,33 @@ export default function CheckoutPage() {
 
             <div className="space-y-2">
               <span className="text-[10px] uppercase text-[#8B5A3C] font-bold tracking-widest block">ORDER CONFIRMED</span>
-              <h1 className="font-serif-luxury text-3xl font-normal text-[#2A0E11]">Thank You for Your Order!</h1>
+              <h1 className="font-serif-luxury text-3xl font-normal text-[#6A2B15]">Thank You for Your Order!</h1>
               <p className="text-xs text-[#8A786D]">We have received your payment and will contact you with shipping details soon.</p>
             </div>
 
             <div className="border-t border-b border-[#E5DACD]/80 py-4 text-left space-y-2.5 text-xs text-[#5A4438]">
               <div className="flex justify-between">
-                <span className="font-semibold text-[#2A0E11]">Order Number:</span>
-                <span className="font-mono text-[#8B2635] font-bold">{orderSuccess.orderNumber}</span>
+                <span className="font-semibold text-[#6A2B15]">Order Number:</span>
+                <span className="font-mono text-[#B84D28] font-bold">{orderSuccess.orderNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-semibold text-[#2A0E11]">Name:</span>
+                <span className="font-semibold text-[#6A2B15]">Name:</span>
                 <span>{orderSuccess.customerName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-semibold text-[#2A0E11]">Email:</span>
+                <span className="font-semibold text-[#6A2B15]">Email:</span>
                 <span>{orderSuccess.customerEmail}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-semibold text-[#2A0E11]">Amount Paid:</span>
-                <span className="font-bold text-[#2A0E11]">₹{orderSuccess.totalAmount.toLocaleString('en-IN')}</span>
+                <span className="font-semibold text-[#6A2B15]">Amount Paid:</span>
+                <span className="font-bold text-[#6A2B15]">₹{orderSuccess.totalAmount.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
             <div className="pt-2">
               <Link
                 href="/shop"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors"
               >
                 <ShoppingBag className="w-4 h-4" />
                 <span>CONTINUE SHOPPING</span>
@@ -245,7 +245,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
       <AnnouncementBar />
       <Navbar />
 
@@ -254,11 +254,11 @@ export default function CheckoutPage() {
         {/* Title Header */}
         <div className="text-center mb-8">
           <nav className="flex justify-center items-center gap-2 text-[10px] sm:text-xs text-[#8A786D] mb-2 font-medium uppercase tracking-wider">
-            <Link href="/cart" className="hover:text-[#3D1418] transition-colors">Cart</Link>
+            <Link href="/cart" className="hover:text-[#8C3B1F] transition-colors">Cart</Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-[#3D1418] font-semibold">{isPaying ? 'Payment Gateway' : 'Checkout Details'}</span>
+            <span className="text-[#8C3B1F] font-semibold">{isPaying ? 'Payment Gateway' : 'Checkout Details'}</span>
           </nav>
-          <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A0E11] font-normal leading-tight tracking-tight">
+          <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#6A2B15] font-normal leading-tight tracking-tight">
             {isPaying ? 'Secure Payment' : 'Checkout Profile'}
           </h1>
           <div className="flex items-center justify-center gap-3 my-2">
@@ -270,12 +270,12 @@ export default function CheckoutPage() {
 
         {cartItems.length === 0 ? (
           <div className="text-center py-16 bg-[#F3EADF]/60 rounded-2xl border border-[#E5DACD] max-w-2xl mx-auto my-6 space-y-4">
-            <h2 className="font-serif-luxury text-2xl font-medium text-[#2A0E11]">Your cart is empty</h2>
+            <h2 className="font-serif-luxury text-2xl font-medium text-[#6A2B15]">Your cart is empty</h2>
             <p className="text-xs text-[#5A4438]">Add products to your cart before proceeding to checkout.</p>
             <div className="pt-2">
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-[0.2em] px-6 py-3 rounded-md shadow-xs transition-colors"
+                className="inline-flex items-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold uppercase tracking-[0.2em] px-6 py-3 rounded-md shadow-xs transition-colors"
               >
                 <span>SHOP COLLECTION</span>
                 <ArrowRight className="w-4 h-4" />
@@ -289,63 +289,63 @@ export default function CheckoutPage() {
             {/* Shipping Form */}
             <form onSubmit={handlePlaceOrderClick} className="lg:col-span-7 space-y-6">
               <div className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-xl p-5 sm:p-6 space-y-5 shadow-2xs">
-                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#2A0E11] border-b border-[#E5DACD]/80 pb-3 flex items-center gap-2">
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#6A2B15] border-b border-[#E5DACD]/80 pb-3 flex items-center gap-2">
                   <Home className="w-4 h-4 text-[#C59B27]" />
                   <span>SHIPPING & DELIVERY DETAILS</span>
                 </h2>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">First Name *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">First Name *</label>
                     <input
                       required
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Last Name *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Last Name *</label>
                     <input
                       required
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Email Address *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Email Address *</label>
                     <input
                       required
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Phone Number *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Phone Number *</label>
                     <input
                       required
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Street Address *</label>
+                  <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Street Address *</label>
                   <input
                     required
                     type="text"
@@ -353,42 +353,42 @@ export default function CheckoutPage() {
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="House number, apartment, street name"
-                    className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                    className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">City *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">City *</label>
                     <input
                       required
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">State *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">State *</label>
                     <input
                       required
                       type="text"
                       name="state"
                       value={formData.state}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="block text-[10px] font-bold text-[#3D1418] uppercase tracking-wider">Pincode *</label>
+                    <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Pincode *</label>
                     <input
                       required
                       type="text"
                       name="pincode"
                       value={formData.pincode}
                       onChange={handleInputChange}
-                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] focus:outline-none focus:border-[#3D1418] transition-colors"
+                      className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
                     />
                   </div>
                 </div>
@@ -396,30 +396,30 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-[0.2em] uppercase py-3.5 rounded-md transition-colors shadow-md group"
+                className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3.5 rounded-md transition-colors shadow-md group"
               >
                 <span>PROCEED TO PAYMENT</span>
-                <ArrowRight className="w-4 h-4 text-[#F7EFE8] group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-[#FFFFF0] group-hover:translate-x-1 transition-transform" />
               </button>
             </form>
 
             {/* Right Summary Block */}
             <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-24">
               <div className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-xl p-5 sm:p-6 space-y-4 shadow-2xs">
-                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#2A0E11] border-b border-[#E5DACD] pb-3">Order Details</h2>
+                <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#6A2B15] border-b border-[#E5DACD] pb-3">Order Details</h2>
 
                 <div className="divide-y divide-[#E5DACD]/60 max-h-56 overflow-y-auto pr-1">
                   {cartItems.map((item) => (
                     <div key={item.id} className="py-2.5 flex items-center gap-3">
-                      <div className="relative w-12 h-15 bg-[#EFE6DD] rounded overflow-hidden flex-shrink-0">
+                      <div className="relative w-12 h-15 bg-[#FAF7EC] rounded overflow-hidden flex-shrink-0">
                         <Image src={item.image} alt={item.name} fill className="object-cover" sizes="48px" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-[11px] font-medium text-[#2A0E11] truncate">{item.name}</h4>
+                        <h4 className="text-[11px] font-medium text-[#6A2B15] truncate">{item.name}</h4>
                         <p className="text-[10px] text-[#8A786D]">Qty: {item.quantity} &nbsp;•&nbsp; {item.fabric}</p>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-bold text-[#2A0E11]">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
+                        <span className="text-xs font-bold text-[#6A2B15]">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
                       </div>
                     </div>
                   ))}
@@ -428,10 +428,10 @@ export default function CheckoutPage() {
                 <div className="space-y-2 text-xs pt-3 border-t border-[#E5DACD]">
                   <div className="flex justify-between text-[#5A4438]">
                     <span>Subtotal</span>
-                    <span className="font-semibold text-[#2A0E11]">₹{subtotal.toLocaleString('en-IN')}</span>
+                    <span className="font-semibold text-[#6A2B15]">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   {discount > 0 && (
-                    <div className="flex justify-between text-[#8B2635] font-medium">
+                    <div className="flex justify-between text-[#B84D28] font-medium">
                       <span>Discount ({couponCode})</span>
                       <span>- ₹{discount.toLocaleString('en-IN')}</span>
                     </div>
@@ -441,8 +441,8 @@ export default function CheckoutPage() {
                     <span className="text-[#1E5631] font-bold uppercase">FREE</span>
                   </div>
                   <div className="pt-2 border-t border-[#E5DACD]/80 flex justify-between items-baseline">
-                    <span className="font-bold text-[#2A0E11]">Total Amount</span>
-                    <span className="font-serif-luxury text-xl font-bold text-[#2A0E11]">₹{finalTotal.toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-[#6A2B15]">Total Amount</span>
+                    <span className="font-serif-luxury text-xl font-bold text-[#6A2B15]">₹{finalTotal.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
@@ -459,12 +459,12 @@ export default function CheckoutPage() {
           <div className="max-w-2xl w-full mx-auto grid grid-cols-1 md:grid-cols-12 bg-[#F3EADF]/85 border border-[#E5DACD] rounded-2xl shadow-xl overflow-hidden animate-in zoom-in duration-300">
             
             {/* Details Left */}
-            <div className="md:col-span-5 bg-[#2A0E11] text-[#F7EFE8] p-6 space-y-6 flex flex-col justify-between">
+            <div className="md:col-span-5 bg-[#6A2B15] text-[#FFFFF0] p-6 space-y-6 flex flex-col justify-between">
               <div>
                 <span className="text-[9px] uppercase tracking-widest text-[#C59B27] font-bold block">SECURE CONNECTION</span>
                 <h3 className="font-serif-luxury text-2xl font-normal mt-1 leading-tight">Sakhi Bill Pay</h3>
                 
-                <div className="space-y-4 pt-8 text-xs text-[#EFE6DD]">
+                <div className="space-y-4 pt-8 text-xs text-[#FAF7EC]">
                   <div className="flex justify-between border-b border-white/10 pb-2">
                     <span className="opacity-75">Customer:</span>
                     <span>{formData.firstName} {formData.lastName}</span>
@@ -493,7 +493,7 @@ export default function CheckoutPage() {
                 <Lock className="w-8 h-8" />
               </div>
               <div className="space-y-2 max-w-sm">
-                <h3 className="font-serif-luxury text-lg font-bold text-[#2A0E11]">Secure Payment Gateway</h3>
+                <h3 className="font-serif-luxury text-lg font-bold text-[#6A2B15]">Secure Payment Gateway</h3>
                 <p className="text-xs text-[#8A786D] leading-relaxed">
                   Your transaction is secured with industry-grade 256-bit encryption. Card, Net Banking, and UPI credentials are never seen or stored on our servers.
                 </p>
@@ -504,7 +504,7 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={handleCompletePaymentSubmit}
                   disabled={paymentProcessing}
-                  className="w-full bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] py-3.5 text-xs font-bold tracking-widest uppercase transition-all rounded shadow-md flex items-center justify-center gap-2"
+                  className="w-full bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] py-3.5 text-xs font-bold tracking-widest uppercase transition-all rounded shadow-md flex items-center justify-center gap-2"
                 >
                   {paymentProcessing ? (
                     <>
@@ -522,7 +522,7 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={() => setIsPaying(false)}
                   disabled={paymentProcessing}
-                  className="w-full border border-[#C5B9AD] text-[#3D1418] hover:bg-[#3D1418]/5 text-xs font-bold tracking-widest uppercase py-3 rounded transition-colors"
+                  className="w-full border border-[#C5B9AD] text-[#8C3B1F] hover:bg-[#8C3B1F]/5 text-xs font-bold tracking-widest uppercase py-3 rounded transition-colors"
                 >
                   Go Back
                 </button>

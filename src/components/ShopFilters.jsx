@@ -24,9 +24,9 @@ export default function ShopFilters({
             <button
               type="button"
               onClick={onToggleDesktopSidebar}
-              className="inline-flex items-center gap-2 bg-[#F7EFE8] hover:bg-[#F3EADF] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] text-xs font-bold tracking-widest uppercase px-3.5 py-2 rounded-md transition-all shadow-2xs"
+              className="inline-flex items-center gap-2 bg-[#FFFFF0] hover:bg-[#F3EADF] border border-[#DCD0C5] hover:border-[#B84D28] text-[#8C3B1F] text-xs font-bold tracking-widest uppercase px-3.5 py-2 rounded-md transition-all shadow-2xs"
             >
-              <AlignLeft className="w-4 h-4 text-[#3D1418]" />
+              <AlignLeft className="w-4 h-4 text-[#8C3B1F]" />
               <span>{showDesktopSidebar ? 'HIDE FILTERS' : 'SHOW FILTERS'}</span>
             </button>
           )}
@@ -42,7 +42,7 @@ export default function ShopFilters({
           <select
             value={selectedSort}
             onChange={(e) => onSortChange(e.target.value)}
-            className="appearance-none bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] rounded-md px-4 py-2 pr-8 text-xs font-bold uppercase tracking-wider text-[#3D1418] focus:outline-none cursor-pointer transition-colors shadow-2xs"
+            className="appearance-none bg-[#FFFFF0] border border-[#DCD0C5] hover:border-[#B84D28] rounded-md px-4 py-2 pr-8 text-xs font-bold uppercase tracking-wider text-[#8C3B1F] focus:outline-none cursor-pointer transition-colors shadow-2xs"
           >
             <option value="new">SORT BY: NEWEST FIRST</option>
             <option value="featured">SORT BY: FEATURED</option>
@@ -50,7 +50,7 @@ export default function ShopFilters({
             <option value="price_desc">SORT BY: PRICE HIGH TO LOW</option>
             <option value="bestselling">SORT BY: BEST SELLING</option>
           </select>
-          <ChevronDown className="w-4 h-4 text-[#3D1418] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-80" />
+          <ChevronDown className="w-4 h-4 text-[#8C3B1F] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-80" />
         </div>
       </div>
 
@@ -62,12 +62,12 @@ export default function ShopFilters({
           <button
             type="button"
             onClick={onOpenMobileDrawer}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#3D1418] transition-colors shadow-2xs"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-[#FFFFF0] border border-[#DCD0C5] hover:border-[#B84D28] rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#8C3B1F] transition-colors shadow-2xs"
           >
             <span>FILTER & SORT</span>
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#3D1418]" />
+            <SlidersHorizontal className="w-3.5 h-3.5 text-[#8C3B1F]" />
             {activeFilterCount > 0 && (
-              <span className="bg-[#8B2635] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              <span className="bg-[#B84D28] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {activeFilterCount}
               </span>
             )}
@@ -78,7 +78,7 @@ export default function ShopFilters({
             <select
               value={selectedSort}
               onChange={(e) => onSortChange(e.target.value)}
-              className="w-full appearance-none bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] rounded-md px-3 py-2 pr-7 text-[11px] font-bold uppercase tracking-wider text-[#3D1418] focus:outline-none cursor-pointer transition-colors shadow-2xs"
+              className="w-full appearance-none bg-[#FFFFF0] border border-[#DCD0C5] hover:border-[#B84D28] rounded-md px-3 py-2 pr-7 text-[11px] font-bold uppercase tracking-wider text-[#8C3B1F] focus:outline-none cursor-pointer transition-colors shadow-2xs"
             >
               <option value="new">SORT BY: NEWEST FIRST</option>
               <option value="featured">SORT BY: FEATURED</option>
@@ -86,7 +86,7 @@ export default function ShopFilters({
               <option value="price_desc">SORT BY: PRICE HIGH TO LOW</option>
               <option value="bestselling">SORT BY: BEST SELLING</option>
             </select>
-            <ChevronDown className="w-3.5 h-3.5 text-[#3D1418] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-80" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#8C3B1F] absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-80" />
           </div>
         </div>
 

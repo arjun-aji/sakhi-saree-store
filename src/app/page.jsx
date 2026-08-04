@@ -17,14 +17,14 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
       {/* Luxury Loading Preloader */}
       <Preloader />
 
       {/* Sticky top bar: Announcement + Navbar */}
-      <div className="sticky top-0 z-50 bg-[#F7EFE8]/95 backdrop-blur-md">
+      <div className="sticky top-0 z-50 bg-[#FFFFF0]/95 backdrop-blur-md">
         <AnnouncementBar />
-        <div className="border-b border-[#E2D4C5]/50">
+        <div className="border-b border-[#E5D9C8]/50">
           <Navbar />
         </div>
       </div>
@@ -39,7 +39,7 @@ export default function HomePage() {
         <Suspense
           fallback={
             <div className="w-full py-24 text-center">
-              <p className="font-serif-luxury text-xl text-[#3D1418] animate-pulse">
+              <p className="font-serif-luxury text-xl text-[#8C3B1F] animate-pulse">
                 Loading Collection...
               </p>
             </div>
@@ -61,9 +61,9 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-8 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418]">
+      <footer className="w-full bg-[#6A2B15] text-[#FAF7EC] py-8 px-4 text-center text-xs tracking-wider uppercase border-t border-[#8C3B1F]">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
-          <div className="flex flex-wrap justify-center gap-6 text-[#EFE6DD]/80">
+          <div className="flex flex-wrap justify-center gap-6 text-[#FAF7EC]/80">
             <Link href="/#home" className="hover:text-white transition-colors">Home</Link>
             <Link href="/#shop" className="hover:text-white transition-colors">Shop</Link>
             <Link href="/new-arrivals" className="hover:text-white transition-colors">New Arrivals</Link>
@@ -72,8 +72,8 @@ export default function HomePage() {
             <Link href="/#about" className="hover:text-white transition-colors">About Us</Link>
             <Link href="/#contact" className="hover:text-white transition-colors">Contact</Link>
           </div>
-          <div className="h-[0.5px] w-full bg-[#3D1418]" />
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#EFE6DD]/70">
+          <div className="h-[0.5px] w-full bg-[#8C3B1F]" />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-[#FAF7EC]/70">
             <p>© 2026 SAKHI BY MAYA&apos;S. ALL RIGHTS RESERVED.</p>
             <p className="opacity-75">TRADITION WOVEN WITH LOVE</p>
           </div>

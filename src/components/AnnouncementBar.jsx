@@ -3,7 +3,7 @@ import { Truck, ShieldCheck, Tag } from 'lucide-react';
 
 export default function AnnouncementBar() {
   return (
-    <div className="bg-[#2A0E11] text-[#F7EFE8] text-[10px] sm:text-xs tracking-wider uppercase py-2 px-3 sm:px-4 border-b border-[#3D1418]/50">
+    <div className="bg-[#6A2B15] text-[#FFFFF0] text-[10px] sm:text-xs tracking-wider uppercase py-2 px-3 sm:px-4 border-b border-[#8C3B1F]/50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-1 sm:gap-4 text-center">
         
         {/* Item 1 */}
@@ -12,7 +12,7 @@ export default function AnnouncementBar() {
           <span className="truncate">Free Shipping Above ₹1499</span>
         </div>
         
-        <span className="hidden sm:inline text-[#5B1D23]">|</span>
+        <span className="hidden sm:inline text-[#A34320]">|</span>
 
         {/* Item 2 */}
         <div className="flex items-center justify-center gap-1.5 font-medium flex-1">
@@ -20,7 +20,7 @@ export default function AnnouncementBar() {
           <span className="truncate">COD Available</span>
         </div>
 
-        <span className="hidden sm:inline text-[#5B1D23]">|</span>
+        <span className="hidden sm:inline text-[#A34320]">|</span>
 
         {/* Item 3 */}
         <div className="flex items-center justify-center gap-1.5 font-medium flex-1">

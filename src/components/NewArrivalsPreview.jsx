@@ -5,7 +5,7 @@ const SAMPLE_ARRIVALS = [
   {
     id: '1',
     name: 'Deep Maroon Zari',
-    color: '#3D1418',
+    color: '#8C3B1F',
     bgGradient: 'from-[#4A151B] to-[#2D0D11]',
     borderColor: '#D4AF37'
   },
@@ -36,10 +36,10 @@ export default function NewArrivalsPreview() {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2">
-        <span className="text-[11px] sm:text-xs tracking-[0.25em] font-bold text-[#3D1418] uppercase">
+        <span className="text-[11px] sm:text-xs tracking-[0.25em] font-bold text-[#8C3B1F] uppercase">
           New Arrivals
         </span>
-        <span className="h-[1px] w-6 bg-[#3D1418]/30"></span>
+        <span className="h-[1px] w-6 bg-[#8C3B1F]/30"></span>
       </div>
 
       <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1 scrollbar-none">
@@ -57,7 +57,7 @@ export default function NewArrivalsPreview() {
         ))}
 
         <button 
-          className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#EFE6DD] hover:bg-[#3D1418] text-[#3D1418] hover:text-[#F7EFE8] border border-[#E2D4C5] flex items-center justify-center transition-all duration-300 shadow-sm"
+          className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#FAF7EC] hover:bg-[#8C3B1F] text-[#8C3B1F] hover:text-[#FFFFF0] border border-[#E5D9C8] flex items-center justify-center transition-all duration-300 shadow-sm"
           aria-label="Next arrivals"
         >
           <ArrowRight className="w-4 h-4 stroke-[2]" />

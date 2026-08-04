@@ -212,11 +212,11 @@ export default function Cart() {
   };
 
   return (
-    <div className="w-full bg-[#F7EFE8] pb-20 lg:pb-12">
+    <div className="w-full bg-[#FFFFF0] pb-20 lg:pb-12">
       {/* ================================================================ */}
       {/* 1. HERO SECTION WITH BREADCRUMB & FLORAL ARTWORK                */}
       {/* ================================================================ */}
-      <section className="relative w-full bg-[#F7EFE8] pt-4 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-8 overflow-hidden">
+      <section className="relative w-full bg-[#FFFFF0] pt-4 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-8 overflow-hidden">
         {/* Top-Right Background Floral Artwork */}
         <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-70">
           <FloralArtworkRight />
@@ -225,15 +225,15 @@ export default function Cart() {
         <div className="max-w-7xl mx-auto space-y-2 relative z-10 text-center">
           {/* Breadcrumb */}
           <nav className="flex justify-center items-center gap-2 text-[11px] sm:text-xs text-[#8A786D] mb-2 font-medium">
-            <Link href="/" className="hover:text-[#3D1418] transition-colors">
+            <Link href="/" className="hover:text-[#8C3B1F] transition-colors">
               Home
             </Link>
             <span>&gt;</span>
-            <span className="text-[#3D1418] font-semibold">Cart</span>
+            <span className="text-[#8C3B1F] font-semibold">Cart</span>
           </nav>
 
           {/* Main Serif Title */}
-          <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[50px] font-normal text-[#2A0E11] leading-tight tracking-tight">
+          <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-[50px] font-normal text-[#6A2B15] leading-tight tracking-tight">
             Shopping Cart
           </h1>
 
@@ -266,10 +266,10 @@ export default function Cart() {
                   {cartItems.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-[#F7EFE8] border border-[#E5DACD] rounded-xl p-3 sm:p-5 flex flex-row items-center gap-3 sm:gap-5 shadow-2xs hover:border-[#C59B27]/50 transition-all"
+                      className="bg-[#FFFFF0] border border-[#E5DACD] rounded-xl p-3 sm:p-5 flex flex-row items-center gap-3 sm:gap-5 shadow-2xs hover:border-[#C59B27]/50 transition-all"
                     >
                       {/* Saree Thumbnail Image */}
-                      <div className="relative w-20 h-24 sm:w-28 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-[#EFE6DD]">
+                      <div className="relative w-20 h-24 sm:w-28 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden bg-[#FAF7EC]">
                         <Image
                           src={item.image}
                           alt={item.name}
@@ -282,7 +282,7 @@ export default function Cart() {
                       {/* Item Info Middle */}
                       <div className="flex-1 min-w-0 space-y-1 sm:space-y-1.5">
                         <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-serif-luxury text-sm sm:text-lg font-medium text-[#2A0E11] leading-tight truncate">
+                          <h3 className="font-serif-luxury text-sm sm:text-lg font-medium text-[#6A2B15] leading-tight truncate">
                             {item.name}
                           </h3>
 
@@ -291,13 +291,13 @@ export default function Cart() {
                             type="button"
                             onClick={() => toggleWishlist(item.id)}
                             aria-label="Add to Wishlist"
-                            className="p-1 text-[#3D1418] hover:text-[#8B2635] transition-colors flex-shrink-0"
+                            className="p-1 text-[#8C3B1F] hover:text-[#B84D28] transition-colors flex-shrink-0"
                           >
                             <Heart
                               className={`w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[1.75] ${
                                 wishlistItems.includes(item.id) || item.wishlisted
-                                  ? 'fill-[#8B2635] text-[#8B2635]'
-                                  : 'text-[#3D1418]'
+                                  ? 'fill-[#B84D28] text-[#B84D28]'
+                                  : 'text-[#8C3B1F]'
                               }`}
                             />
                           </button>
@@ -309,7 +309,7 @@ export default function Cart() {
                         </p>
 
                         {/* Price Unit */}
-                        <p className="font-serif-luxury text-sm sm:text-base font-bold text-[#2A0E11]">
+                        <p className="font-serif-luxury text-sm sm:text-base font-bold text-[#6A2B15]">
                           ₹{item.price.toLocaleString('en-IN')}
                         </p>
 
@@ -317,23 +317,23 @@ export default function Cart() {
                         <div className="flex items-center justify-between pt-1 sm:pt-2">
                           {/* Quantity Controller Pill [ - 1 + ] */}
                           {/* Reducing from 1 to 0 automatically removes the product via updateQuantity(id, -1) */}
-                          <div className="inline-flex items-center border border-[#DCD0C5] rounded-md bg-[#F7EFE8] px-2 py-0.5 sm:py-1 text-xs font-semibold text-[#3D1418]">
+                          <div className="inline-flex items-center border border-[#DCD0C5] rounded-md bg-[#FFFFF0] px-2 py-0.5 sm:py-1 text-xs font-semibold text-[#8C3B1F]">
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.id, -1)}
-                              className="px-1.5 py-0.5 hover:text-[#8B2635] transition-colors font-bold text-sm"
+                              className="px-1.5 py-0.5 hover:text-[#B84D28] transition-colors font-bold text-sm"
                               title={item.quantity === 1 ? 'Remove product from cart' : 'Decrease quantity'}
                               aria-label="Decrease quantity"
                             >
                               −
                             </button>
-                            <span className="px-3 text-xs font-bold text-[#2A0E11]">
+                            <span className="px-3 text-xs font-bold text-[#6A2B15]">
                               {item.quantity}
                             </span>
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.id, 1)}
-                              className="px-1.5 py-0.5 hover:text-[#8B2635] transition-colors font-bold text-sm"
+                              className="px-1.5 py-0.5 hover:text-[#B84D28] transition-colors font-bold text-sm"
                               title="Increase quantity"
                               aria-label="Increase quantity"
                             >
@@ -345,7 +345,7 @@ export default function Cart() {
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.id)}
-                            className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#8B2635] hover:text-[#5B1D23] font-medium transition-colors"
+                            className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-[#B84D28] hover:text-[#A34320] font-medium transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span>Remove</span>
@@ -355,7 +355,7 @@ export default function Cart() {
 
                       {/* Total Item Price (Far Right on Desktop) */}
                       <div className="hidden sm:block text-right flex-shrink-0 pl-2">
-                        <span className="font-serif-luxury text-base sm:text-lg font-bold text-[#2A0E11]">
+                        <span className="font-serif-luxury text-base sm:text-lg font-bold text-[#6A2B15]">
                           ₹{(item.price * item.quantity).toLocaleString('en-IN')}
                         </span>
                       </div>
@@ -365,7 +365,7 @@ export default function Cart() {
 
                 {/* ── Free Shipping Progress Bar Card ── */}
                 <div className="bg-[#F3EADF] border border-[#E5DACD] rounded-xl p-4 sm:p-5 space-y-2.5 shadow-2xs">
-                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#2A0E11]">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#6A2B15]">
                     <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-[#C59B27] flex-shrink-0" />
                     <span>
                       {amountNeededForFreeShipping > 0
@@ -377,7 +377,7 @@ export default function Cart() {
                   {/* Progress Line */}
                   <div className="w-full bg-[#E5DACD] rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-[#3D1418] h-full transition-all duration-500 rounded-full"
+                      className="bg-[#8C3B1F] h-full transition-all duration-500 rounded-full"
                       style={{ width: `${progressPercent}%` }}
                     />
                   </div>
@@ -391,15 +391,15 @@ export default function Cart() {
 
                 {/* ── "YOU MAY ALSO LIKE" Recommendations Section ── */}
                 {recommendations.length > 0 && (
-                  <div className="bg-[#F7EFE8] border border-[#E5DACD] rounded-xl p-4 sm:p-6 space-y-3.5 shadow-2xs">
+                  <div className="bg-[#FFFFF0] border border-[#E5DACD] rounded-xl p-4 sm:p-6 space-y-3.5 shadow-2xs">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#2A0E11]">
+                      <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#6A2B15]">
                         YOU MAY ALSO LIKE
                       </h3>
                       <div className="flex items-center gap-3">
                         <Link
                           href="/shop"
-                          className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#8B2635] hover:underline"
+                          className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#B84D28] hover:underline"
                         >
                           VIEW ALL
                         </Link>
@@ -408,7 +408,7 @@ export default function Cart() {
                             type="button"
                             onClick={handlePrevRec}
                             disabled={recommendationIndex === 0}
-                            className="p-1 rounded-full border border-[#DCD0C5] hover:border-[#3D1418] text-[#3D1418] disabled:opacity-30 transition-all"
+                            className="p-1 rounded-full border border-[#DCD0C5] hover:border-[#8C3B1F] text-[#8C3B1F] disabled:opacity-30 transition-all"
                           >
                             <ChevronLeft className="w-4 h-4" />
                           </button>
@@ -416,7 +416,7 @@ export default function Cart() {
                             type="button"
                             onClick={handleNextRec}
                             disabled={recommendationIndex >= recommendations.length - 4}
-                            className="p-1 rounded-full border border-[#DCD0C5] hover:border-[#3D1418] text-[#3D1418] disabled:opacity-30 transition-all"
+                            className="p-1 rounded-full border border-[#DCD0C5] hover:border-[#8C3B1F] text-[#8C3B1F] disabled:opacity-30 transition-all"
                           >
                             <ChevronRight className="w-4 h-4" />
                           </button>
@@ -432,11 +432,11 @@ export default function Cart() {
                             key={idx}
                             className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-lg p-2 flex flex-col justify-between animate-pulse"
                           >
-                            <div className="relative aspect-[4/3] w-full bg-[#EFE6DD] mb-1.5 rounded-md" />
-                            <div className="h-3 bg-[#EFE6DD] w-3/4 mb-1.5 rounded-xs" />
+                            <div className="relative aspect-[4/3] w-full bg-[#FAF7EC] mb-1.5 rounded-md" />
+                            <div className="h-3 bg-[#FAF7EC] w-3/4 mb-1.5 rounded-xs" />
                             <div className="flex items-center justify-between mt-1">
-                              <div className="h-4 bg-[#EFE6DD] w-1/3 rounded-xs" />
-                              <div className="h-6 bg-[#EFE6DD] w-1/3 rounded-sm" />
+                              <div className="h-4 bg-[#FAF7EC] w-1/3 rounded-xs" />
+                              <div className="h-6 bg-[#FAF7EC] w-1/3 rounded-sm" />
                             </div>
                           </div>
                         ))
@@ -447,7 +447,7 @@ export default function Cart() {
                             className="bg-[#F3EADF]/80 hover:bg-[#F3EADF] border border-[#E5DACD] rounded-lg p-2 flex flex-col justify-between transition-all group"
                           >
                             <div>
-                              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-[#EFE6DD] mb-1.5">
+                              <div className="relative aspect-[4/3] w-full rounded-md overflow-hidden bg-[#FAF7EC] mb-1.5">
                                 <Image
                                   src={rec.image}
                                   alt={rec.name}
@@ -458,28 +458,28 @@ export default function Cart() {
                                   type="button"
                                   onClick={() => toggleWishlist(rec.id)}
                                   aria-label="Toggle Wishlist"
-                                  className="absolute top-1.5 right-1.5 p-1 bg-[#F7EFE8]/80 rounded-full text-[#3D1418] hover:text-[#8B2635]"
+                                  className="absolute top-1.5 right-1.5 p-1 bg-[#FFFFF0]/80 rounded-full text-[#8C3B1F] hover:text-[#B84D28]"
                                 >
                                   <Heart
                                     className={`w-3 h-3 stroke-[1.75] ${
-                                      wishlistItems.includes(rec.id) ? 'fill-[#8B2635] text-[#8B2635]' : 'text-[#3D1418]'
+                                      wishlistItems.includes(rec.id) ? 'fill-[#B84D28] text-[#B84D28]' : 'text-[#8C3B1F]'
                                     }`}
                                   />
                                 </button>
                               </div>
-                              <h4 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#2A0E11] line-clamp-1 group-hover:text-[#8B2635] transition-colors">
+                              <h4 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#6A2B15] line-clamp-1 group-hover:text-[#B84D28] transition-colors">
                                 {rec.name}
                               </h4>
                             </div>
 
                             <div className="mt-1 flex items-center justify-between">
-                              <p className="font-serif-luxury text-xs sm:text-sm font-bold text-[#2A0E11]">
+                              <p className="font-serif-luxury text-xs sm:text-sm font-bold text-[#6A2B15]">
                                 ₹{rec.price.toLocaleString('en-IN')}
                               </p>
                               <button
                                 type="button"
                                 onClick={() => handleAddRecommendation(rec)}
-                                className="inline-flex items-center gap-1 bg-[#2A0E11] text-[#F7EFE8] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#3D1418] transition-colors"
+                                className="inline-flex items-center gap-1 bg-[#6A2B15] text-[#FFFFF0] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#8C3B1F] transition-colors"
                               >
                                 {addedRecId === rec.id ? (
                                   <Check className="w-3 h-3 text-white" />
@@ -502,11 +502,11 @@ export default function Cart() {
 
               {/* RIGHT COLUMN: ORDER SUMMARY CARD (Sticky Desktop) */}
               <div className="lg:col-span-5 xl:col-span-4 lg:sticky lg:top-24">
-                <div className="bg-[#F7EFE8] border border-[#E5DACD] rounded-xl p-4 sm:p-6 space-y-5 shadow-2xs">
+                <div className="bg-[#FFFFF0] border border-[#E5DACD] rounded-xl p-4 sm:p-6 space-y-5 shadow-2xs">
                   
                   {/* Title */}
                   <div className="pb-3 border-b border-[#E5DACD]">
-                    <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#2A0E11]">
+                    <h2 className="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-[#6A2B15]">
                       ORDER SUMMARY
                     </h2>
                   </div>
@@ -515,13 +515,13 @@ export default function Cart() {
                   <div className="space-y-3 text-xs sm:text-sm">
                     <div className="flex justify-between text-[#5A4438]">
                       <span>Subtotal ({totalItemsCount} Items)</span>
-                      <span className="font-serif-luxury font-bold text-[#2A0E11]">
+                      <span className="font-serif-luxury font-bold text-[#6A2B15]">
                         ₹{subtotal.toLocaleString('en-IN')}
                       </span>
                     </div>
 
                     {appliedCoupon && (
-                      <div className="flex justify-between text-[#8B2635] font-medium">
+                      <div className="flex justify-between text-[#B84D28] font-medium">
                         <span>Discount ({appliedCoupon})</span>
                         <span>- ₹{effectiveDiscount.toLocaleString('en-IN')}</span>
                       </div>
@@ -533,10 +533,10 @@ export default function Cart() {
                     </div>
 
                     <div className="pt-3 border-t border-[#E5DACD] flex justify-between items-baseline">
-                      <span className="font-serif-luxury text-base font-bold text-[#2A0E11]">
+                      <span className="font-serif-luxury text-base font-bold text-[#6A2B15]">
                         Total
                       </span>
-                      <span className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#2A0E11]">
+                      <span className="font-serif-luxury text-2xl sm:text-3xl font-bold text-[#6A2B15]">
                         ₹{finalTotal.toLocaleString('en-IN')}
                       </span>
                     </div>
@@ -544,15 +544,15 @@ export default function Cart() {
 
                   {/* Coupon UI (Only allow one coupon at a time) */}
                   {appliedCoupon ? (
-                    <div className="flex items-center justify-between bg-[#EFE6DD]/70 border border-[#E2D4C5]/80 rounded-md px-3 py-2 text-xs text-[#2A0E11] mt-2">
+                    <div className="flex items-center justify-between bg-[#FAF7EC]/70 border border-[#E5D9C8]/80 rounded-md px-3 py-2 text-xs text-[#6A2B15] mt-2">
                       <div className="flex flex-col gap-0.5">
-                        <span className="font-bold text-[#8B2635]">Coupon {appliedCoupon} active</span>
+                        <span className="font-bold text-[#B84D28]">Coupon {appliedCoupon} active</span>
                         {couponSuccess && <span className="text-[10.5px] text-[#1E5631] font-medium">{couponSuccess}</span>}
                       </div>
                       <button
                         type="button"
                         onClick={handleRemoveCoupon}
-                        className="text-[10px] font-bold text-[#8B2635] hover:text-[#3D1418] uppercase tracking-wider underline cursor-pointer"
+                        className="text-[10px] font-bold text-[#B84D28] hover:text-[#8C3B1F] uppercase tracking-wider underline cursor-pointer"
                       >
                         Remove
                       </button>
@@ -565,17 +565,17 @@ export default function Cart() {
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value)}
                           placeholder="Enter coupon code"
-                          className="flex-1 bg-[#F7EFE8] border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] placeholder-[#8A786D] focus:outline-none focus:border-[#3D1418]"
+                          className="flex-1 bg-[#FFFFF0] border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] placeholder-[#8A786D] focus:outline-none focus:border-[#8C3B1F]"
                         />
                         <button
                           type="submit"
-                          className="bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md transition-colors"
+                          className="bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md transition-colors"
                         >
                           APPLY
                         </button>
                       </div>
                       {couponError && (
-                        <p className="text-[11px] text-[#8B2635] font-medium pt-0.5">
+                        <p className="text-[11px] text-[#B84D28] font-medium pt-0.5">
                           {couponError}
                         </p>
                       )}
@@ -585,22 +585,22 @@ export default function Cart() {
                   {/* Trust Badges */}
                   <div className="pt-3 border-t border-[#E5DACD]/80 grid grid-cols-3 gap-1 text-center divide-x divide-[#E5DACD]/60 items-center">
                     <div className="flex flex-col items-center p-1 space-y-1">
-                      <ShieldCheck className="w-4 h-4 text-[#8B2635]" />
-                      <span className="text-[9.5px] font-semibold text-[#3D1418]">
+                      <ShieldCheck className="w-4 h-4 text-[#B84D28]" />
+                      <span className="text-[9.5px] font-semibold text-[#8C3B1F]">
                         Secure Payment
                       </span>
                     </div>
 
                     <div className="flex flex-col items-center p-1 space-y-1">
-                      <Package className="w-4 h-4 text-[#8B2635]" />
-                      <span className="text-[9.5px] font-semibold text-[#3D1418]">
+                      <Package className="w-4 h-4 text-[#B84D28]" />
+                      <span className="text-[9.5px] font-semibold text-[#8C3B1F]">
                         Easy Returns
                       </span>
                     </div>
 
                     <div className="flex flex-col items-center p-1 space-y-1">
-                      <Award className="w-4 h-4 text-[#8B2635]" />
-                      <span className="text-[9.5px] font-semibold text-[#3D1418]">
+                      <Award className="w-4 h-4 text-[#B84D28]" />
+                      <span className="text-[9.5px] font-semibold text-[#8C3B1F]">
                         Quality Assured
                       </span>
                     </div>
@@ -610,10 +610,10 @@ export default function Cart() {
                   <div className="pt-2 space-y-2">
                     <button
                       onClick={handleProceedToCheckout}
-                      className="w-full inline-flex items-center justify-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-[0.2em] uppercase py-3.5 rounded-md transition-colors shadow-sm group"
+                      className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3.5 rounded-md transition-colors shadow-sm group"
                     >
                       <span>PROCEED TO CHECKOUT</span>
-                      <ArrowRight className="w-4 h-4 text-[#F7EFE8] group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="w-4 h-4 text-[#FFFFF0] group-hover:translate-x-1 transition-transform" />
                     </button>
 
                     <a
@@ -641,10 +641,10 @@ export default function Cart() {
           ) : (
             /* Empty Cart View */
             <div className="text-center py-16 bg-[#F3EADF]/60 rounded-2xl border border-[#E5DACD] max-w-2xl mx-auto my-6 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-[#F7EFE8] border border-[#C59B27]/40 flex items-center justify-center mx-auto text-[#8B2635]">
+              <div className="w-16 h-16 rounded-full bg-[#FFFFF0] border border-[#C59B27]/40 flex items-center justify-center mx-auto text-[#B84D28]">
                 <RotateCcw className="w-8 h-8" />
               </div>
-              <h2 className="font-serif-luxury text-2xl sm:text-3xl font-medium text-[#2A0E11]">
+              <h2 className="font-serif-luxury text-2xl sm:text-3xl font-medium text-[#6A2B15]">
                 Your Shopping Cart is Empty
               </h2>
               <p className="text-xs sm:text-sm text-[#5A4438]">
@@ -653,7 +653,7 @@ export default function Cart() {
               <div className="pt-2">
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-2 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-[0.2em] px-6 py-3 rounded-md shadow-xs transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold uppercase tracking-[0.2em] px-6 py-3 rounded-md shadow-xs transition-colors"
                 >
                   <span>EXPLORE SAREES</span>
                   <ArrowRight className="w-4 h-4" />
@@ -668,18 +668,18 @@ export default function Cart() {
       {/* 3. STICKY BOTTOM CHECKOUT BAR FOR MOBILE                         */}
       {/* ================================================================ */}
       {cartItems.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#F7EFE8] border-t border-[#E5DACD] p-3 shadow-2xl block lg:hidden">
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#FFFFF0] border-t border-[#E5DACD] p-3 shadow-2xl block lg:hidden">
           <div className="max-w-md mx-auto flex items-center justify-between gap-3">
             <div>
               <span className="text-[10px] uppercase text-[#8A786D] font-medium block">Total</span>
-              <span className="font-serif-luxury text-xl font-bold text-[#2A0E11]">
+              <span className="font-serif-luxury text-xl font-bold text-[#6A2B15]">
                 ₹{finalTotal.toLocaleString('en-IN')}
               </span>
             </div>
 
             <button
               onClick={handleProceedToCheckout}
-              className="flex-1 inline-flex items-center justify-center gap-1 bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-[10px] font-bold tracking-wider uppercase py-2.5 rounded-md transition-colors shadow-xs"
+              className="flex-1 inline-flex items-center justify-center gap-1 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-[10px] font-bold tracking-wider uppercase py-2.5 rounded-md transition-colors shadow-xs"
             >
               <span>CHECKOUT</span>
             </button>
@@ -707,7 +707,7 @@ export default function Cart() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center items-center">
             <div className="flex flex-col items-center p-2 space-y-1">
               <Truck className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 FREE SHIPPING
               </span>
               <span className="text-[9.5px] text-[#5A4438]">On orders above ₹1499</span>
@@ -715,7 +715,7 @@ export default function Cart() {
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <Package className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 SECURE PACKAGING
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Safe & premium packaging</span>
@@ -723,7 +723,7 @@ export default function Cart() {
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <RotateCcw className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 EASY RETURNS
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Hassle-free returns</span>
@@ -731,7 +731,7 @@ export default function Cart() {
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <Award className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 100% QUALITY ASSURED
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Premium quality sarees</span>

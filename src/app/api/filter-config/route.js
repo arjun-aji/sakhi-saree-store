@@ -21,14 +21,14 @@ const DEFAULT_FILTERS = {
     { label: 'Tussar', value: 'Tussar' }
   ],
   colors: [
-    { name: 'Red', hex: '#8B2635', border: false },
+    { name: 'Red', hex: '#B84D28', border: false },
     { name: 'Purple', hex: '#4A154B', border: false },
     { name: 'Green', hex: '#1E5631', border: false },
     { name: 'Blue', hex: '#1B365D', border: false },
     { name: 'Yellow', hex: '#D4AF37', border: false },
     { name: 'Pink', hex: '#E8A598', border: false },
     { name: 'Cream', hex: '#F5ECE4', border: true },
-    { name: 'Black', hex: '#2A0E11', border: false }
+    { name: 'Black', hex: '#6A2B15', border: false }
   ]
 };
 

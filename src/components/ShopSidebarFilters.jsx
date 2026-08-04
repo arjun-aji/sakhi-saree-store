@@ -39,14 +39,14 @@ export default function ShopSidebarFilters({
   ]);
 
   const [colors, setColors] = useState([
-    { name: 'Red', hex: '#8B2635', border: false },
+    { name: 'Red', hex: '#B84D28', border: false },
     { name: 'Purple', hex: '#4A154B', border: false },
     { name: 'Green', hex: '#1E5631', border: false },
     { name: 'Blue', hex: '#1B365D', border: false },
     { name: 'Yellow', hex: '#D4AF37', border: false },
     { name: 'Pink', hex: '#E8A598', border: false },
     { name: 'Cream', hex: '#F5ECE4', border: true },
-    { name: 'Black', hex: '#2A0E11', border: false },
+    { name: 'Black', hex: '#6A2B15', border: false },
   ]);
 
   const toggleSection = (section) => {
@@ -96,14 +96,14 @@ export default function ShopSidebarFilters({
 
 
   return (
-    <aside className="w-full text-[#3D1418] text-xs font-sans">
+    <aside className="w-full text-[#8C3B1F] text-xs font-sans">
       <div className="divide-y divide-[#E5DACD] space-y-4">
         
         {/* 1. CATEGORIES SECTION */}
         <div>
           <button
             onClick={() => toggleSection('category')}
-            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#3D1418] py-1"
+            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#8C3B1F] py-1"
           >
             <span>CATEGORIES</span>
             {openSections.category ? <ChevronUp className="w-3.5 h-3.5 opacity-70" /> : <ChevronDown className="w-3.5 h-3.5 opacity-70" />}
@@ -112,16 +112,16 @@ export default function ShopSidebarFilters({
           {openSections.category && (
             <div className="mt-2.5 space-y-2">
               {categories.map((cat) => (
-                <label key={cat.value} className="flex items-center justify-between text-xs text-[#5A4438] cursor-pointer hover:text-[#8B2635] transition-colors group">
+                <label key={cat.value} className="flex items-center justify-between text-xs text-[#5A4438] cursor-pointer hover:text-[#B84D28] transition-colors group">
                   <div className="flex items-center gap-2">
                     <input
                       type="radio"
                       name="category_filter"
                       checked={selectedCategory === cat.value}
                       onChange={() => onCategoryChange(cat.value)}
-                      className="w-3.5 h-3.5 border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#2A0E11]"
+                      className="w-3.5 h-3.5 border-[#C59B27] text-[#B84D28] focus:ring-[#B84D28] cursor-pointer accent-[#6A2B15]"
                     />
-                    <span className={selectedCategory === cat.value ? 'font-bold text-[#2A0E11]' : ''}>{cat.label}</span>
+                    <span className={selectedCategory === cat.value ? 'font-bold text-[#6A2B15]' : ''}>{cat.label}</span>
                   </div>
                   <span className="text-[10px] text-[#8A786D]">({cat.count})</span>
                 </label>
@@ -134,7 +134,7 @@ export default function ShopSidebarFilters({
         <div className="pt-4">
           <button
             onClick={() => toggleSection('fabric')}
-            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#3D1418] py-1"
+            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#8C3B1F] py-1"
           >
             <span>FABRIC</span>
             {openSections.fabric ? <ChevronUp className="w-3.5 h-3.5 opacity-70" /> : <ChevronDown className="w-3.5 h-3.5 opacity-70" />}
@@ -143,15 +143,15 @@ export default function ShopSidebarFilters({
           {openSections.fabric && (
             <div className="mt-2.5 space-y-2">
               {fabrics.map((fab) => (
-                <label key={fab.value} className="flex items-center justify-between text-xs text-[#5A4438] cursor-pointer hover:text-[#8B2635] transition-colors">
+                <label key={fab.value} className="flex items-center justify-between text-xs text-[#5A4438] cursor-pointer hover:text-[#B84D28] transition-colors">
                   <div className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       checked={selectedFabric === fab.value}
                       onChange={() => onFabricChange(selectedFabric === fab.value ? 'All' : fab.value)}
-                      className="w-3.5 h-3.5 rounded border-[#C59B27] text-[#8B2635] focus:ring-[#8B2635] cursor-pointer accent-[#2A0E11]"
+                      className="w-3.5 h-3.5 rounded border-[#C59B27] text-[#B84D28] focus:ring-[#B84D28] cursor-pointer accent-[#6A2B15]"
                     />
-                    <span className={selectedFabric === fab.value ? 'font-bold text-[#2A0E11]' : ''}>{fab.label}</span>
+                    <span className={selectedFabric === fab.value ? 'font-bold text-[#6A2B15]' : ''}>{fab.label}</span>
                   </div>
                   <span className="text-[10px] text-[#8A786D]">({fab.count})</span>
                 </label>
@@ -164,7 +164,7 @@ export default function ShopSidebarFilters({
         <div className="pt-4">
           <button
             onClick={() => toggleSection('color')}
-            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#3D1418] py-1"
+            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#8C3B1F] py-1"
           >
             <span>COLOR</span>
             {openSections.color ? <ChevronUp className="w-3.5 h-3.5 opacity-70" /> : <ChevronDown className="w-3.5 h-3.5 opacity-70" />}
@@ -180,7 +180,7 @@ export default function ShopSidebarFilters({
                   aria-label={color.name}
                   className={`w-6 h-6 rounded-full mx-auto transition-transform hover:scale-110 relative flex items-center justify-center ${
                     color.border ? 'border border-[#C59B27]' : ''
-                  } ${selectedColor === color.name ? 'ring-2 ring-offset-2 ring-[#2A0E11]' : ''}`}
+                  } ${selectedColor === color.name ? 'ring-2 ring-offset-2 ring-[#6A2B15]' : ''}`}
                   style={{ backgroundColor: color.hex }}
                 />
               ))}
@@ -192,7 +192,7 @@ export default function ShopSidebarFilters({
         <div className="pt-4">
           <button
             onClick={() => toggleSection('price')}
-            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#3D1418] py-1"
+            className="flex items-center justify-between w-full text-[11px] font-bold uppercase tracking-wider text-[#8C3B1F] py-1"
           >
             <span>PRICE</span>
             {openSections.price ? <ChevronUp className="w-3.5 h-3.5 opacity-70" /> : <ChevronDown className="w-3.5 h-3.5 opacity-70" />}
@@ -200,7 +200,7 @@ export default function ShopSidebarFilters({
 
           {openSections.price && (
             <div className="mt-3 space-y-3">
-              <div className="flex items-center justify-between text-[11px] font-bold text-[#2A0E11]">
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#6A2B15]">
                 <span>₹1,299</span>
                 <span>₹{selectedPrice ? selectedPrice.toLocaleString('en-IN') : '8,999'}</span>
               </div>
@@ -211,7 +211,7 @@ export default function ShopSidebarFilters({
                 step="100"
                 value={selectedPrice || 8999}
                 onChange={(e) => onPriceChange(Number(e.target.value))}
-                className="w-full accent-[#2A0E11] cursor-pointer"
+                className="w-full accent-[#6A2B15] cursor-pointer"
               />
             </div>
           )}
@@ -224,7 +224,7 @@ export default function ShopSidebarFilters({
         <button
           type="button"
           onClick={onApplyFilters}
-          className="w-full bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-[0.2em] py-3 rounded-md transition-colors shadow-xs"
+          className="w-full bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold uppercase tracking-[0.2em] py-3 rounded-md transition-colors shadow-xs"
         >
           APPLY FILTERS
         </button>

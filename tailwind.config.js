@@ -9,14 +9,14 @@ module.exports = {
     extend: {
       colors: {
         maroon: {
-          dark: '#2A0E11',
-          DEFAULT: '#3D1418',
-          light: '#5B1D23',
+          dark: '#6A2B15',
+          DEFAULT: '#8C3B1F',
+          light: '#A34320',
         },
         beige: {
-          bg: '#F7EFE8',
-          card: '#EFE6DD',
-          border: '#E2D4C5',
+          bg: '#FFFFF0',
+          card: '#FAF7EC',
+          border: '#E5D9C8',
         },
         gold: {
           DEFAULT: '#C59B27',

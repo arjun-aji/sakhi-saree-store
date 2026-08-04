@@ -142,7 +142,7 @@ export default function ProductCard({
         {/* Saree Image Container — portrait */}
         <div 
           onClick={() => setIsModalOpen(true)}
-          className="relative aspect-[4/5] w-full overflow-hidden bg-[#EFE6DD] mb-1.5 cursor-pointer"
+          className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7EC] mb-1.5 cursor-pointer"
         >
           <Image
             src={image || '/assets/about/hero_stack.jpg'}
@@ -154,7 +154,7 @@ export default function ProductCard({
 
           {/* Top Left Badge */}
           {displayBadge && (
-            <div className="absolute top-2 left-2 bg-[#2A0E11] text-[#F7EFE8] text-[8px] sm:text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-sm shadow-xs z-10 pointer-events-none">
+            <div className="absolute top-2 left-2 bg-[#6A2B15] text-[#FFFFF0] text-[8px] sm:text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-sm shadow-xs z-10 pointer-events-none">
               {displayBadge}
             </div>
           )}
@@ -164,11 +164,11 @@ export default function ProductCard({
             type="button"
             onClick={handleWishlistClick}
             aria-label="Add to Wishlist"
-            className="absolute top-2 right-2 p-1 hover:bg-[#F7EFE8]/70 rounded-full text-[#3D1418] hover:text-[#8B2635] transition-all duration-200 z-10"
+            className="absolute top-2 right-2 p-1 hover:bg-[#FFFFF0]/70 rounded-full text-[#8C3B1F] hover:text-[#B84D28] transition-all duration-200 z-10"
           >
             <Heart
               className={`w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[1.75] transition-colors ${
-                isWishlisted ? 'fill-[#8B2635] text-[#8B2635]' : 'text-white drop-shadow'
+                isWishlisted ? 'fill-[#B84D28] text-[#B84D28]' : 'text-white drop-shadow'
               }`}
             />
           </button>
@@ -181,14 +181,14 @@ export default function ProductCard({
             onClick={() => setIsModalOpen(true)}
             className="text-left block w-full"
           >
-            <h3 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#2A0E11] group-hover:text-[#8B2635] transition-colors leading-snug line-clamp-1">
+            <h3 className="font-serif-luxury text-[11px] sm:text-xs font-medium text-[#6A2B15] group-hover:text-[#B84D28] transition-colors leading-snug line-clamp-1">
               {name}
             </h3>
           </button>
 
           {/* Price Row */}
           <div className="flex items-baseline gap-1">
-            <span className="font-serif-luxury text-[11px] sm:text-xs font-bold text-[#2A0E11]">
+            <span className="font-serif-luxury text-[11px] sm:text-xs font-bold text-[#6A2B15]">
               ₹{price?.toLocaleString('en-IN')}
             </span>
             {originalPrice && (
@@ -208,7 +208,7 @@ export default function ProductCard({
             className={`flex-grow inline-flex items-center justify-center gap-1 border py-1 px-1 text-[8.5px] sm:text-[9.5px] font-bold tracking-widest uppercase transition-all duration-300 ${
               addedToCart
                 ? 'bg-[#1E5631] text-white border-[#1E5631]'
-                : 'bg-transparent hover:bg-[#2A0E11] border-[#C5B9AD] hover:border-[#2A0E11] text-[#3D1418] hover:text-[#F7EFE8]'
+                : 'bg-transparent hover:bg-[#6A2B15] border-[#C5B9AD] hover:border-[#6A2B15] text-[#8C3B1F] hover:text-[#FFFFF0]'
             }`}
           >
             {addedToCart ? (
@@ -243,12 +243,12 @@ export default function ProductCard({
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
           {/* Modal Container */}
-          <div className="bg-[#F7EFE8] max-w-4xl w-full max-h-[92vh] overflow-y-auto border border-[#E2D4C5] shadow-2xl rounded-lg p-5 sm:p-7 relative flex flex-col md:flex-row gap-6">
+          <div className="bg-[#FFFFF0] max-w-4xl w-full max-h-[92vh] overflow-y-auto border border-[#E5D9C8] shadow-2xl rounded-lg p-5 sm:p-7 relative flex flex-col md:flex-row gap-6">
             
             {/* Close Button */}
             <button
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#EFE6DD] text-[#3D1418] transition z-10"
+              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-[#FAF7EC] text-[#8C3B1F] transition z-10"
               aria-label="Close Modal"
             >
               <X className="w-5 h-5" />
@@ -256,7 +256,7 @@ export default function ProductCard({
 
             {/* Left Column: Image Gallery */}
             <div className="w-full md:w-1/2 flex flex-col gap-3">
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#EFE6DD] rounded border border-[#E2D4C5]">
+              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#FAF7EC] rounded border border-[#E5D9C8]">
                 <Image
                   src={activeImage || '/assets/about/hero_stack.jpg'}
                   alt={name}
@@ -264,7 +264,7 @@ export default function ProductCard({
                   className="object-cover object-center"
                 />
                 {displayBadge && (
-                  <span className="absolute top-3 left-3 bg-[#2A0E11] text-[#F7EFE8] text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-sm">
+                  <span className="absolute top-3 left-3 bg-[#6A2B15] text-[#FFFFF0] text-[9px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-sm">
                     {displayBadge}
                   </span>
                 )}
@@ -278,7 +278,7 @@ export default function ProductCard({
                       key={idx}
                       onClick={() => setActiveImage(img)}
                       className={`relative w-12 h-14 flex-shrink-0 border-2 rounded overflow-hidden transition-all ${
-                        activeImage === img ? 'border-[#8B2635] scale-105' : 'border-[#E2D4C5] hover:border-[#8B2635]/65'
+                        activeImage === img ? 'border-[#B84D28] scale-105' : 'border-[#E5D9C8] hover:border-[#B84D28]/65'
                       }`}
                     >
                       <Image
@@ -296,13 +296,13 @@ export default function ProductCard({
             {/* Right Column: Saree Details & Reviews */}
             <div className="w-full md:w-1/2 flex flex-col gap-4">
               <div>
-                <h2 className="font-serif-luxury text-xl sm:text-2xl font-semibold text-[#2A0E11] leading-tight">
+                <h2 className="font-serif-luxury text-xl sm:text-2xl font-semibold text-[#6A2B15] leading-tight">
                   {name}
                 </h2>
                 
                 {/* Price */}
                 <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-serif-luxury text-lg font-bold text-[#2A0E11]">
+                  <span className="font-serif-luxury text-lg font-bold text-[#6A2B15]">
                     ₹{price?.toLocaleString('en-IN')}
                   </span>
                   {originalPrice && (
@@ -314,7 +314,7 @@ export default function ProductCard({
 
                 {/* Rating summary */}
                 {averageRating && (
-                  <div className="flex items-center gap-1.5 mt-1.5 text-xs text-[#8B2635] font-semibold">
+                  <div className="flex items-center gap-1.5 mt-1.5 text-xs text-[#B84D28] font-semibold">
                     <div className="flex text-[#C59B27]">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star 
@@ -329,7 +329,7 @@ export default function ProductCard({
               </div>
 
               {/* Saree attributes */}
-              <div className="grid grid-cols-2 gap-2 text-xs border-t border-b border-[#E2D4C5]/60 py-2 text-[#4E3F3B]">
+              <div className="grid grid-cols-2 gap-2 text-xs border-t border-b border-[#E5D9C8]/60 py-2 text-[#4E3F3B]">
                 <div>
                   <span className="font-semibold text-[#8C7A6B] uppercase tracking-wider block text-[10px]">Fabric</span>
                   <span>{fabric || 'Premium Silk Blend'}</span>
@@ -357,7 +357,7 @@ export default function ProductCard({
                     className={`flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold tracking-widest uppercase transition-all duration-300 border ${
                       addedToCart
                         ? 'bg-[#1E5631] text-white border-[#1E5631]'
-                        : 'bg-[#2A0E11] border-[#2A0E11] text-[#F7EFE8] hover:bg-[#3D1418]'
+                        : 'bg-[#6A2B15] border-[#6A2B15] text-[#FFFFF0] hover:bg-[#8C3B1F]'
                     }`}
                   >
                     <ShoppingCart className="w-4 h-4" />
@@ -367,9 +367,9 @@ export default function ProductCard({
                   <button
                     type="button"
                     onClick={handleWishlistClick}
-                    className={`p-2.5 border border-[#C5B9AD] rounded hover:bg-[#FAF7F2] transition text-[#3D1418]`}
+                    className={`p-2.5 border border-[#C5B9AD] rounded hover:bg-[#FAF7F2] transition text-[#8C3B1F]`}
                   >
-                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#8B2635] text-[#8B2635]' : 'text-gray-500'}`} />
+                    <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#B84D28] text-[#B84D28]' : 'text-gray-500'}`} />
                   </button>
                 </div>
 
@@ -387,7 +387,7 @@ export default function ProductCard({
               </div>
 
               {/* Reviews & Submit Form Section */}
-              <div className="mt-2 border-t border-[#E2D4C5]/60 pt-4 flex-1 flex flex-col gap-4 min-h-[180px]">
+              <div className="mt-2 border-t border-[#E5D9C8]/60 pt-4 flex-1 flex flex-col gap-4 min-h-[180px]">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#8C7A6B] flex items-center gap-1.5">
                   <MessageSquare className="w-3.5 h-3.5" />
                   <span>Customer Reviews ({reviewsList.length})</span>
@@ -401,9 +401,9 @@ export default function ProductCard({
                     <p className="text-[#8C7A6B] italic">No reviews yet. Be the first to share your thoughts!</p>
                   ) : (
                     reviewsList.map((rev, idx) => (
-                      <div key={idx} className="border-b border-[#E2D4C5]/30 pb-2">
+                      <div key={idx} className="border-b border-[#E5D9C8]/30 pb-2">
                         <div className="flex justify-between items-center mb-0.5">
-                          <span className="font-semibold text-[#2A0E11]">{rev.customerName}</span>
+                          <span className="font-semibold text-[#6A2B15]">{rev.customerName}</span>
                           <div className="flex text-[#C59B27]">
                             {Array.from({ length: 5 }).map((_, i) => (
                               <Star 
@@ -420,7 +420,7 @@ export default function ProductCard({
                 </div>
 
                 {/* Add Review Form */}
-                <form onSubmit={handleReviewSubmit} className="space-y-2 border-t border-[#E2D4C5]/30 pt-3">
+                <form onSubmit={handleReviewSubmit} className="space-y-2 border-t border-[#E5D9C8]/30 pt-3">
                   <span className="font-semibold text-[#8C7A6B] uppercase tracking-wider block text-[10px]">Add a Saree Review</span>
                   
                   <div className="grid grid-cols-3 gap-2">
@@ -430,13 +430,13 @@ export default function ProductCard({
                       required
                       value={reviewForm.name}
                       onChange={(e) => setReviewForm(prev => ({ ...prev, name: e.target.value }))}
-                      className="col-span-2 p-1.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-xs bg-white"
+                      className="col-span-2 p-1.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-xs bg-white"
                     />
                     
                     <select
                       value={reviewForm.rating}
                       onChange={(e) => setReviewForm(prev => ({ ...prev, rating: Number(e.target.value) }))}
-                      className="p-1.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-xs bg-white text-[#2A0E11]"
+                      className="p-1.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-xs bg-white text-[#6A2B15]"
                     >
                       <option value="5">5 Stars</option>
                       <option value="4">4 Stars</option>
@@ -453,12 +453,12 @@ export default function ProductCard({
                       required
                       value={reviewForm.comment}
                       onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
-                      className="flex-1 p-1.5 rounded border border-[#E2D4C5] focus:outline-none focus:ring-1 focus:ring-[#2A0E11] text-xs bg-white"
+                      className="flex-1 p-1.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-xs bg-white"
                     />
                     <button
                       type="submit"
                       disabled={submittingReview}
-                      className="bg-[#2A0E11] text-[#F7EFE8] px-3 py-1 rounded text-xs font-semibold hover:bg-[#3D1418] disabled:opacity-50 flex-shrink-0"
+                      className="bg-[#6A2B15] text-[#FFFFF0] px-3 py-1 rounded text-xs font-semibold hover:bg-[#8C3B1F] disabled:opacity-50 flex-shrink-0"
                     >
                       {submittingReview ? 'Sending...' : 'Post'}
                     </button>

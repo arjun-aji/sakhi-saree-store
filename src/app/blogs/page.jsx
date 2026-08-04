@@ -30,10 +30,10 @@ export default function BlogsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
       {/* Announcement & Navbar */}
       <AnnouncementBar />
-      <div className="sticky top-0 z-50 bg-[#F7EFE8]/95 backdrop-blur-md border-b border-[#E2D4C5]/50">
+      <div className="sticky top-0 z-50 bg-[#FFFFF0]/95 backdrop-blur-md border-b border-[#E5D9C8]/50">
         <Navbar />
       </div>
 
@@ -43,14 +43,14 @@ export default function BlogsPage() {
           <article className="max-w-3xl mx-auto space-y-6 animate-in fade-in duration-300">
             <button
               onClick={() => setSelectedBlog(null)}
-              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#8B2635] hover:underline mb-4"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#B84D28] hover:underline mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Articles
             </button>
 
             {selectedBlog.image && (
-              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-[#E2D4C5]">
+              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-[#E5D9C8]">
                 <Image
                   src={selectedBlog.image}
                   alt={selectedBlog.title}
@@ -61,11 +61,11 @@ export default function BlogsPage() {
             )}
 
             <div className="space-y-3">
-              <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#2A0E11] font-medium leading-tight">
+              <h1 className="font-serif-luxury text-3xl sm:text-4xl text-[#6A2B15] font-medium leading-tight">
                 {selectedBlog.title}
               </h1>
 
-              <div className="flex items-center gap-4 text-xs text-[#8A786D] border-b border-[#E2D4C5]/50 pb-4">
+              <div className="flex items-center gap-4 text-xs text-[#8A786D] border-b border-[#E5D9C8]/50 pb-4">
                 <span className="flex items-center gap-1">
                   <User className="w-3.5 h-3.5" />
                   {selectedBlog.author || 'Sakhi Editor'}
@@ -90,7 +90,7 @@ export default function BlogsPage() {
           /* BLOG LIST VIEW */
           <div className="space-y-10 animate-in fade-in duration-300">
             <div className="text-center space-y-2">
-              <h1 className="font-serif-luxury text-3xl sm:text-5xl font-normal text-[#2A0E11] leading-tight">
+              <h1 className="font-serif-luxury text-3xl sm:text-5xl font-normal text-[#6A2B15] leading-tight">
                 The Sakhi Chronicle
               </h1>
               <div className="flex items-center justify-center gap-3 my-2">
@@ -105,12 +105,12 @@ export default function BlogsPage() {
 
             {loading ? (
               <div className="text-center py-20">
-                <p className="font-serif-luxury text-lg text-[#3D1418] animate-pulse">Loading Chronicles...</p>
+                <p className="font-serif-luxury text-lg text-[#8C3B1F] animate-pulse">Loading Chronicles...</p>
               </div>
             ) : blogs.length === 0 ? (
               <div className="text-center py-20 bg-[#F3EADF]/60 rounded-xl border border-[#E5DACD] max-w-xl mx-auto">
-                <BookOpen className="w-8 h-8 mx-auto text-[#8B2635] mb-2" />
-                <h3 className="font-serif-luxury text-lg font-medium text-[#2A0E11]">No Articles Yet</h3>
+                <BookOpen className="w-8 h-8 mx-auto text-[#B84D28] mb-2" />
+                <h3 className="font-serif-luxury text-lg font-medium text-[#6A2B15]">No Articles Yet</h3>
                 <p className="text-xs text-[#5A4438] mt-1">Check back soon for insights on luxury handlooms.</p>
               </div>
             ) : (
@@ -122,7 +122,7 @@ export default function BlogsPage() {
                   >
                     <div>
                       {blog.image && (
-                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#EFE6DD]">
+                        <div className="relative aspect-[16/10] w-full overflow-hidden bg-[#FAF7EC]">
                           <Image
                             src={blog.image}
                             alt={blog.title}
@@ -145,7 +145,7 @@ export default function BlogsPage() {
                             })}
                           </span>
                         </div>
-                        <h3 className="font-serif-luxury text-base sm:text-lg font-semibold text-[#2A0E11] line-clamp-2 leading-snug group-hover:text-[#8B2635] transition-colors">
+                        <h3 className="font-serif-luxury text-base sm:text-lg font-semibold text-[#6A2B15] line-clamp-2 leading-snug group-hover:text-[#B84D28] transition-colors">
                           {blog.title}
                         </h3>
                         <p className="text-xs text-[#5A4438] line-clamp-3 leading-relaxed">
@@ -156,7 +156,7 @@ export default function BlogsPage() {
                     <div className="p-5 pt-0">
                       <button
                         onClick={() => setSelectedBlog(blog)}
-                        className="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase text-[#8B2635] hover:text-[#2A0E11] transition-colors"
+                        className="inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase text-[#B84D28] hover:text-[#6A2B15] transition-colors"
                       >
                         Read Full Article
                         <ChevronRight className="w-3.5 h-3.5" />
@@ -171,7 +171,7 @@ export default function BlogsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418] mt-10">
+      <footer className="w-full bg-[#6A2B15] text-[#FAF7EC] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#8C3B1F] mt-10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 SAKHI BY MAYA&apos;S. ALL RIGHTS RESERVED.</p>
           <p className="text-[11px] opacity-75">TRADITION WOVEN WITH LOVE</p>

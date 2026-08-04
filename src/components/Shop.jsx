@@ -170,12 +170,12 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
   };
 
   return (
-    <div className="w-full bg-[#F7EFE8]">
+    <div className="w-full bg-[#FFFFF0]">
 
       {/* ================================================================ */}
       {/* 1. HERO SECTION WITH BREADCRUMB & FLORAL ARTWORK                */}
       {/* ================================================================ */}
-      <section className="relative w-full bg-[#F7EFE8] pt-2 sm:pt-3 pb-2 sm:pb-3 px-4 sm:px-8 overflow-hidden text-center">
+      <section className="relative w-full bg-[#FFFFF0] pt-2 sm:pt-3 pb-2 sm:pb-3 px-4 sm:px-8 overflow-hidden text-center">
         
         {/* Decorative Background Floral Artwork */}
         <div className="absolute top-0 left-0 p-2 sm:p-3 opacity-70">
@@ -194,7 +194,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
           </div>
 
           {/* Main Serif Heading */}
-          <h1 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-normal text-[#2A0E11] leading-tight tracking-tight">
+          <h1 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl font-normal text-[#6A2B15] leading-tight tracking-tight">
             {isNewArrivals ? 'New Arrivals' : 'Shop Collection'}
           </h1>
 
@@ -257,10 +257,10 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
               >
                 {Array.from({ length: 12 }).map((_, idx) => (
                   <div key={idx} className="flex flex-col border border-[#E5DACD] p-2 space-y-2 animate-pulse">
-                    <div className="relative aspect-[4/5] w-full bg-[#EFE6DD]" />
-                    <div className="h-3 bg-[#EFE6DD] w-3/4 rounded-xs" />
-                    <div className="h-3 bg-[#EFE6DD] w-1/2 rounded-xs" />
-                    <div className="h-7 bg-[#EFE6DD] w-full rounded-sm" />
+                    <div className="relative aspect-[4/5] w-full bg-[#FAF7EC]" />
+                    <div className="h-3 bg-[#FAF7EC] w-3/4 rounded-xs" />
+                    <div className="h-3 bg-[#FAF7EC] w-1/2 rounded-xs" />
+                    <div className="h-7 bg-[#FAF7EC] w-full rounded-sm" />
                   </div>
                 ))}
               </div>
@@ -277,11 +277,11 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
             ) : (
               /* Empty State */
               <div className="text-center py-14 bg-[#F3EADF]/60 rounded-xl border border-[#E5DACD] my-4">
-                <p className="font-serif-luxury text-xl text-[#2A0E11] mb-2">No Sarees Found</p>
+                <p className="font-serif-luxury text-xl text-[#6A2B15] mb-2">No Sarees Found</p>
                 <p className="text-xs text-[#8B5A3C] mb-4">Try adjusting your filters to see more sarees.</p>
                 <button
                   onClick={handleReset}
-                  className="inline-flex items-center gap-2 bg-[#3D1418] text-[#F7EFE8] text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-md shadow-xs hover:bg-[#5B1D23] transition-colors"
+                  className="inline-flex items-center gap-2 bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-md shadow-xs hover:bg-[#A34320] transition-colors"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   Clear Filters
@@ -294,10 +294,10 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
               <div className="text-center mt-8 sm:mt-10">
                 <Link
                   href="/shop"
-                  className="inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] hover:text-[#8B2635] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
+                  className="inline-flex items-center justify-center gap-2 bg-[#FFFFF0] border border-[#DCD0C5] hover:border-[#B84D28] text-[#8C3B1F] hover:text-[#B84D28] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
                 >
                   <span>EXPLORE OUR STORE</span>
-                  <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-x-0.5 transition-transform rotate-[-90deg]" />
+                  <ChevronDown className="w-4 h-4 text-[#8C3B1F] group-hover:translate-x-0.5 transition-transform rotate-[-90deg]" />
                 </Link>
               </div>
             ) : (
@@ -305,10 +305,10 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
                 <div className="text-center mt-8 sm:mt-10">
                   <button
                     onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
-                    className="inline-flex items-center justify-center gap-2 bg-[#F7EFE8] border border-[#DCD0C5] hover:border-[#8B2635] text-[#3D1418] hover:text-[#8B2635] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
+                    className="inline-flex items-center justify-center gap-2 bg-[#FFFFF0] border border-[#DCD0C5] hover:border-[#B84D28] text-[#8C3B1F] hover:text-[#B84D28] text-xs font-bold tracking-[0.2em] uppercase px-8 sm:px-10 py-2.5 sm:py-3 rounded-md transition-all shadow-2xs group"
                   >
                     <span>LOAD MORE</span>
-                    <ChevronDown className="w-4 h-4 text-[#3D1418] group-hover:translate-y-0.5 transition-transform" />
+                    <ChevronDown className="w-4 h-4 text-[#8C3B1F] group-hover:translate-y-0.5 transition-transform" />
                   </button>
                 </div>
               )
@@ -337,7 +337,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
             {/* Left Promotional Text */}
             <div className="flex-1 space-y-1.5 text-center sm:text-left relative z-10">
-              <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl text-[#2A0E11] font-normal leading-tight">
+              <h2 className="font-serif-luxury text-2xl sm:text-3xl lg:text-4xl text-[#6A2B15] font-normal leading-tight">
                 Timeless Elegance, Delivered to You
               </h2>
               <p className="text-xs sm:text-sm text-[#5A4438] font-medium">
@@ -350,7 +350,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
             {/* Right Sakhi Luxury Box Packaging Graphic */}
             <div className="flex-shrink-0 relative z-10">
-              <div className="w-48 sm:w-56 lg:w-64 h-24 sm:h-28 bg-[#F9F5F0] rounded-xl border border-[#E2D4C5] p-3 flex flex-col items-center justify-center text-center shadow-md hover:scale-102 transition-transform">
+              <div className="w-48 sm:w-56 lg:w-64 h-24 sm:h-28 bg-[#F9F5F0] rounded-xl border border-[#E5D9C8] p-3 flex flex-col items-center justify-center text-center shadow-md hover:scale-102 transition-transform">
                 <div className="relative w-28 sm:w-32 h-8 sm:h-10 mb-1">
                   <Image
                     src="/assets/logo.png"
@@ -379,7 +379,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
             
             <div className="flex flex-col items-center p-2 space-y-1">
               <Truck className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 FREE SHIPPING
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Above ₹1499</span>
@@ -387,7 +387,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <Package className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 SECURE PACKAGING
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Safe & Premium</span>
@@ -395,7 +395,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <RefreshCw className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 EASY RETURNS
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Hassle-free</span>
@@ -403,7 +403,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
 
             <div className="flex flex-col items-center p-2 space-y-1">
               <Award className="w-5 h-5 text-[#C59B27]" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#2A0E11]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
                 QUALITY ASSURED
               </span>
               <span className="text-[9.5px] text-[#5A4438]">Premium Sarees</span>
@@ -425,14 +425,14 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
           />
 
           {/* Slide-out Drawer Panel */}
-          <div className="relative w-4/5 max-w-xs bg-[#F7EFE8] h-full shadow-2xl overflow-y-auto p-4 z-10 flex flex-col justify-between animate-in slide-in-from-left duration-300">
+          <div className="relative w-4/5 max-w-xs bg-[#FFFFF0] h-full shadow-2xl overflow-y-auto p-4 z-10 flex flex-col justify-between animate-in slide-in-from-left duration-300">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-[#E5DACD] mb-3">
-                <span className="text-xs font-bold uppercase tracking-widest text-[#3D1418]">FILTERS & SORT</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-[#8C3B1F]">FILTERS & SORT</span>
                 <button
                   type="button"
                   onClick={() => setIsMobileDrawerOpen(false)}
-                  className="p-1 text-[#3D1418] hover:bg-[#3D1418]/10 rounded-md"
+                  className="p-1 text-[#8C3B1F] hover:bg-[#8C3B1F]/10 rounded-md"
                 >
                   <X className="w-5 h-5" />
                 </button>

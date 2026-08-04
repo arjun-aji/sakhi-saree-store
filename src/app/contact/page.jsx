@@ -12,12 +12,12 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7EFE8]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
       {/* Top Announcement Bar */}
       <AnnouncementBar />
 
       {/* Sticky Navbar */}
-      <div className="sticky top-0 z-50 bg-[#F7EFE8]/95 backdrop-blur-md border-b border-[#E2D4C5]/50">
+      <div className="sticky top-0 z-50 bg-[#FFFFF0]/95 backdrop-blur-md border-b border-[#E5D9C8]/50">
         <Navbar />
       </div>
 
@@ -31,7 +31,7 @@ export default function ContactPage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full bg-[#2A0E11] text-[#EFE6DD] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#3D1418]">
+      <footer className="w-full bg-[#6A2B15] text-[#FAF7EC] py-6 px-4 text-center text-xs tracking-wider uppercase border-t border-[#8C3B1F]">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2026 SAKHI BY MAYA'S. ALL RIGHTS RESERVED.</p>
           <p className="text-[11px] opacity-75">TRADITION WOVEN WITH LOVE</p>

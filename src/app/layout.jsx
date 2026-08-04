@@ -73,7 +73,7 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased bg-[#F7EFE8] text-[#2D2625] min-h-screen flex flex-col">
+      <body className="antialiased bg-[#FFFFF0] text-[#2D2625] min-h-screen flex flex-col">
         <CartProvider>
           {children}
         </CartProvider>

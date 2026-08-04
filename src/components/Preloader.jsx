@@ -38,7 +38,7 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-[#2A0E11] flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
+      className={`fixed inset-0 z-[9999] bg-[#6A2B15] flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
         fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
@@ -57,7 +57,7 @@ export default function Preloader() {
         </div>
 
         {/* Gold Progress Line */}
-        <div className="w-40 h-[1.5px] bg-[#F7EFE8]/15 relative overflow-hidden mt-6 rounded-full">
+        <div className="w-40 h-[1.5px] bg-[#FFFFF0]/15 relative overflow-hidden mt-6 rounded-full">
           <div className="absolute top-0 left-0 h-full bg-[#C59B27] w-1/2 rounded-full animate-elegant-load" />
         </div>
 
