@@ -18,7 +18,7 @@ export default function Hero() {
     window.addEventListener('preloader-done', handleDone);
 
     // Fallback: if preloader is already finished (page already loaded), show after tiny delay
-    const fallback = setTimeout(() => setVisible(true), 2700);
+    const fallback = setTimeout(() => setVisible(true), 900);
 
     return () => {
       window.removeEventListener('preloader-done', handleDone);

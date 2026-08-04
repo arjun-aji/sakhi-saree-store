@@ -23,10 +23,10 @@ export default function Preloader() {
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
         window.dispatchEvent(new CustomEvent('preloader-done'));
-      }, 700);
+      }, 300);
 
       return () => clearTimeout(unmountTimer);
-    }, 1800);
+    }, 600);
 
     return () => {
       clearTimeout(timer);
@@ -38,7 +38,7 @@ export default function Preloader() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-[#6A2B15] flex flex-col items-center justify-center transition-all duration-700 ease-in-out ${
+      className={`fixed inset-0 z-[9999] bg-[#6A2B15] flex flex-col items-center justify-center transition-all duration-300 ease-in-out ${
         fadeOut ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
