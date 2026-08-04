@@ -69,7 +69,21 @@ export default function CheckoutPage() {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   }, [cartItems]);
 
-  const discount = subtotal > 0 ? 600 : 0; // Default welcome discount matching cart
+  const [couponCode, setCouponCode] = useState('WELCOME10');
+  const [discount, setDiscount] = useState(0);
+
+  useEffect(() => {
+    const savedCode = localStorage.getItem('sakhi_coupon_code');
+    const savedDiscount = localStorage.getItem('sakhi_coupon_discount');
+    if (savedCode && savedDiscount) {
+      setCouponCode(savedCode);
+      setDiscount(Number(savedDiscount));
+    } else {
+      setDiscount(subtotal > 0 ? 600 : 0);
+      setCouponCode('WELCOME10');
+    }
+  }, [subtotal]);
+
   const finalTotal = Math.max(0, subtotal - discount);
 
   const handleInputChange = (e) => {
@@ -418,7 +432,7 @@ export default function CheckoutPage() {
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-[#8B2635] font-medium">
-                      <span>Discount (WELCOME10)</span>
+                      <span>Discount ({couponCode})</span>
                       <span>- ₹{discount.toLocaleString('en-IN')}</span>
                     </div>
                   )}

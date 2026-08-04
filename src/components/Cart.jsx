@@ -49,6 +49,7 @@ export default function Cart() {
   const [couponSuccess, setCouponSuccess] = useState('WELCOME10 applied (-₹600)');
   const [recommendationIndex, setRecommendationIndex] = useState(0);
   const [addedRecId, setAddedRecId] = useState(null);
+  const [dbCoupons, setDbCoupons] = useState([]);
 
   const handleProceedToCheckout = (e) => {
     e.preventDefault();
@@ -94,7 +95,26 @@ export default function Cart() {
       setProductsList(localProducts);
       setIsLoading(false);
     }
+
+    async function loadCoupons() {
+      try {
+        const res = await fetch('/api/coupons');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.coupons)) {
+          setDbCoupons(data.coupons);
+        }
+      } catch (err) {
+        console.error('Error fetching coupons for cart page:', err);
+      }
+    }
+
     loadProducts();
+    loadCoupons();
+
+    if (!localStorage.getItem('sakhi_coupon_code')) {
+      localStorage.setItem('sakhi_coupon_code', 'WELCOME10');
+      localStorage.setItem('sakhi_coupon_discount', '600');
+    }
   }, []);
 
   /* ── Calculations ── */
@@ -122,14 +142,44 @@ export default function Cart() {
     const code = couponCode.trim().toUpperCase();
     if (!code) return;
 
+    // Check database coupons first
+    const dbCoupon = dbCoupons.find((c) => c.code.toUpperCase() === code && c.active);
+    if (dbCoupon) {
+      const isExpired = new Date(dbCoupon.expiryDate) < new Date();
+      if (isExpired) {
+        setCouponError('This coupon code has expired.');
+        return;
+      }
+
+      let disc = 0;
+      if (dbCoupon.discountType === 'Percentage') {
+        disc = Math.round(subtotal * (dbCoupon.discountValue / 100));
+      } else {
+        disc = dbCoupon.discountValue;
+      }
+
+      setDiscount(disc);
+      setAppliedCoupon(code);
+      localStorage.setItem('sakhi_coupon_code', code);
+      localStorage.setItem('sakhi_coupon_discount', String(disc));
+      setCouponSuccess(`Coupon ${code} applied successfully (-₹${disc.toLocaleString('en-IN')})!`);
+      return;
+    }
+
+    // Static fallback coupons
     if (code === 'WELCOME10' || code === 'SAKHI10') {
       const disc = Math.round(subtotal * 0.1) || 600;
       setDiscount(disc);
       setAppliedCoupon(code);
+      localStorage.setItem('sakhi_coupon_code', code);
+      localStorage.setItem('sakhi_coupon_discount', String(disc));
       setCouponSuccess(`Coupon ${code} applied successfully!`);
     } else if (code === 'SAKHI500') {
-      setDiscount(500);
+      const disc = 500;
+      setDiscount(disc);
       setAppliedCoupon(code);
+      localStorage.setItem('sakhi_coupon_code', code);
+      localStorage.setItem('sakhi_coupon_discount', String(disc));
       setCouponSuccess('Coupon SAKHI500 applied (-₹500)!');
     } else {
       setCouponError('Invalid coupon code. Try WELCOME10 or SAKHI500.');
