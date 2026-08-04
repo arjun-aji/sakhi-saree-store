@@ -181,6 +181,16 @@ export default function Cart() {
     }
   };
 
+  const handleRemoveCoupon = () => {
+    setDiscount(0);
+    setAppliedCoupon('');
+    setCouponCode('');
+    setCouponSuccess('');
+    setCouponError('');
+    localStorage.removeItem('sakhi_coupon_code');
+    localStorage.removeItem('sakhi_coupon_discount');
+  };
+
   /* Filter out products currently in cart for recommendation strip */
   const recommendations = useMemo(() => {
     const currentCartIds = cartItems.map((item) => item.id);
@@ -532,35 +542,45 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  {/* Coupon Input Form */}
-                  <form onSubmit={handleApplyCoupon} className="space-y-1.5 pt-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        placeholder="Enter coupon code"
-                        className="flex-1 bg-[#F7EFE8] border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] placeholder-[#8A786D] focus:outline-none focus:border-[#3D1418]"
-                      />
+                  {/* Coupon UI (Only allow one coupon at a time) */}
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between bg-[#EFE6DD]/70 border border-[#E2D4C5]/80 rounded-md px-3 py-2 text-xs text-[#2A0E11] mt-2">
+                      <div className="flex flex-col gap-0.5">
+                        <span className="font-bold text-[#8B2635]">Coupon {appliedCoupon} active</span>
+                        {couponSuccess && <span className="text-[10.5px] text-[#1E5631] font-medium">{couponSuccess}</span>}
+                      </div>
                       <button
-                        type="submit"
-                        className="bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md transition-colors"
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-[10px] font-bold text-[#8B2635] hover:text-[#3D1418] uppercase tracking-wider underline cursor-pointer"
                       >
-                        APPLY
+                        Remove
                       </button>
                     </div>
-
-                    {couponSuccess && (
-                      <p className="text-[11px] text-[#1E5631] font-medium pt-0.5">
-                        ✓ {couponSuccess}
-                      </p>
-                    )}
-                    {couponError && (
-                      <p className="text-[11px] text-[#8B2635] font-medium pt-0.5">
-                        {couponError}
-                      </p>
-                    )}
-                  </form>
+                  ) : (
+                    <form onSubmit={handleApplyCoupon} className="space-y-1.5 pt-1">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={couponCode}
+                          onChange={(e) => setCouponCode(e.target.value)}
+                          placeholder="Enter coupon code"
+                          className="flex-1 bg-[#F7EFE8] border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#2A0E11] placeholder-[#8A786D] focus:outline-none focus:border-[#3D1418]"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-[#2A0E11] hover:bg-[#3D1418] text-[#F7EFE8] text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md transition-colors"
+                        >
+                          APPLY
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-[11px] text-[#8B2635] font-medium pt-0.5">
+                          {couponError}
+                        </p>
+                      )}
+                    </form>
+                  )}
 
                   {/* Trust Badges */}
                   <div className="pt-3 border-t border-[#E5DACD]/80 grid grid-cols-3 gap-1 text-center divide-x divide-[#E5DACD]/60 items-center">
