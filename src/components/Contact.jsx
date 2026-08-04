@@ -226,10 +226,10 @@ export default function Contact() {
                                         Phone
                                     </h4>
                                     <a
-                                        href="tel:+918086123456"
+                                        href="tel:+919746598789"
                                         className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#8B2635] transition-colors"
                                     >
-                                        +91 8086 123 456
+                                        +91 97465 98789
                                     </a>
                                 </div>
                             </div>
@@ -324,7 +324,7 @@ export default function Contact() {
                                         </a>
                                         {/* WhatsApp */}
                                         <a
-                                            href="https://wa.me/918086123456"
+                                            href="https://wa.me/919746598789"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             aria-label="WhatsApp"
