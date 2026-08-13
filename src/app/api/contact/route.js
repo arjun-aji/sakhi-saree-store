@@ -9,9 +9,9 @@ export async function POST(request) {
     const data = await request.json();
     const { name, email, phone, subject, message } = data;
 
-    // Log the contact message destined for jajithks01@gmail.com
-    console.log('--- NEW CONTACT FORM SUBMISSION FOR jajithks01@gmail.com ---');
-    console.log('Recipient:', 'jajithks01@gmail.com');
+    // Log the contact message destined for sakhibymayas@gmail.com
+    console.log('--- NEW CONTACT FORM SUBMISSION FOR sakhibymayas@gmail.com ---');
+    console.log('Recipient:', 'sakhibymayas@gmail.com');
     console.log('From Name:', name);
     console.log('From Email:', email);
     console.log('Phone:', phone);
@@ -36,7 +36,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       message: 'Contact message received and saved successfully',
-      recipient: 'jajithks01@gmail.com',
+      recipient: 'sakhibymayas@gmail.com',
       id: newContact._id
     });
   } catch (error) {

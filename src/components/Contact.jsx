@@ -101,7 +101,7 @@ export default function Contact() {
             const mailtoBody = encodeURIComponent(
                 `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'N/A'}\n\nMessage:\n${formData.message}`
             );
-            const mailtoUrl = `mailto:jajithks01@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+            const mailtoUrl = `mailto:sakhibymayas@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
 
             window.location.href = mailtoUrl;
         } catch (err) {
@@ -244,10 +244,10 @@ export default function Contact() {
                                         Email
                                     </h4>
                                     <a
-                                        href="mailto:jajithks01@gmail.com"
+                                        href="mailto:sakhibymayas@gmail.com"
                                         className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#B84D28] transition-colors font-medium"
                                     >
-                                        jajithks01@gmail.com
+                                        sakhibymayas@gmail.com
                                     </a>
                                 </div>
                             </div>
@@ -357,7 +357,7 @@ export default function Contact() {
                                         </div>
                                         <h3 className="font-serif-luxury text-xl sm:text-2xl">Thank You!</h3>
                                         <p className="text-[11px] sm:text-xs text-[#FAF7EC]">
-                                            Your message has been received and opening in your mail app for <span className="text-[#C59B27] font-semibold">jajithks01@gmail.com</span>. We will get back to you shortly!
+                                            Your message has been received and opening in your mail app for <span className="text-[#C59B27] font-semibold">sakhibymayas@gmail.com</span>. We will get back to you shortly!
                                         </p>
                                     </div>
                                 ) : (
