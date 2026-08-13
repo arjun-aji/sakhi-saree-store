@@ -1085,14 +1085,44 @@ export default function AdminDashboard() {
 
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Color Shade</label>
-                              <input 
-                                type="text"
-                                placeholder="e.g. Rose Gold"
-                                value={productForm.color}
-                                onChange={(e) => setProductForm(prev => ({ ...prev, color: e.target.value }))}
-                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
-                              />
+                              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Color Shades (Select multiple)</label>
+                              <div className="w-full p-2.5 rounded border border-[#E5D9C8] text-sm bg-white max-h-[150px] overflow-y-auto space-y-2">
+                                {filterConfig.colors.length === 0 ? (
+                                  <span className="text-xs text-[#8C7A6B]">No colors configured. Add them in Filter Settings.</span>
+                                ) : (
+                                  filterConfig.colors.map((c) => {
+                                    const isChecked = productForm.color
+                                      ? productForm.color.toLowerCase().split(',').map(item => item.trim()).includes(c.name.toLowerCase())
+                                      : false;
+                                    return (
+                                      <label key={c.name} className="flex items-center gap-2.5 text-sm text-[#4A3B32] cursor-pointer hover:bg-[#FAF7EC] p-1 rounded transition-colors">
+                                        <input
+                                          type="checkbox"
+                                          checked={isChecked}
+                                          onChange={(e) => {
+                                            const currentColors = productForm.color
+                                              ? productForm.color.split(',').map(item => item.trim()).filter(Boolean)
+                                              : [];
+                                            let updatedColors;
+                                            if (e.target.checked) {
+                                              updatedColors = [...currentColors, c.name];
+                                            } else {
+                                              updatedColors = currentColors.filter(colorName => colorName.toLowerCase() !== c.name.toLowerCase());
+                                            }
+                                            setProductForm(prev => ({ ...prev, color: updatedColors.join(',') }));
+                                          }}
+                                          className="rounded border-[#E5D9C8] text-[#8C3B1F] focus:ring-[#8C3B1F] w-4 h-4 cursor-pointer"
+                                        />
+                                        <span
+                                          className="w-3.5 h-3.5 rounded-full border border-gray-350 inline-block shadow-inner"
+                                          style={{ backgroundColor: c.hex }}
+                                        />
+                                        <span>{c.name}</span>
+                                      </label>
+                                    );
+                                  })
+                                )}
+                              </div>
                             </div>
                             <div>
                               <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Initial Stock *</label>

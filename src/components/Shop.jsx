@@ -115,7 +115,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
     }
 
     if (selectedColor !== 'All') {
-      result = result.filter((p) => p.color && p.color.toLowerCase() === selectedColor.toLowerCase());
+      result = result.filter((p) => p.color && p.color.toLowerCase().split(',').map(c => c.trim()).includes(selectedColor.toLowerCase()));
     }
 
     if (selectedPrice < 8999) {
