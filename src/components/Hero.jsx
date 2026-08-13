@@ -7,8 +7,22 @@ import { ArrowRight } from 'lucide-react';
 import NewArrivalsPreview from './NewArrivalsPreview';
 import FeatureBar from './FeatureBar';
 
+const slides = [
+  {
+    desktop: "/assets/desktop/herodesk.jpeg",
+    mobile: "/assets/mobile/heromob.jpeg",
+    alt: "Classic Heritage Collection"
+  },
+  {
+    desktop: "/assets/desktop/herodesk.png",
+    mobile: "/assets/mobile/heromob.png",
+    alt: "New Luxury Handloom Collection"
+  }
+];
+
 export default function Hero() {
   const [visible, setVisible] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     // If preloader already done (e.g. hot reload / subsequent visits), show immediately
@@ -26,6 +40,13 @@ export default function Hero() {
     };
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className={`relative w-full bg-[#FFFFF0] overflow-hidden transition-opacity duration-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
 
@@ -34,17 +55,26 @@ export default function Hero() {
       {/* ========================================================= */}
       <div className="block md:hidden relative w-full min-h-[calc(100vh-56px)] flex flex-col justify-between pb-6 pt-8 px-4">
 
-        {/* Mobile Full Background Image */}
+        {/* Mobile Full Background Image Slideshow */}
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/assets/mobile/heromob.jpeg"
-            alt="Sakhi Mobile Background"
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="100vw"
-            quality={95}
-          />
+          {slides.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                idx === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <Image
+                src={slide.mobile}
+                alt={slide.alt}
+                fill
+                priority={idx === 0}
+                className="object-cover object-center"
+                sizes="100vw"
+                quality={95}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Mobile Content Layer — animated in after preloader */}
@@ -126,17 +156,26 @@ export default function Hero() {
       {/* DESKTOP HERO VIEW                                         */}
       {/* ========================================================= */}
       <div className="hidden md:block relative w-full min-h-screen">
-        {/* Desktop Full Background Image */}
+        {/* Desktop Full Background Image Slideshow */}
         <div className="absolute inset-0 z-0">
-          <Image
-            src="/assets/desktop/herodesk.jpeg"
-            alt="Sakhi By Maya's Desktop Hero"
-            fill
-            priority
-            className="object-cover object-center"
-            sizes="100vw"
-            quality={95}
-          />
+          {slides.map((slide, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                idx === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <Image
+                src={slide.desktop}
+                alt={slide.alt}
+                fill
+                priority={idx === 0}
+                className="object-cover object-center"
+                sizes="100vw"
+                quality={95}
+              />
+            </div>
+          ))}
         </div>
 
         {/* Desktop Content Overlay */}
@@ -215,6 +254,20 @@ export default function Hero() {
           </div>
 
         </div>
+      </div>
+
+      {/* Slide Indicators */}
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+        {slides.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentSlide(idx)}
+            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              idx === currentSlide ? 'bg-[#8C3B1F] w-6' : 'bg-[#8C3B1F]/30 hover:bg-[#8C3B1F]/60'
+            }`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
       </div>
 
     </section>

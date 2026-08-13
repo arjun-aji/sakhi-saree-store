@@ -7,7 +7,6 @@ import AnnouncementBar from '@/components/AnnouncementBar';
 import ProductCard from '@/components/ProductCard';
 import { useCart } from '@/context/CartContext';
 import { Heart, ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
-import { products as localProducts } from '@/data/products';
 
 export default function WishlistPage() {
   const { wishlistItems } = useCart();
@@ -26,16 +25,15 @@ export default function WishlistPage() {
             id: p._id,
           }));
           setProductsList(normalized);
-          setIsLoading(false);
-          return;
+        } else {
+          setProductsList([]);
         }
       } catch (err) {
-        console.error('Error fetching products, falling back to local:', err);
+        console.error('Error fetching products:', err);
+        setProductsList([]);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Fallback
-      setProductsList(localProducts.map(p => ({ ...p, id: p.id || p._id })));
-      setIsLoading(false);
     }
     loadProducts();
   }, []);

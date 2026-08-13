@@ -30,6 +30,10 @@ const nextConfig = {
         destination: '/api/admin/seed',
       },
       {
+        source: '/api/admin/clear',
+        destination: '/api/admin/clear',
+      },
+      {
         source: '/api/upload',
         destination: '/api/upload',
       },

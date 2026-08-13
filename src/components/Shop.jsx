@@ -8,7 +8,6 @@ import { ChevronDown, RotateCcw, X, ShieldCheck, Heart, Sparkles, Truck, Package
 import ProductCard from '@/components/ProductCard';
 import ShopFilters from '@/components/ShopFilters';
 import ShopSidebarFilters from '@/components/ShopSidebarFilters';
-import { products as localProducts } from '@/data/products';
 
 /* ── Delicate Floral Branch Vector Artwork for Hero ── */
 function FloralArtworkLeft() {
@@ -75,16 +74,15 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
             id: p._id,
           }));
           setProductsList(normalized);
-          setIsLoading(false);
-          return;
+        } else {
+          setProductsList([]);
         }
       } catch (err) {
-        console.error('Error fetching products from database, falling back to local data:', err);
+        console.error('Error fetching products from database:', err);
+        setProductsList([]);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Fallback to static products
-      setProductsList(localProducts);
-      setIsLoading(false);
     }
     loadProducts();
   }, []);

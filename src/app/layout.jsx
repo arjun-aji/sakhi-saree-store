@@ -25,7 +25,7 @@ export const metadata = {
     siteName: "Sakhi by Maya's",
     images: [
       {
-        url: '/assets/desktop/herodesk.jpeg',
+        url: '/assets/desktop/herodesk.png',
         width: 1200,
         height: 630,
         alt: "Sakhi by Maya's Sarees",
@@ -38,7 +38,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "Sakhi by Maya's | Premium Sarees",
     description: "Buy premium Kerala sarees with worldwide shipping.",
-    images: ['/assets/desktop/herodesk.jpeg'],
+    images: ['/assets/desktop/herodesk.png'],
   },
   robots: {
     index: true,
@@ -60,7 +60,7 @@ export default function RootLayout({ children }) {
     '@type': 'Organization',
     name: "Sakhi by Maya's",
     url: 'https://sakhibymayas.com',
-    logo: 'https://sakhibymayas.com/assets/desktop/herodesk.jpeg',
+    logo: 'https://sakhibymayas.com/assets/desktop/herodesk.png',
     description: 'Premium Kerala Sarees and Ethnic Wear',
     sameAs: [],
   };

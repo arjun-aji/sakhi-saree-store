@@ -90,7 +90,7 @@ export default function About() {
               </p>
 
               <p className="text-[10px] sm:text-sm lg:text-base text-[#5A4438] leading-relaxed sm:leading-[1.85] font-normal max-w-lg">
-                At Sakhi By Maya&apos;s, we celebrate the timeless beauty of handcrafted sarees. Each piece is a tribute to India&apos;s rich heritage, woven with love, care, and a promise of unmatched quality.
+                At Sakhi By Maya&apos;s, we curate and source the finest handcrafted sarees directly from master weavers. Each piece is a tribute to India&apos;s rich heritage, handpicked with love, care, and a promise of unmatched quality.
               </p>
             </div>
 

@@ -8,18 +8,71 @@ import Blog from '@/models/Blog';
 import FAQ from '@/models/FAQ';
 import FilterConfig from '@/models/FilterConfig';
 import Customer from '@/models/Customer';
-import { products } from '@/data/products';
 
 export const dynamic = 'force-dynamic';
+
+const SAMPLE_PRODUCTS = [
+  {
+    name: "Rose Gold Banarasi Silk Saree",
+    image: "/assets/about/story_tradition.jpg",
+    price: 2799,
+    originalPrice: 3599,
+    badge: "NEW",
+    isNew: true,
+    isBestSeller: false,
+    category: "Banarasi",
+    fabric: "Silk",
+    color: "Pink",
+    slug: "rose-gold-banarasi-silk-saree",
+  },
+  {
+    name: "Emerald Green Kanjivaram Saree",
+    image: "/assets/about/story_crafted.jpg",
+    price: 2999,
+    originalPrice: 3899,
+    badge: "BESTSELLER",
+    isNew: false,
+    isBestSeller: true,
+    category: "Kanjivaram",
+    fabric: "Silk",
+    color: "Green",
+    slug: "emerald-green-kanjivaram-saree",
+  },
+  {
+    name: "Classic Kerala Gold Kasavu Saree",
+    image: "/assets/about/hero_stack.jpg",
+    price: 1999,
+    originalPrice: 2499,
+    badge: "NEW",
+    isNew: true,
+    isBestSeller: false,
+    category: "Kerala Kasavu",
+    fabric: "Cotton Silk",
+    color: "Cream & Gold",
+    slug: "classic-kerala-gold-kasavu-saree",
+  },
+  {
+    name: "Royal Purple Tussar Silk Saree",
+    image: "/assets/about/story_madeforyou.jpg",
+    price: 2499,
+    originalPrice: 3199,
+    badge: "",
+    isNew: false,
+    isBestSeller: false,
+    category: "Tussar Silk",
+    fabric: "Tussar Silk",
+    color: "Purple",
+    slug: "royal-purple-tussar-silk-saree",
+  }
+];
 
 export async function POST() {
   try {
     await connectDB();
 
     // 1. Seed Products if empty or force-refresh
-    // We will clear existing products to have a fresh state aligned with data/products.js
     await Product.deleteMany({});
-    const formattedProducts = products.map(p => ({
+    const formattedProducts = SAMPLE_PRODUCTS.map(p => ({
       name: p.name,
       image: p.image,
       price: p.price,

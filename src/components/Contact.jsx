@@ -442,16 +442,6 @@ export default function Contact() {
 
                             </div>
 
-                            {/* Decorative Flowers & Brass Urli Vessel Image Accent matching reference 100% */}
-                            <div className="hidden xl:block absolute -right-24 bottom-0 w-44 h-64 pointer-events-none opacity-90 z-0">
-                                <Image
-                                    src="/assets/about/contact_flowers.jpg"
-                                    alt="Traditional Brass Vessel with Pink Flowers"
-                                    fill
-                                    className="object-contain object-bottom mix-blend-multiply opacity-90"
-                                />
-                            </div>
-
                         </div>
 
                     </div>

@@ -187,6 +187,22 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
+app.delete('/api/products', async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'Missing product ID' });
+    }
+    const deleted = await Product.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Product not found' });
+    }
+    res.json({ success: true, message: 'Product deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Filter Config Endpoint
 app.get('/api/filter-config', async (req, res) => {
   try {
@@ -310,6 +326,126 @@ app.post('/api/reviews', async (req, res) => {
   try {
     const newReview = await Review.create(req.body);
     res.status(201).json({ success: true, review: newReview });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Reviews PUT
+app.put('/api/reviews', async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    if (!id || !status) {
+      return res.status(400).json({ success: false, error: 'Missing review ID or status' });
+    }
+    const updated = await Review.findByIdAndUpdate(id, { status }, { new: true });
+    res.json({ success: true, review: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Blogs POST & DELETE
+app.post('/api/blogs', async (req, res) => {
+  try {
+    const { _id, title, content, image, author, date, slug } = req.body;
+    if (!title || !content || !image) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+    const finalSlug = slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    if (_id) {
+      const updated = await Blog.findByIdAndUpdate(
+        _id,
+        { title, content, image, author, date, slug: finalSlug },
+        { new: true }
+      );
+      return res.json({ success: true, blog: updated });
+    } else {
+      const created = await Blog.create({
+        title, content, image, author: author || 'Admin', date: date || new Date().toLocaleDateString(), slug: finalSlug
+      });
+      return res.status(201).json({ success: true, blog: created });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/blogs', async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) return res.status(400).json({ success: false, error: 'Missing blog ID' });
+    await Blog.findByIdAndDelete(id);
+    res.json({ success: true, message: 'Blog deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// FAQs POST & DELETE
+app.post('/api/faqs', async (req, res) => {
+  try {
+    const { _id, question, answer, category } = req.body;
+    if (!question || !answer) {
+      return res.status(400).json({ success: false, error: 'Missing question or answer' });
+    }
+    if (_id) {
+      const updated = await FAQ.findByIdAndUpdate(_id, { question, answer, category }, { new: true });
+      return res.json({ success: true, faq: updated });
+    } else {
+      const created = await FAQ.create({ question, answer, category: category || 'General' });
+      return res.status(201).json({ success: true, faq: created });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/faqs', async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) return res.status(400).json({ success: false, error: 'Missing FAQ ID' });
+    await FAQ.findByIdAndDelete(id);
+    res.json({ success: true, message: 'FAQ deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Contact Messages DELETE
+app.delete('/api/contact-messages', async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) return res.status(400).json({ success: false, error: 'Missing message ID' });
+    await ContactMessage.findByIdAndDelete(id);
+    res.json({ success: true, message: 'Message deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/clear', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    if (!db) {
+      return res.status(500).json({ success: false, error: 'Database connection not initialized' });
+    }
+    const collections = ['products', 'orders', 'reviews', 'coupons', 'blogs', 'faqs', 'filterconfigs', 'customers', 'contacts', 'contactmessages'];
+    const results = {};
+    for (const name of collections) {
+      try {
+        const col = db.collection(name);
+        const delRes = await col.deleteMany({});
+        results[name] = delRes.deletedCount;
+      } catch (err) {
+        results[name] = 0;
+      }
+    }
+    res.json({
+      success: true,
+      message: 'All dummy and store data cleared successfully from the database',
+      details: results
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

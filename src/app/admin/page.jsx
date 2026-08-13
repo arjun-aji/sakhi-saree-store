@@ -53,6 +53,7 @@ export default function AdminDashboard() {
   // UI & Loading States
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
+  const [clearing, setClearing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [notification, setNotification] = useState(null);
@@ -166,6 +167,28 @@ export default function AdminDashboard() {
       showNotification('Error triggering database seeder', 'error');
     } finally {
       setSeeding(false);
+    }
+  };
+
+  // Clear DB handler
+  const handleClearDatabase = async () => {
+    if (!window.confirm('Are you sure you want to clear all dummy and store data from the database? This action is irreversible.')) {
+      return;
+    }
+    setClearing(true);
+    try {
+      const res = await fetch('/api/admin/clear', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Database cleared successfully! All dummy data has been removed.');
+        await fetchData();
+      } else {
+        showNotification(data.error || 'Failed to clear database', 'error');
+      }
+    } catch (error) {
+      showNotification('Error triggering database clearing', 'error');
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -524,17 +547,29 @@ export default function AdminDashboard() {
               })}
             </nav>
 
-            <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
-              <span>Ver: 1.2.0</span>
+            <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex flex-col gap-2 text-[#BCAFA1]">
+              <div className="flex items-center justify-between">
+                <span>Ver: 1.2.0</span>
+                <button 
+                  onClick={() => {
+                    setIsMobileSidebarOpen(false);
+                    handleSeedDatabase();
+                  }}
+                  disabled={seeding || clearing}
+                  className="px-3 py-1 rounded bg-[#9E2A2B] text-white hover:bg-[#BF3E40] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider"
+                >
+                  {seeding ? 'Seeding...' : 'Seed Data'}
+                </button>
+              </div>
               <button 
                 onClick={() => {
                   setIsMobileSidebarOpen(false);
-                  handleSeedDatabase();
+                  handleClearDatabase();
                 }}
-                disabled={seeding}
-                className="px-3 py-1 rounded bg-[#9E2A2B] text-white hover:bg-[#BF3E40] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider"
+                disabled={seeding || clearing}
+                className="w-full px-3 py-1.5 rounded bg-[#4E3F3B] text-white hover:bg-[#63514C] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider text-center"
               >
-                {seeding ? 'Seeding...' : 'Seed Data'}
+                {clearing ? 'Clearing...' : 'Clear All Dummy Data'}
               </button>
             </div>
           </aside>
@@ -596,14 +631,23 @@ export default function AdminDashboard() {
         </nav>
 
         {/* Admin Meta */}
-        <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex items-center justify-between text-[#BCAFA1]">
-          <span>Ver: 1.2.0</span>
+        <div className="p-4 border-t border-[#8C3B1F] bg-[#1F0A0C] text-xs flex flex-col gap-2 text-[#BCAFA1]">
+          <div className="flex items-center justify-between">
+            <span>Ver: 1.2.0</span>
+            <button 
+              onClick={handleSeedDatabase}
+              disabled={seeding || clearing}
+              className="px-3 py-1 rounded bg-[#9E2A2B] text-white hover:bg-[#BF3E40] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider"
+            >
+              {seeding ? 'Seeding...' : 'Seed Data'}
+            </button>
+          </div>
           <button 
-            onClick={handleSeedDatabase}
-            disabled={seeding}
-            className="px-3 py-1 rounded bg-[#9E2A2B] text-white hover:bg-[#BF3E40] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider"
+            onClick={handleClearDatabase}
+            disabled={seeding || clearing}
+            className="w-full px-3 py-1.5 rounded bg-[#4E3F3B] text-white hover:bg-[#63514C] transition disabled:opacity-50 text-[10px] font-bold uppercase tracking-wider text-center"
           >
-            {seeding ? 'Seeding...' : 'Seed Data'}
+            {clearing ? 'Clearing...' : 'Clear All Dummy Data'}
           </button>
         </div>
       </aside>
@@ -1859,7 +1903,7 @@ export default function AdminDashboard() {
                       
                       <div className="space-y-4">
                         <div className="border border-[#E5D9C8] rounded-lg p-4 flex gap-4 bg-[#FAF7F2]/35">
-                          <img src="/assets/desktop/herodesk.jpeg" alt="Hero Banner" className="w-32 h-20 object-cover rounded border" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
+                          <img src="/assets/desktop/herodesk.png" alt="Hero Banner" className="w-32 h-20 object-cover rounded border" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
                           <div className="flex-1 space-y-2">
                             <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-800">Desktop Banner 1</span>
                             <h4 className="font-serif font-bold text-sm text-[#6A2B15]">Bridal Kasavu Silk Collection</h4>

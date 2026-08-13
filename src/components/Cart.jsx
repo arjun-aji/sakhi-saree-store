@@ -21,7 +21,6 @@ import {
   ShoppingCart,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
-import { products as localProducts } from '@/data/products';
 
 /* ── Delicate Floral Branch Vector Artwork for Cart Hero ── */
 function FloralArtworkRight() {
@@ -84,16 +83,15 @@ export default function Cart() {
             id: p._id,
           }));
           setProductsList(normalized);
-          setIsLoading(false);
-          return;
+        } else {
+          setProductsList([]);
         }
       } catch (err) {
-        console.error('Error fetching products for cart page, falling back to local data:', err);
+        console.error('Error fetching products for cart page:', err);
+        setProductsList([]);
+      } finally {
+        setIsLoading(false);
       }
-
-      // Fallback to static products
-      setProductsList(localProducts);
-      setIsLoading(false);
     }
 
     async function loadCoupons() {
