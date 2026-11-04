@@ -2,6 +2,15 @@
 const nextConfig = {
   reactStrictMode: true,
   cleanDistDir: true,
+  serverExternalPackages: ['mongoose', 'cloudinary'],
+  modularizeImports: {
+    'lucide-react': {
+      transform: 'lucide-react/dist/esm/icons/{{kebabCase member}}',
+    },
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
   onDemandEntries: {
     // Keep dev pages in memory longer to prevent 404 chunk errors on fast refresh
     maxInactiveAge: 60 * 1000,
@@ -22,26 +31,11 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+      return [];
+    }
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL;
     return [
-      // Admin Utility endpoints handled natively by Vercel serverless functions
-      {
-        source: '/api/admin/seed',
-        destination: '/api/admin/seed',
-      },
-      {
-        source: '/api/admin/clear',
-        destination: '/api/admin/clear',
-      },
-      {
-        source: '/api/upload',
-        destination: '/api/upload',
-      },
-      {
-        source: '/api/coupons',
-        destination: '/api/coupons',
-      },
-      // Backend core routes proxied to the Render Express backend
       {
         source: '/api/:path*',
         destination: `${backendUrl}/api/:path*`,

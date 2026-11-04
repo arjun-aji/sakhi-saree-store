@@ -28,7 +28,15 @@ import {
   Percent,
   PercentSquare,
   Menu,
-  SlidersHorizontal
+  SlidersHorizontal,
+  MapPin,
+  Phone,
+  CreditCard,
+  Truck,
+  Copy,
+  CheckCircle2,
+  ExternalLink,
+  Gift
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -61,6 +69,14 @@ export default function AdminDashboard() {
   
   // Selected items for view/edit modals
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+  const [trackingForm, setTrackingForm] = useState({
+    courierPartner: '',
+    trackingId: '',
+    trackingUrl: '',
+    status: 'Shipped'
+  });
+  const [savingTracking, setSavingTracking] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [editingBlog, setEditingBlog] = useState(null);
@@ -71,14 +87,34 @@ export default function AdminDashboard() {
     name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: ''
   });
   const [couponForm, setCouponForm] = useState({
-    code: '', discountType: 'Percentage', discountValue: '', expiryDate: '', active: true
+    code: '',
+    discountType: 'Percentage',
+    discountValue: 30,
+    minOrderAmount: 1499,
+    maxDiscount: '',
+    expiryDate: '',
+    targetType: 'all',
+    minCustomerSpent: 5000,
+    assignedTo: '',
+    description: '',
+    active: true
   });
+  const [showCouponModal, setShowCouponModal] = useState(false);
+  const [savingCoupon, setSavingCoupon] = useState(false);
   const [blogForm, setBlogForm] = useState({
     title: '', summary: '', content: '', image: '', author: 'Admin'
   });
   const [faqForm, setFaqForm] = useState({
     question: '', answer: '', category: 'General'
   });
+  const [shippingRates, setShippingRates] = useState({
+    keralaLocal: 49,
+    panIndiaStandard: 49,
+    international: 1500,
+    freeShippingThreshold: 0,
+    enableFreeShipping: false
+  });
+  const [savingShippingRates, setSavingShippingRates] = useState(false);
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -139,6 +175,13 @@ export default function AdminDashboard() {
           colors: filterData.colors || []
         });
       }
+
+      // Fetch Shipping Settings
+      const settingsRes = await fetch('/api/settings');
+      const settingsData = await settingsRes.json();
+      if (settingsData.success && settingsData.settings?.shippingRates) {
+        setShippingRates(settingsData.settings.shippingRates);
+      }
     } catch (error) {
       console.error('Error fetching admin dashboard data:', error);
       showNotification('Failed to fetch store data. Please try again.', 'error');
@@ -147,9 +190,45 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSaveShippingRates = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSavingShippingRates(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shippingRates })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Shipping rates updated successfully!');
+        if (data.settings?.shippingRates) {
+          setShippingRates(data.settings.shippingRates);
+        }
+      } else {
+        showNotification(data.error || 'Failed to update shipping rates', 'error');
+      }
+    } catch (err) {
+      showNotification('Failed to update shipping rates', 'error');
+    } finally {
+      setSavingShippingRates(false);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (selectedOrder) {
+      setTrackingForm({
+        courierPartner: selectedOrder.courierPartner || '',
+        trackingId: selectedOrder.trackingId || '',
+        trackingUrl: selectedOrder.trackingUrl || '',
+        status: selectedOrder.status || 'Processing'
+      });
+    }
+  }, [selectedOrder]);
 
   // Seed DB handler
   const handleSeedDatabase = async () => {
@@ -284,9 +363,42 @@ export default function AdminDashboard() {
           setSelectedOrder(data.order);
         }
         fetchData();
+
+        // If changed to Shipped and tracking ID is not yet entered, prompt admin to enter tracking
+        if (status === 'Shipped' && (!data.order.trackingId || !data.order.trackingUrl)) {
+          setSelectedOrder(data.order);
+          showNotification('Order marked as Shipped. Please add shipment tracking details.', 'warning');
+        }
+      } else {
+        showNotification(data.error || 'Failed to update order status', 'error');
       }
     } catch (err) {
       showNotification('Failed to update order status', 'error');
+    }
+  };
+
+  const updateOrderTracking = async (id, trackingData) => {
+    try {
+      setSavingTracking(true);
+      const res = await fetch('/api/orders', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ...trackingData })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Shipment tracking details saved successfully!');
+        if (selectedOrder && selectedOrder._id === id) {
+          setSelectedOrder(data.order);
+        }
+        fetchData();
+      } else {
+        showNotification(data.error || 'Failed to save tracking details', 'error');
+      }
+    } catch (err) {
+      showNotification('Failed to save tracking details', 'error');
+    } finally {
+      setSavingTracking(false);
     }
   };
 
@@ -323,10 +435,49 @@ export default function AdminDashboard() {
     }
   };
 
+  const openCouponModal = (targetCustomer = null, defaultTargetType = 'all') => {
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 30);
+    const dateStr = defaultDate.toISOString().split('T')[0];
+
+    if (targetCustomer) {
+      const firstName = (targetCustomer.name || 'VIP').trim().split(' ')[0].toUpperCase();
+      setCouponForm({
+        code: `SAKHI-${firstName}-${Math.floor(100 + Math.random() * 900)}`,
+        discountType: 'Percentage',
+        discountValue: 30,
+        minOrderAmount: 1499,
+        maxDiscount: 500,
+        expiryDate: dateStr,
+        targetType: 'specific',
+        minCustomerSpent: 0,
+        assignedTo: targetCustomer.email,
+        description: `Exclusive 30% OFF gift for ${targetCustomer.name} on orders above ₹1,499`,
+        active: true
+      });
+    } else {
+      setCouponForm({
+        code: `SAKHI-SEASON-${Math.floor(100 + Math.random() * 900)}`,
+        discountType: 'Percentage',
+        discountValue: 30,
+        minOrderAmount: 1499,
+        maxDiscount: 500,
+        expiryDate: dateStr,
+        targetType: defaultTargetType,
+        minCustomerSpent: 5000,
+        assignedTo: '',
+        description: 'Seasonal promotion: 30% OFF on orders above ₹1,499 (Single-use per customer)',
+        active: true
+      });
+    }
+    setShowCouponModal(true);
+  };
+
   // Coupon CRUD
   const saveCoupon = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     try {
+      setSavingCoupon(true);
       const body = editingCoupon ? { ...couponForm, _id: editingCoupon._id } : couponForm;
       const res = await fetch('/api/coupons', {
         method: 'POST',
@@ -335,14 +486,31 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (data.success) {
-        showNotification('Coupon saved successfully');
+        showNotification(editingCoupon ? 'Coupon updated successfully' : `Coupon '${couponForm.code}' created successfully!`);
         setEditingCoupon(null);
-        setCouponForm({ code: '', discountType: 'Percentage', discountValue: '', expiryDate: '', active: true });
+        setShowCouponModal(false);
+        setCouponForm({
+          code: '',
+          discountType: 'Percentage',
+          discountValue: 30,
+          minOrderAmount: 1499,
+          maxDiscount: '',
+          expiryDate: '',
+          targetType: 'all',
+          minCustomerSpent: 5000,
+          assignedTo: '',
+          description: '',
+          active: true
+        });
         setSubTab('');
         fetchData();
+      } else {
+        showNotification(data.error || 'Failed to save coupon', 'error');
       }
     } catch (err) {
       showNotification('Failed to save coupon', 'error');
+    } finally {
+      setSavingCoupon(false);
     }
   };
 
@@ -1529,7 +1697,19 @@ export default function AdminDashboard() {
                         <tbody>
                           {orders.map((o) => (
                             <tr key={o._id} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/20 transition">
-                              <td className="p-4 font-bold text-[#6A2B15]">{o.orderNumber}</td>
+                              <td className="p-4">
+                                <div className="font-bold text-[#6A2B15]">{o.orderNumber}</div>
+                                {o.trackingId ? (
+                                  <div className="flex items-center gap-1 text-[11px] font-mono text-purple-700 font-semibold mt-0.5" title={`Courier: ${o.courierPartner || 'Courier'} | AWB: ${o.trackingId}`}>
+                                    <Truck className="w-3 h-3 shrink-0" />
+                                    <span className="truncate max-w-[120px]">{o.trackingId}</span>
+                                  </div>
+                                ) : o.status === 'Shipped' ? (
+                                  <div className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded inline-flex items-center gap-1 mt-0.5 font-medium">
+                                    <span>⚠️ Missing tracking</span>
+                                  </div>
+                                ) : null}
+                              </td>
                               <td className="p-4 text-[#6A2B15] font-semibold">{o.customerName}</td>
                               <td className="p-4 text-[#8C7A6B]">{o.customerEmail}</td>
                               <td className="p-4">{o.items.length} Saree(s)</td>
@@ -1557,8 +1737,8 @@ export default function AdminDashboard() {
                                 <div className="flex items-center justify-center">
                                   <button 
                                     onClick={() => setSelectedOrder(o)}
-                                    className="p-1.5 text-[#9E2A2B] hover:bg-[#FAF7F2] rounded transition flex items-center gap-1 text-xs font-bold"
-                                    title="View Details"
+                                    className="p-1.5 text-[#9E2A2B] hover:bg-[#FAF7F2] rounded transition flex items-center gap-1 text-xs font-bold cursor-pointer"
+                                    title="View Details & Tracking"
                                   >
                                     <Eye className="w-4 h-4" /> View Details
                                   </button>
@@ -1623,57 +1803,343 @@ export default function AdminDashboard() {
                     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
                       <div className="bg-white rounded-xl shadow-2xl border border-[#E5D9C8] w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
                         <button 
-                          onClick={() => setSelectedOrder(null)} 
-                          className="absolute right-4 top-4 p-1.5 rounded hover:bg-[#FAF7F2]"
+                          onClick={() => { setSelectedOrder(null); setCopiedAddress(false); }} 
+                          className="absolute right-4 top-4 p-1.5 rounded hover:bg-[#FAF7F2] transition"
                         >
                           <X className="w-5 h-5 text-[#8C7A6B]" />
                         </button>
 
-                        <h3 className="text-xl font-serif font-bold text-[#6A2B15] mb-2">Order Details</h3>
-                        <p className="text-xs text-[#8C7A6B]">Log summary for order: {selectedOrder.orderNumber}</p>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-serif font-bold text-[#6A2B15]">Order Details</h3>
+                          <span className="font-mono text-xs px-2.5 py-0.5 bg-[#FAF7F2] border border-[#E5D9C8] rounded text-[#8C3B1F] font-bold">
+                            {selectedOrder.orderNumber}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#8C7A6B]">Placed on: {new Date(selectedOrder.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</p>
 
-                        <div className="grid grid-cols-2 gap-4 border-t border-b border-[#E5D9C8]/60 py-4 my-4 text-sm">
+                        {/* Top Info Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-b border-[#E5D9C8]/60 py-4 my-4 text-sm">
                           <div>
-                            <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Customer Details</p>
+                            <p className="text-xs uppercase font-semibold text-[#8C7A6B] flex items-center gap-1.5">
+                              <Users className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                              Customer Information
+                            </p>
                             <p className="font-bold text-[#6A2B15] mt-1">{selectedOrder.customerName}</p>
-                            <p className="text-xs text-[#5C4D3E]">{selectedOrder.customerEmail}</p>
+                            <p className="text-xs text-[#5C4D3E] flex items-center gap-1 mt-0.5">
+                              <Mail className="w-3 h-3 text-[#8C7A6B]" />
+                              {selectedOrder.customerEmail}
+                            </p>
+                            {selectedOrder.customerPhone && (
+                              <p className="text-xs text-[#5C4D3E] flex items-center gap-1 mt-0.5 font-medium">
+                                <Phone className="w-3 h-3 text-[#8C7A6B]" />
+                                {selectedOrder.customerPhone}
+                              </p>
+                            )}
                           </div>
+
                           <div>
-                            <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Ship Date &amp; Status</p>
-                            <p className="font-bold text-[#6A2B15] mt-1">{new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
-                            <span className={`inline-block mt-1 px-2.5 py-0.5 rounded text-xs font-bold ${
-                              selectedOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {selectedOrder.status}
-                            </span>
+                            <p className="text-xs uppercase font-semibold text-[#8C7A6B] flex items-center gap-1.5">
+                              <Truck className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                              Fulfillment &amp; Status
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-xs text-[#8C7A6B]">Order:</span>
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                                selectedOrder.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                selectedOrder.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                                selectedOrder.status === 'Shipped' ? 'bg-purple-100 text-purple-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {selectedOrder.status}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <span className="text-xs text-[#8C7A6B]">Payment:</span>
+                              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                                selectedOrder.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {selectedOrder.paymentStatus || 'Paid'}
+                              </span>
+                            </div>
+                            {selectedOrder.paymentId && (
+                              <p className="text-[10px] font-mono text-[#8C7A6B] mt-1 truncate" title={selectedOrder.paymentId}>
+                                Ref: {selectedOrder.paymentId}
+                              </p>
+                            )}
                           </div>
                         </div>
 
-                        <div className="space-y-4">
-                          <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Items Ordered</p>
-                          {selectedOrder.items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between items-center border-b border-[#FAF7F2] pb-3">
-                              <div className="flex items-center gap-3">
-                                <img src={item.image} alt={item.name} className="w-10 h-12 object-cover rounded border" />
-                                <div>
-                                  <p className="text-sm font-semibold text-[#6A2B15]">{item.name}</p>
-                                  <p className="text-xs text-[#8C7A6B]">Qty: {item.quantity}</p>
-                                </div>
-                              </div>
-                              <p className="font-bold text-[#6A2B15]">₹{(item.price * item.quantity).toLocaleString()}</p>
+                        {/* SHIPPING & DELIVERY ADDRESS */}
+                        <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5D9C8] space-y-2 mb-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase tracking-wider text-[#6A2B15] flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4 text-[#8C3B1F]" />
+                              Shipping &amp; Delivery Address
+                            </span>
+
+                            {selectedOrder.shippingAddress?.address && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const text = `${selectedOrder.customerName}\nPhone: ${selectedOrder.customerPhone || ''}\n${selectedOrder.shippingAddress.address}\n${selectedOrder.shippingAddress.city}, ${selectedOrder.shippingAddress.state} - ${selectedOrder.shippingAddress.pincode}`;
+                                  navigator.clipboard.writeText(text);
+                                  setCopiedAddress(true);
+                                  setTimeout(() => setCopiedAddress(false), 2000);
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold bg-white border border-[#D5C7B7] hover:bg-[#FAF7F2] text-[#6A2B15] rounded transition shadow-2xs cursor-pointer"
+                              >
+                                {copiedAddress ? (
+                                  <>
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                                    <span className="text-green-700">Copied!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3.5 h-3.5" />
+                                    <span>Copy Label</span>
+                                  </>
+                                )}
+                              </button>
+                            )}
+                          </div>
+
+                          {selectedOrder.shippingAddress?.address ? (
+                            <div className="text-xs text-[#5C4D3E] space-y-1 pt-1 leading-relaxed">
+                              <p className="font-semibold text-[#6A2B15]">{selectedOrder.customerName}</p>
+                              <p>{selectedOrder.shippingAddress.address}</p>
+                              <p>
+                                <span className="font-medium text-[#6A2B15]">{selectedOrder.shippingAddress.city}</span>, {selectedOrder.shippingAddress.state} — <span className="font-bold text-[#8C3B1F]">{selectedOrder.shippingAddress.pincode}</span>
+                              </p>
+                              {selectedOrder.customerPhone && (
+                                <p className="pt-0.5 text-[#6A2B15] font-medium flex items-center gap-1">
+                                  <span>Phone:</span>
+                                  <span className="font-bold">{selectedOrder.customerPhone}</span>
+                                </p>
+                              )}
                             </div>
-                          ))}
+                          ) : (
+                            <div className="text-xs text-[#8C7A6B] italic py-1">
+                              {(() => {
+                                const customer = customers.find(c => c.email?.toLowerCase() === selectedOrder.customerEmail?.toLowerCase());
+                                if (customer && customer.address) {
+                                  return (
+                                    <div className="not-italic text-[#5C4D3E] space-y-0.5">
+                                      <p className="text-[11px] text-[#A34320] font-semibold">From Customer Profile:</p>
+                                      <p>{customer.address}</p>
+                                      <p>{customer.city}, {customer.state} - {customer.pincode}</p>
+                                      {customer.phone && <p>Phone: {customer.phone}</p>}
+                                    </div>
+                                  );
+                                }
+                                return 'No detailed shipping address recorded for this order.';
+                              })()}
+                            </div>
+                          )}
                         </div>
 
-                        <div className="flex justify-between items-center pt-4 mt-4 border-t border-[#E5D9C8]/60">
-                          <span className="font-bold text-[#6A2B15]">Grand Total</span>
-                          <span className="text-xl font-serif font-bold text-[#9E2A2B]">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                        {/* SHIPMENT & TRACKING MANAGEMENT */}
+                        <div className="p-4 rounded-lg bg-[#FAF7F2]/60 border border-[#E5D9C8] space-y-3 mb-4 shadow-2xs">
+                          <div className="flex items-center justify-between border-b border-[#E5D9C8]/60 pb-2.5">
+                            <div className="flex items-center gap-2">
+                              <div className="p-1.5 rounded bg-white text-[#8C3B1F] border border-[#E5D9C8]/60 shadow-2xs">
+                                <Truck className="w-4 h-4 text-[#8C3B1F]" />
+                              </div>
+                              <div>
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-[#6A2B15]">
+                                  Shipment &amp; Tracking Information
+                                </h4>
+                                <p className="text-[11px] text-[#8C7A6B]">
+                                  Add AWB tracking ID &amp; carrier link so the customer can track their delivery live.
+                                </p>
+                              </div>
+                            </div>
+
+                            {selectedOrder.trackingId ? (
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] font-bold bg-green-50 text-green-700 border border-green-200 rounded-full">
+                                <CheckCircle2 className="w-3 h-3 text-green-600" />
+                                Tracking Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 rounded-full">
+                                Awaiting Tracking
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                            <div>
+                              <label className="block text-[11px] font-bold text-[#6A2B15] mb-1">
+                                Courier Partner
+                              </label>
+                              <input
+                                type="text"
+                                list="courierPartnersList"
+                                value={trackingForm.courierPartner}
+                                onChange={(e) => setTrackingForm(prev => ({ ...prev, courierPartner: e.target.value }))}
+                                placeholder="e.g. Delhivery, DTDC, India Post"
+                                className="w-full text-xs px-3 py-2 border border-[#E5D9C8] rounded bg-white focus:border-[#8C3B1F] focus:outline-none"
+                              />
+                              <datalist id="courierPartnersList">
+                                <option value="Delhivery" />
+                                <option value="India Post" />
+                                <option value="Blue Dart" />
+                                <option value="DTDC" />
+                                <option value="Shiprocket" />
+                                <option value="Ekart Logistics" />
+                                <option value="Shadowfax" />
+                                <option value="Professional Couriers" />
+                                <option value="Trackon" />
+                                <option value="XpressBees" />
+                              </datalist>
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold text-[#6A2B15] mb-1">
+                                Shipment / Tracking ID (AWB)
+                              </label>
+                              <input
+                                type="text"
+                                value={trackingForm.trackingId}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setTrackingForm(prev => {
+                                    const next = { ...prev, trackingId: val };
+                                    if (val && !prev.trackingUrl) {
+                                      const partner = (prev.courierPartner || '').toLowerCase();
+                                      if (partner.includes('delhivery')) {
+                                        next.trackingUrl = `https://www.delhivery.com/track/package/${val}`;
+                                      } else if (partner.includes('shiprocket')) {
+                                        next.trackingUrl = `https://shiprocket.co/tracking/${val}`;
+                                      } else if (partner.includes('blue dart')) {
+                                        next.trackingUrl = `https://www.bluedart.com/tracking?trackNumber=${val}`;
+                                      }
+                                    }
+                                    return next;
+                                  });
+                                }}
+                                placeholder="e.g. DEL78349201"
+                                className="w-full text-xs px-3 py-2 border border-[#E5D9C8] rounded bg-white focus:border-[#8C3B1F] focus:outline-none font-mono"
+                              />
+                            </div>
+
+                            <div className="sm:col-span-2">
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-[11px] font-bold text-[#6A2B15]">
+                                  Shipment Tracking Link (URL)
+                                </label>
+                                {trackingForm.trackingUrl && (
+                                  <a
+                                    href={trackingForm.trackingUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[11px] font-semibold text-[#8C3B1F] hover:underline inline-flex items-center gap-1"
+                                  >
+                                    <span>Test Link</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                )}
+                              </div>
+                              <input
+                                type="url"
+                                value={trackingForm.trackingUrl}
+                                onChange={(e) => setTrackingForm(prev => ({ ...prev, trackingUrl: e.target.value }))}
+                                placeholder="https://www.delhivery.com/track/package/..."
+                                className="w-full text-xs px-3 py-2 border border-[#E5D9C8] rounded bg-white focus:border-[#8C3B1F] focus:outline-none font-mono"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-bold text-[#6A2B15] mb-1">
+                                Order Fulfillment Status
+                              </label>
+                              <select
+                                value={trackingForm.status}
+                                onChange={(e) => setTrackingForm(prev => ({ ...prev, status: e.target.value }))}
+                                className="w-full text-xs px-3 py-2 border border-[#E5D9C8] rounded bg-white focus:border-[#8C3B1F] focus:outline-none font-semibold text-[#6A2B15]"
+                              >
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Cancelled">Cancelled</option>
+                              </select>
+                            </div>
+
+                            <div className="flex items-end gap-2">
+                              <button
+                                type="button"
+                                disabled={savingTracking}
+                                onClick={() => updateOrderTracking(selectedOrder._id, trackingForm)}
+                                className="flex-1 py-2 px-3 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded transition cursor-pointer disabled:opacity-50 shadow-xs flex items-center justify-center gap-1.5"
+                              >
+                                {savingTracking ? (
+                                  <span>Saving...</span>
+                                ) : (
+                                  <>
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <span>Save Tracking</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {selectedOrder.status !== 'Shipped' && (
+                                <button
+                                  type="button"
+                                  disabled={savingTracking}
+                                  onClick={() => {
+                                    const updated = { ...trackingForm, status: 'Shipped' };
+                                    setTrackingForm(updated);
+                                    updateOrderTracking(selectedOrder._id, updated);
+                                  }}
+                                  className="py-2 px-3 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded transition cursor-pointer disabled:opacity-50 shadow-xs flex items-center gap-1"
+                                  title="Mark order as Shipped and save tracking details"
+                                >
+                                  <Truck className="w-3.5 h-3.5" />
+                                  <span>Ship Order</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Items Ordered */}
+                        <div className="space-y-3">
+                          <p className="text-xs uppercase font-semibold text-[#8C7A6B]">Items Ordered ({selectedOrder.items?.length || 0})</p>
+                          <div className="divide-y divide-[#FAF7F2] max-h-48 overflow-y-auto pr-1">
+                            {selectedOrder.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between items-center py-2">
+                                <div className="flex items-center gap-3">
+                                  <img src={item.image} alt={item.name} className="w-10 h-12 object-cover rounded border border-[#E5D9C8]/60" />
+                                  <div>
+                                    <p className="text-sm font-semibold text-[#6A2B15]">{item.name}</p>
+                                    <p className="text-xs text-[#8C7A6B]">Qty: {item.quantity}</p>
+                                  </div>
+                                </div>
+                                <p className="font-bold text-[#6A2B15]">₹{(item.price * item.quantity).toLocaleString()}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="pt-4 mt-4 border-t border-[#E5D9C8]/60 space-y-1.5">
+                          {selectedOrder.shippingFee !== undefined && (
+                            <div className="flex justify-between items-center text-xs text-[#5C4D3E]">
+                              <span>Delivery Fee</span>
+                              <span className="font-semibold text-[#6A2B15]">
+                                {selectedOrder.shippingFee > 0 ? `₹${selectedOrder.shippingFee}` : 'FREE'}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center">
+                            <span className="font-bold text-[#6A2B15]">Grand Total</span>
+                            <span className="text-xl font-serif font-bold text-[#9E2A2B]">₹{selectedOrder.totalAmount.toLocaleString()}</span>
+                          </div>
                         </div>
 
                         <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#FAF7F2]">
                           <button 
-                            onClick={() => setSelectedOrder(null)}
-                            className="px-4 py-2 bg-[#6A2B15] text-white hover:bg-[#8C3B1F] text-sm font-medium rounded-lg"
+                            onClick={() => { setSelectedOrder(null); setCopiedAddress(false); }}
+                            className="px-5 py-2.5 bg-[#6A2B15] text-white hover:bg-[#8C3B1F] text-xs font-bold uppercase tracking-wider rounded-lg transition shadow cursor-pointer"
                           >
                             Close Details
                           </button>
@@ -1689,42 +2155,137 @@ export default function AdminDashboard() {
               {activeTab === 'customers' && (
                 <div className="space-y-6 animate-fadeIn">
                   <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-6">
-                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] mb-4">Customer database</h3>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-[#E5D9C8]/60">
+                      <div>
+                        <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Customer Database &amp; Rewards</h3>
+                        <p className="text-xs text-[#8C7A6B]">
+                          Manage registered customers, view their purchase history, and issue single-use custom gift coupons.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => openCouponModal(null, 'all')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#6A2B15] text-white rounded-lg text-xs font-semibold hover:bg-[#8C3B1F] transition shadow-xs cursor-pointer"
+                        >
+                          <Gift className="w-3.5 h-3.5" />
+                          <span>Seasonal Campaign</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => openCouponModal(null, 'min_spent')}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-900 border border-amber-200 rounded-lg text-xs font-semibold hover:bg-amber-100 transition shadow-xs cursor-pointer"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Reward VIP Patrons</span>
+                        </button>
+                      </div>
+                    </div>
                     
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
-                          <th className="p-4">Customer Name</th>
-                          <th className="p-4">Email Address</th>
-                          <th className="p-4">Orders Count</th>
-                          <th className="p-4">Total Amount Spent</th>
-                          <th className="p-4">Customer Since</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {customers.map((c) => {
-                          const customerOrders = orders.filter(o => o.customerEmail && o.customerEmail.toLowerCase() === c.email.toLowerCase());
-                          const totalSpent = customerOrders.reduce((sum, o) => o.status !== 'Cancelled' ? sum + o.totalAmount : sum, 0);
-                          const orderCount = customerOrders.length;
-                          const createdDate = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'July 2026';
-                          return (
-                            <tr key={c._id || c.email} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/20 transition">
-                              <td className="p-4 font-bold text-[#6A2B15]">{c.name}</td>
-                              <td className="p-4 text-[#8C7A6B]">
-                                <div className="space-y-0.5">
-                                  <div>{c.email}</div>
-                                  {c.phone && <div className="text-[10px] text-[#A59483]">📞 {c.phone}</div>}
-                                  {c.address && <div className="text-[10px] text-[#A59483]">📍 {c.address}, {c.city || ''}</div>}
-                                </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-[#FAF7F2] text-left text-xs font-bold text-[#7D6B5A] uppercase tracking-wider border-b border-[#E5D9C8]">
+                            <th className="p-4">Customer</th>
+                            <th className="p-4">Contact &amp; Address</th>
+                            <th className="p-4 text-center">Orders</th>
+                            <th className="p-4 text-right">Total Spent</th>
+                            <th className="p-4 text-center">Reward Coupon</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {customers.length === 0 ? (
+                            <tr>
+                              <td colSpan="5" className="p-8 text-center text-xs text-[#8C7A6B]">
+                                No customers registered yet.
                               </td>
-                              <td className="p-4 font-medium">{orderCount} order(s)</td>
-                              <td className="p-4 font-bold text-[#6A2B15]">₹{totalSpent.toLocaleString()}</td>
-                              <td className="p-4 text-xs text-[#8C7A6B]">{createdDate}</td>
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                          ) : (
+                            customers.map((c) => {
+                              const customerOrders = orders.filter(o => o.customerEmail && o.customerEmail.toLowerCase() === c.email.toLowerCase());
+                              const totalSpent = customerOrders.reduce((sum, o) => o.status !== 'Cancelled' ? sum + o.totalAmount : sum, 0);
+                              const orderCount = customerOrders.length;
+                              const isVip = totalSpent >= 5000;
+                              
+                              // Check active coupons assigned to this customer
+                              const assignedCoupons = coupons.filter(coup => 
+                                (coup.assignedTo && coup.assignedTo.includes(c.email.toLowerCase())) ||
+                                (coup.targetType === 'min_spent' && totalSpent >= (coup.minCustomerSpent || 0))
+                              );
+
+                              return (
+                                <tr key={c._id || c.email} className="border-b border-[#E5D9C8]/40 hover:bg-[#FAF7F2]/30 transition">
+                                  <td className="p-4">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-8 h-8 rounded-full bg-[#FAF7F2] border border-[#E5D9C8] flex items-center justify-center font-bold text-xs text-[#6A2B15]">
+                                        {(c.name || 'U').charAt(0).toUpperCase()}
+                                      </div>
+                                      <div>
+                                        <div className="font-bold text-[#6A2B15] flex items-center gap-1.5">
+                                          <span>{c.name}</span>
+                                          {isVip && (
+                                            <span className="text-[10px] font-bold px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded border border-amber-300">
+                                              VIP
+                                            </span>
+                                          )}
+                                        </div>
+                                        <div className="font-mono text-[10px] text-[#8C3B1F] bg-[#FAF7F2] border border-[#E5D9C8] px-1.5 py-0.2 rounded inline-block mt-0.5 font-bold">
+                                          {c.customerId || `SK-USR-${(c._id || '').toString().slice(-6).toUpperCase()}`}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </td>
+
+                                  <td className="p-4 text-[#8C7A6B]">
+                                    <div className="space-y-0.5 text-xs">
+                                      <div className="text-[#5C4D3E] font-medium">{c.email}</div>
+                                      {c.phone && <div className="text-[11px] text-[#8C7A6B]">📞 {c.phone}</div>}
+                                      {c.address && (
+                                        <div className="text-[11px] text-[#8C7A6B] truncate max-w-xs" title={`${c.address}, ${c.city || ''} ${c.pincode || ''}`}>
+                                          📍 {c.address}, {c.city || ''} {c.pincode ? `- ${c.pincode}` : ''}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </td>
+
+                                  <td className="p-4 text-center font-medium">
+                                    <span className="inline-block px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5D9C8] text-xs font-semibold text-[#6A2B15]">
+                                      {orderCount} {orderCount === 1 ? 'order' : 'orders'}
+                                    </span>
+                                  </td>
+
+                                  <td className="p-4 text-right">
+                                    <div className="font-bold text-[#6A2B15]">₹{totalSpent.toLocaleString()}</div>
+                                    <div className="text-[10px] text-[#8C7A6B]">lifetime</div>
+                                  </td>
+
+                                  <td className="p-4 text-center">
+                                    <div className="flex flex-col items-center gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => openCouponModal(c, 'specific')}
+                                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-[#FAF7F2] text-[#6A2B15] border border-[#D5C7B7] hover:bg-[#6A2B15] hover:text-white rounded-lg transition shadow-2xs cursor-pointer"
+                                        title={`Create single-use coupon for ${c.name}`}
+                                      >
+                                        <Gift className="w-3.5 h-3.5 text-[#8C3B1F] group-hover:text-white" />
+                                        <span>Gift Coupon</span>
+                                      </button>
+                                      {assignedCoupons.length > 0 && (
+                                        <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                                          {assignedCoupons.length} offer(s) assigned
+                                        </span>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1825,101 +2386,254 @@ export default function AdminDashboard() {
                   </div>
 
                   {subTab === '' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                       {/* Left: Create Form */}
                       <form onSubmit={saveCoupon} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
-                        <h4 className="font-serif font-bold text-[#6A2B15] border-b pb-2">Add Coupon Code</h4>
+                        <div className="flex items-center justify-between border-b pb-2">
+                          <h4 className="font-serif font-bold text-[#6A2B15]">Create Coupon &amp; Rules</h4>
+                          <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                            1x Use Per User
+                          </span>
+                        </div>
                         
                         <div>
                           <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Coupon Code *</label>
-                          <input 
-                            type="text" 
-                            required
-                            placeholder="WELCOME20"
-                            value={couponForm.code}
-                            onChange={(e) => setCouponForm(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                            className="w-full p-2 border rounded text-sm bg-white"
-                          />
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              required
+                              placeholder="SAKHI-ROYAL-30"
+                              value={couponForm.code}
+                              onChange={(e) => setCouponForm(prev => ({ ...prev, code: e.target.value.toUpperCase().replace(/\s+/g, '') }))}
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white font-mono font-bold text-[#6A2B15]"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setCouponForm(prev => ({ ...prev, code: `SAKHI-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.floor(100 + Math.random() * 900)}` }))}
+                              className="px-2.5 py-1 text-xs border border-[#D5C7B7] rounded hover:bg-[#FAF7F2] text-[#6A2B15]"
+                              title="Generate Random Code"
+                            >
+                              Auto
+                            </button>
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Type *</label>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Discount Type *</label>
                             <select 
                               value={couponForm.discountType}
                               onChange={(e) => setCouponForm(prev => ({ ...prev, discountType: e.target.value }))}
-                              className="w-full p-2 border rounded text-sm bg-white"
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
                             >
-                              <option value="Percentage">Percentage</option>
-                              <option value="Fixed">Fixed Amount</option>
+                              <option value="Percentage">Percentage (%)</option>
+                              <option value="Fixed">Flat Amount (₹)</option>
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Value *</label>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Discount Value *</label>
                             <input 
                               type="number" 
                               required
+                              min="1"
+                              placeholder={couponForm.discountType === 'Percentage' ? '30' : '100'}
                               value={couponForm.discountValue}
                               onChange={(e) => setCouponForm(prev => ({ ...prev, discountValue: Number(e.target.value) }))}
-                              className="w-full p-2 border rounded text-sm bg-white"
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white font-bold"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                              Min. Order (₹)
+                            </label>
+                            <input 
+                              type="number" 
+                              min="0"
+                              placeholder="1499"
+                              value={couponForm.minOrderAmount}
+                              onChange={(e) => setCouponForm(prev => ({ ...prev, minOrderAmount: Number(e.target.value) }))}
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
+                            />
+                            <p className="text-[10px] text-[#8C7A6B] mt-0.5">e.g. Orders above ₹1,499</p>
+                          </div>
+                          <div>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Expiry Date *</label>
+                            <input 
+                              type="date" 
+                              required
+                              value={couponForm.expiryDate}
+                              onChange={(e) => setCouponForm(prev => ({ ...prev, expiryDate: e.target.value }))}
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
                             />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Expiry Date *</label>
+                          <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Target Audience</label>
+                          <select 
+                            value={couponForm.targetType}
+                            onChange={(e) => setCouponForm(prev => ({ ...prev, targetType: e.target.value }))}
+                            className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
+                          >
+                            <option value="all">All Customers (Seasonal Broadcast)</option>
+                            <option value="specific">Specific Customer (Individual Gift)</option>
+                            <option value="min_spent">VIP Patrons (Spent above threshold)</option>
+                          </select>
+                        </div>
+
+                        {couponForm.targetType === 'specific' && (
+                          <div>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Customer Email *</label>
+                            <input 
+                              type="email" 
+                              required
+                              placeholder="customer@example.com"
+                              value={couponForm.assignedTo}
+                              onChange={(e) => setCouponForm(prev => ({ ...prev, assignedTo: e.target.value }))}
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
+                            />
+                          </div>
+                        )}
+
+                        {couponForm.targetType === 'min_spent' && (
+                          <div>
+                            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Minimum Customer Spend (₹) *</label>
+                            <input 
+                              type="number" 
+                              min="0"
+                              placeholder="5000"
+                              value={couponForm.minCustomerSpent}
+                              onChange={(e) => setCouponForm(prev => ({ ...prev, minCustomerSpent: Number(e.target.value) }))}
+                              className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Offer Description</label>
                           <input 
-                            type="date" 
-                            required
-                            value={couponForm.expiryDate}
-                            onChange={(e) => setCouponForm(prev => ({ ...prev, expiryDate: e.target.value }))}
-                            className="w-full p-2 border rounded text-sm bg-white"
+                            type="text" 
+                            placeholder="e.g. Seasonal 30% OFF on all sarees above ₹1,499"
+                            value={couponForm.description}
+                            onChange={(e) => setCouponForm(prev => ({ ...prev, description: e.target.value }))}
+                            className="w-full p-2 border border-[#E5D9C8] rounded text-sm bg-white text-xs"
                           />
                         </div>
 
-                        <button type="submit" className="w-full py-2 bg-[#6A2B15] text-white rounded text-sm font-semibold hover:bg-[#8C3B1F] transition">
-                          Add Coupon Code
+                        <div className="p-2.5 bg-[#FAF7F2] border border-[#E5D9C8] rounded-lg text-[11px] text-[#6A2B15] space-y-1">
+                          <p className="font-bold flex items-center gap-1">
+                            <Sparkles className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                            Single-Use Guarantee
+                          </p>
+                          <p className="text-[#8C7A6B]">
+                            Each customer can use this coupon only once. Once used, it cannot be reused. Eligible customers see it automatically in their Profile.
+                          </p>
+                        </div>
+
+                        <button 
+                          type="submit" 
+                          disabled={savingCoupon}
+                          className="w-full py-2.5 bg-[#6A2B15] text-white rounded-lg text-sm font-semibold hover:bg-[#8C3B1F] transition shadow-xs cursor-pointer disabled:opacity-50"
+                        >
+                          {savingCoupon ? 'Saving Coupon...' : 'Create & Publish Coupon'}
                         </button>
                       </form>
 
                       {/* Right: List Table */}
-                      <div className="md:col-span-2 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm overflow-x-auto">
-                        <h4 className="font-serif font-bold text-[#6A2B15] mb-4 border-b pb-2">Active Promo Codes</h4>
+                      <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm overflow-x-auto">
+                        <div className="flex items-center justify-between mb-4 border-b pb-2">
+                          <div>
+                            <h4 className="font-serif font-bold text-[#6A2B15]">Active Coupons &amp; Campaigns</h4>
+                            <p className="text-xs text-[#8C7A6B]">Coupons enforced with minimum order value and 1x single use per user.</p>
+                          </div>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5D9C8] text-[#6A2B15]">
+                            {coupons.length} Active Codes
+                          </span>
+                        </div>
                         
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="text-left text-xs font-bold text-[#7D6B5A] uppercase border-b">
-                              <th className="py-2">Code</th>
-                              <th className="py-2">Discount</th>
-                              <th className="py-2">Expiry</th>
-                              <th className="py-2">Status</th>
-                              <th className="py-2 text-center">Action</th>
+                            <tr className="text-left text-xs font-bold text-[#7D6B5A] uppercase border-b bg-[#FAF7F2]/50">
+                              <th className="py-2.5 px-3">Code &amp; Offer</th>
+                              <th className="py-2.5 px-3">Discount</th>
+                              <th className="py-2.5 px-3">Rules</th>
+                              <th className="py-2.5 px-3">Audience</th>
+                              <th className="py-2.5 px-3 text-center">Used</th>
+                              <th className="py-2.5 px-3 text-center">Action</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {coupons.map((c) => (
-                              <tr key={c._id} className="border-b">
-                                <td className="py-3 font-bold text-[#6A2B15]">{c.code}</td>
-                                <td className="py-3">
-                                  {c.discountType === 'Percentage' ? `${c.discountValue}% Off` : `₹${c.discountValue} Off`}
-                                </td>
-                                <td className="py-3 text-xs text-[#8C7A6B]">
-                                  {new Date(c.expiryDate).toLocaleDateString()}
-                                </td>
-                                <td className="py-3">
-                                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                    c.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                  }`}>
-                                    {c.active ? 'ACTIVE' : 'EXPIRED'}
-                                  </span>
-                                </td>
-                                <td className="py-3 text-center">
-                                  <button onClick={() => deleteCoupon(c._id)} className="text-red-600 hover:text-red-900">
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
+                            {coupons.length === 0 ? (
+                              <tr>
+                                <td colSpan="6" className="py-8 text-center text-xs text-[#8C7A6B]">
+                                  No coupons created yet. Use the form on the left to add one.
                                 </td>
                               </tr>
-                            ))}
+                            ) : (
+                              coupons.map((c) => (
+                                <tr key={c._id} className="border-b hover:bg-[#FAF7F2]/20 transition">
+                                  <td className="py-3 px-3">
+                                    <div className="font-mono font-bold text-[#6A2B15] text-sm">{c.code}</div>
+                                    {c.description && <div className="text-[11px] text-[#8C7A6B] truncate max-w-xs">{c.description}</div>}
+                                    <div className="text-[10px] text-[#A59483]">
+                                      Expires: {new Date(c.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-3">
+                                    <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-bold text-xs border border-emerald-200">
+                                      {c.discountType === 'Percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} FLAT`}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-3 text-xs text-[#5C4D3E]">
+                                    {c.minOrderAmount > 0 ? (
+                                      <span className="font-medium text-[#6A2B15]">Min. ₹{c.minOrderAmount}</span>
+                                    ) : (
+                                      <span className="text-[#8C7A6B]">No Min</span>
+                                    )}
+                                    <div className="text-[10px] text-amber-800 font-semibold">1x use per user</div>
+                                  </td>
+                                  <td className="py-3 px-3 text-xs">
+                                    {c.targetType === 'all' && (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                                        All Users
+                                      </span>
+                                    )}
+                                    {c.targetType === 'specific' && (
+                                      <div>
+                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-50 text-purple-800 border border-purple-200">
+                                          Individual
+                                        </span>
+                                        <div className="text-[10px] text-[#8C7A6B] truncate max-w-[120px]" title={(c.assignedTo || []).join(', ')}>
+                                          {(c.assignedTo || []).join(', ')}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {c.targetType === 'min_spent' && (
+                                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                                        VIP &gt; ₹{c.minCustomerSpent}
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-3 text-center">
+                                    <span className="px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5D9C8] font-bold text-xs text-[#6A2B15]">
+                                      {c.usedBy ? c.usedBy.length : 0}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-3 text-center">
+                                    <button 
+                                      onClick={() => deleteCoupon(c._id)} 
+                                      className="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition cursor-pointer"
+                                      title="Delete Coupon"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -2477,23 +3191,147 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Shipping Rates Settings</h3>
-                    <div className="space-y-3 text-xs text-[#5C4D3E]">
-                      <div className="flex justify-between border-b pb-2">
-                        <span>Kerala State Local Shipping</span>
-                        <span className="font-bold text-[#6A2B15]">₹60</span>
+                  <form onSubmit={handleSaveShippingRates} className="border border-[#E5D9C8] rounded-xl bg-white p-6 shadow-sm space-y-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E5D9C8]/60 gap-2">
+                      <div>
+                        <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+                          <Truck className="w-5 h-5 text-[#8C3B1F]" />
+                          Shipping Rates &amp; Pincode Delivery Settings
+                        </h3>
+                        <p className="text-xs text-[#8C7A6B]">
+                          Configured rates apply automatically to every product order based on the customer&apos;s delivery pincode.
+                        </p>
                       </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span>Pan-India Standard Shipping</span>
-                        <span className="font-bold text-[#6A2B15]">₹120</span>
+
+                      <button
+                        type="submit"
+                        disabled={savingShippingRates}
+                        className="px-4 py-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded-lg transition shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5 self-start sm:self-auto"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>{savingShippingRates ? 'Saving...' : 'Save Shipping Rates'}</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Kerala Local Shipping */}
+                      <div className="p-4 border border-[#E5D9C8] rounded-xl bg-[#FAF7F2]/40 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-[#6A2B15]">
+                            Kerala State Local Delivery (₹)
+                          </label>
+                          <span className="text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">
+                            Pincodes: 67xxxx, 68xxxx, 69xxxx
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-xs font-bold text-[#8C7A6B]">₹</span>
+                          <input
+                            type="number"
+                            required
+                            min="0"
+                            value={shippingRates.keralaLocal}
+                            onChange={(e) => setShippingRates(prev => ({ ...prev, keralaLocal: Number(e.target.value) }))}
+                            className="w-full pl-7 pr-3 py-2 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold text-[#6A2B15]"
+                          />
+                        </div>
+                        <p className="text-[11px] text-[#8C7A6B]">
+                          Automatically applied when the destination pincode is in Kerala.
+                        </p>
                       </div>
-                      <div className="flex justify-between border-b pb-2">
-                        <span>International Worldwide (DHL Express)</span>
-                        <span className="font-bold text-[#6A2B15]">₹1,500</span>
+
+                      {/* Pan-India Standard Shipping */}
+                      <div className="p-4 border border-[#E5D9C8] rounded-xl bg-[#FAF7F2]/40 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-[#6A2B15]">
+                            Pan-India Standard Delivery (₹)
+                          </label>
+                          <span className="text-[10px] font-mono font-semibold bg-blue-50 text-blue-800 px-2 py-0.5 rounded border border-blue-200">
+                            All Other Indian Pincodes
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-xs font-bold text-[#8C7A6B]">₹</span>
+                          <input
+                            type="number"
+                            required
+                            min="0"
+                            value={shippingRates.panIndiaStandard}
+                            onChange={(e) => setShippingRates(prev => ({ ...prev, panIndiaStandard: Number(e.target.value) }))}
+                            className="w-full pl-7 pr-3 py-2 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold text-[#6A2B15]"
+                          />
+                        </div>
+                        <p className="text-[11px] text-[#8C7A6B]">
+                          Default delivery charge applied to every order (e.g. ₹49).
+                        </p>
+                      </div>
+
+                      {/* International Delivery */}
+                      <div className="p-4 border border-[#E5D9C8] rounded-xl bg-[#FAF7F2]/40 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-[#6A2B15]">
+                            International Worldwide (DHL Express) (₹)
+                          </label>
+                          <span className="text-[10px] font-semibold bg-purple-50 text-purple-800 px-2 py-0.5 rounded border border-purple-200">
+                            Outside India
+                          </span>
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-xs font-bold text-[#8C7A6B]">₹</span>
+                          <input
+                            type="number"
+                            required
+                            min="0"
+                            value={shippingRates.international}
+                            onChange={(e) => setShippingRates(prev => ({ ...prev, international: Number(e.target.value) }))}
+                            className="w-full pl-7 pr-3 py-2 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold text-[#6A2B15]"
+                          />
+                        </div>
+                        <p className="text-[11px] text-[#8C7A6B]">
+                          Flat express international air shipping charge.
+                        </p>
+                      </div>
+
+                      {/* Free Shipping Rule Toggle */}
+                      <div className="p-4 border border-[#E5D9C8] rounded-xl bg-[#FAF7F2]/40 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <label className="text-xs font-bold text-[#6A2B15]">
+                            Free Shipping Threshold Rule
+                          </label>
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={shippingRates.enableFreeShipping}
+                              onChange={(e) => setShippingRates(prev => ({ ...prev, enableFreeShipping: e.target.checked }))}
+                              className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#6A2B15]"></div>
+                          </label>
+                        </div>
+                        {shippingRates.enableFreeShipping ? (
+                          <div>
+                            <div className="relative">
+                              <span className="absolute left-3 top-2.5 text-xs font-bold text-[#8C7A6B]">₹</span>
+                              <input
+                                type="number"
+                                min="0"
+                                value={shippingRates.freeShippingThreshold}
+                                onChange={(e) => setShippingRates(prev => ({ ...prev, freeShippingThreshold: Number(e.target.value) }))}
+                                className="w-full pl-7 pr-3 py-2 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold text-[#6A2B15]"
+                              />
+                            </div>
+                            <p className="text-[11px] text-emerald-700 font-medium mt-1">
+                              Orders above ₹{shippingRates.freeShippingThreshold} qualify for Free Delivery.
+                            </p>
+                          </div>
+                        ) : (
+                          <p className="text-[11px] text-[#8C7A6B] pt-2">
+                            Free shipping disabled. Standard delivery charge (₹{shippingRates.panIndiaStandard}) will strictly apply to every order.
+                          </p>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </form>
 
                   <div>
                     <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Admin Users &amp; Roles</h3>
@@ -2510,6 +3348,252 @@ export default function AdminDashboard() {
                 </div>
               )}
             </>
+          )}
+
+          {/* Coupon Creation / Gift Modal */}
+          {showCouponModal && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className="bg-white rounded-xl shadow-2xl border border-[#E5D9C8] w-full max-w-xl p-6 relative max-h-[90vh] overflow-y-auto">
+                <button 
+                  type="button"
+                  onClick={() => { setShowCouponModal(false); setEditingCoupon(null); }} 
+                  className="absolute right-4 top-4 p-1.5 rounded hover:bg-[#FAF7F2] transition cursor-pointer"
+                >
+                  <X className="w-5 h-5 text-[#8C7A6B]" />
+                </button>
+
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-2 rounded-lg bg-[#FAF7F2] border border-[#E5D9C8] text-[#8C3B1F]">
+                    <Gift className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-serif font-bold text-[#6A2B15]">
+                      {couponForm.targetType === 'specific' ? 'Gift Customer Exclusive Coupon' : 'Seasonal / Campaign Coupon'}
+                    </h3>
+                    <p className="text-xs text-[#8C7A6B]">
+                      {couponForm.targetType === 'specific' 
+                        ? `Assign a single-use reward code directly to ${couponForm.assignedTo || 'this customer'}` 
+                        : 'Create a single-use coupon campaign for eligible customers'}
+                    </p>
+                  </div>
+                </div>
+
+                <form onSubmit={saveCoupon} className="space-y-4 mt-5">
+                  {/* Target Audience Selector */}
+                  <div>
+                    <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1.5">Target Audience *</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setCouponForm(prev => ({ ...prev, targetType: 'specific' }))}
+                        className={`p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition ${
+                          couponForm.targetType === 'specific' 
+                            ? 'border-[#8C3B1F] bg-[#FAF7F2] text-[#6A2B15] ring-1 ring-[#8C3B1F]' 
+                            : 'border-[#E5D9C8] bg-white text-[#7D6B5A] hover:bg-[#FAF7F2]/40'
+                        }`}
+                      >
+                        <div className="font-bold flex items-center gap-1">
+                          <Gift className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                          Specific Customer
+                        </div>
+                        <div className="text-[10px] text-[#8C7A6B] mt-0.5">Individual gift</div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setCouponForm(prev => ({ ...prev, targetType: 'all', assignedTo: '' }))}
+                        className={`p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition ${
+                          couponForm.targetType === 'all' 
+                            ? 'border-[#8C3B1F] bg-[#FAF7F2] text-[#6A2B15] ring-1 ring-[#8C3B1F]' 
+                            : 'border-[#E5D9C8] bg-white text-[#7D6B5A] hover:bg-[#FAF7F2]/40'
+                        }`}
+                      >
+                        <div className="font-bold flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                          All Customers
+                        </div>
+                        <div className="text-[10px] text-[#8C7A6B] mt-0.5">Seasonal broadcast</div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setCouponForm(prev => ({ ...prev, targetType: 'min_spent', assignedTo: '' }))}
+                        className={`p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition ${
+                          couponForm.targetType === 'min_spent' 
+                            ? 'border-[#8C3B1F] bg-[#FAF7F2] text-[#6A2B15] ring-1 ring-[#8C3B1F]' 
+                            : 'border-[#E5D9C8] bg-white text-[#7D6B5A] hover:bg-[#FAF7F2]/40'
+                        }`}
+                      >
+                        <div className="font-bold flex items-center gap-1">
+                          <Tag className="w-3.5 h-3.5 text-[#8C3B1F]" />
+                          VIP Patrons
+                        </div>
+                        <div className="text-[10px] text-[#8C7A6B] mt-0.5">Spent above ₹X</div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {couponForm.targetType === 'specific' && (
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Customer Email *</label>
+                      <input 
+                        type="email" 
+                        required
+                        placeholder="e.g. arjun@gmail.com"
+                        value={couponForm.assignedTo}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, assignedTo: e.target.value }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white"
+                      />
+                      <p className="text-[11px] text-[#8C7A6B] mt-1">This coupon will appear in this customer's profile and can only be used by them.</p>
+                    </div>
+                  )}
+
+                  {couponForm.targetType === 'min_spent' && (
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Minimum Customer Lifetime Spend (₹) *</label>
+                      <input 
+                        type="number" 
+                        required
+                        min="1"
+                        placeholder="5000"
+                        value={couponForm.minCustomerSpent}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, minCustomerSpent: Number(e.target.value) }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold"
+                      />
+                      <p className="text-[11px] text-[#8C7A6B] mt-1">Visible and usable only by customers who have spent at least this much.</p>
+                    </div>
+                  )}
+
+                  {/* Code */}
+                  <div>
+                    <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Coupon Code *</label>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        required
+                        placeholder="SAKHI-ROYAL-30"
+                        value={couponForm.code}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, code: e.target.value.toUpperCase().replace(/\s+/g, '') }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white font-mono font-bold text-[#6A2B15]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const prefix = couponForm.targetType === 'specific' ? 'GIFT' : 'SEASON';
+                          setCouponForm(prev => ({ ...prev, code: `SAKHI-${prefix}-${Math.floor(100 + Math.random() * 900)}` }));
+                        }}
+                        className="px-3 py-2 text-xs font-semibold border border-[#D5C7B7] rounded-lg hover:bg-[#FAF7F2] text-[#6A2B15] whitespace-nowrap cursor-pointer"
+                      >
+                        Generate
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Discount Rules */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Discount Type *</label>
+                      <select 
+                        value={couponForm.discountType}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, discountType: e.target.value }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white"
+                      >
+                        <option value="Percentage">Percentage (%)</option>
+                        <option value="Fixed">Flat Amount (₹)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Discount Value *</label>
+                      <input 
+                        type="number" 
+                        required
+                        min="1"
+                        placeholder={couponForm.discountType === 'Percentage' ? '30' : '500'}
+                        value={couponForm.discountValue}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, discountValue: Number(e.target.value) }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white font-bold"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Min Order & Expiry */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                        Min Order Value (₹) *
+                      </label>
+                      <input 
+                        type="number" 
+                        min="0"
+                        placeholder="1499"
+                        value={couponForm.minOrderAmount}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, minOrderAmount: Number(e.target.value) }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white"
+                      />
+                      <p className="text-[10px] text-[#8C7A6B] mt-0.5">e.g. Orders above ₹1,499</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Expiry Date *</label>
+                      <input 
+                        type="date" 
+                        required
+                        value={couponForm.expiryDate}
+                        onChange={(e) => setCouponForm(prev => ({ ...prev, expiryDate: e.target.value }))}
+                        className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Offer Description */}
+                  <div>
+                    <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">Description / Title</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Exclusive 30% OFF on all orders above ₹1,499"
+                      value={couponForm.description}
+                      onChange={(e) => setCouponForm(prev => ({ ...prev, description: e.target.value }))}
+                      className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-sm bg-white"
+                    />
+                  </div>
+
+                  {/* Single Use Rule Banner */}
+                  <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-xs text-amber-900 flex items-start gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">Strict Single-Use Rule Enforced</p>
+                      <p className="text-[11px] text-amber-800 mt-0.5">
+                        Each customer can redeem this code exactly once. It will appear directly in their customer profile and cannot be reused after ordering.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-3 border-t border-[#E5D9C8]/60">
+                    <button
+                      type="button"
+                      onClick={() => { setShowCouponModal(false); setEditingCoupon(null); }}
+                      className="px-4 py-2 text-xs font-semibold text-[#7D6B5A] hover:bg-[#FAF7F2] rounded-lg border border-[#D5C7B7] transition cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={savingCoupon}
+                      className="px-5 py-2 text-xs font-bold text-white bg-[#6A2B15] hover:bg-[#8C3B1F] rounded-lg transition shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                    >
+                      {savingCoupon ? (
+                        <span>Saving...</span>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4" />
+                          <span>{couponForm.targetType === 'specific' ? 'Gift Coupon Now' : 'Create Campaign'}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
         </div>
       </main>

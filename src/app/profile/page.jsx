@@ -10,7 +10,8 @@ import { useCart } from '@/context/CartContext';
 import { 
   User, Mail, Phone, MapPin, ShoppingBag, Calendar, 
   Package, Shield, ArrowRight, LogOut, LogIn, Heart, 
-  Edit3, CheckCircle2, Lock 
+  Edit3, CheckCircle2, Lock, Truck, ExternalLink, Copy,
+  Plus, Trash2, Home, Check, Tag, Ticket, Sparkles
 } from 'lucide-react';
 
 function ProfileContent() {
@@ -45,15 +46,85 @@ function ProfileContent() {
   // Orders State
   const [orders, setOrders] = useState([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [copiedTrackingId, setCopiedTrackingId] = useState(null);
+  const [copiedUserId, setCopiedUserId] = useState(false);
   const [authError, setAuthError] = useState('');
+
+  // Customer Coupons State
+  const [myCoupons, setMyCoupons] = useState([]);
+  const [isLoadingCoupons, setIsLoadingCoupons] = useState(false);
+  const [copiedCouponCode, setCopiedCouponCode] = useState(null);
+
+  // Address Book States (Amazon/Flipkart style)
+  const [showAddAddressForm, setShowAddAddressForm] = useState(false);
+  const [isSavingAddress, setIsSavingAddress] = useState(false);
+  const [newAddressData, setNewAddressData] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+    addressType: 'Home',
+    isDefault: false
+  });
+
+  const loadCustomerCoupons = async (email) => {
+    if (!email) return;
+    setIsLoadingCoupons(true);
+    try {
+      const res = await fetch(`/api/coupons?customerEmail=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.coupons)) {
+        setMyCoupons(data.coupons);
+      }
+    } catch (err) {
+      console.warn('Failed to load customer coupons:', err);
+    } finally {
+      setIsLoadingCoupons(false);
+    }
+  };
+
+  const syncCustomerProfile = async (email) => {
+    try {
+      const res = await fetch(`/api/customers?email=${encodeURIComponent(email)}`);
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const c = data.customer;
+        const updated = {
+          customerId: c.customerId || `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`,
+          name: c.name,
+          email: c.email,
+          phone: c.phone || '',
+          address: c.address || '',
+          city: c.city || '',
+          state: c.state || '',
+          pincode: c.pincode || '',
+          savedAddresses: c.savedAddresses || []
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(updated));
+        setUserSession(updated);
+        return updated;
+      }
+    } catch (err) {
+      console.warn('Sync profile error:', err);
+    }
+    return null;
+  };
 
   useEffect(() => {
     // Check if user is logged in
     const session = localStorage.getItem('sakhi_user_session');
     if (session) {
-      const parsed = JSON.parse(session);
-      setUserSession(parsed);
-      loadCustomerOrders(parsed.email);
+      try {
+        const parsed = JSON.parse(session);
+        setUserSession(parsed);
+        loadCustomerOrders(parsed.email);
+        loadCustomerCoupons(parsed.email);
+        syncCustomerProfile(parsed.email);
+      } catch (err) {
+        console.error('Session parse error:', err);
+      }
     }
   }, []);
 
@@ -82,23 +153,23 @@ function ProfileContent() {
 
     try {
       // 1. Try to find the customer in the database first
-      const custRes = await fetch('/api/customers');
+      const custRes = await fetch(`/api/customers?email=${encodeURIComponent(loginEmail)}`);
       const custData = await custRes.json();
       let userDetails = null;
 
-      if (custData.success && Array.isArray(custData.customers)) {
-        const found = custData.customers.find(c => c.email.toLowerCase() === loginEmail.toLowerCase());
-        if (found) {
-          userDetails = {
-            name: found.name,
-            email: found.email,
-            phone: found.phone || '',
-            address: found.address || '',
-            city: found.city || '',
-            state: found.state || '',
-            pincode: found.pincode || '',
-          };
-        }
+      if (custData.success && custData.customer) {
+        const c = custData.customer;
+        userDetails = {
+          customerId: c.customerId,
+          name: c.name,
+          email: c.email,
+          phone: c.phone || '',
+          address: c.address || '',
+          city: c.city || '',
+          state: c.state || '',
+          pincode: c.pincode || '',
+          savedAddresses: c.savedAddresses || []
+        };
       }
 
       // 2. If not found in customers database, check past orders list
@@ -107,6 +178,7 @@ function ProfileContent() {
         const data = await res.json();
         
         userDetails = {
+          customerId: `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`,
           name: 'Valued Customer',
           email: loginEmail,
           phone: '',
@@ -114,6 +186,7 @@ function ProfileContent() {
           city: '',
           state: '',
           pincode: '',
+          savedAddresses: []
         };
 
         if (data.success && Array.isArray(data.orders)) {
@@ -122,6 +195,7 @@ function ProfileContent() {
           );
           if (pastOrder) {
             userDetails = {
+              customerId: `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`,
               name: pastOrder.customerName || 'Valued Customer',
               email: loginEmail,
               phone: pastOrder.phone || '',
@@ -129,21 +203,38 @@ function ProfileContent() {
               city: pastOrder.city || '',
               state: pastOrder.state || '',
               pincode: pastOrder.pincode || '',
+              savedAddresses: pastOrder.address ? [{
+                id: `addr_${Date.now()}`,
+                name: pastOrder.customerName || 'Valued Customer',
+                phone: pastOrder.phone || '',
+                address: pastOrder.address,
+                city: pastOrder.city || '',
+                state: pastOrder.state || '',
+                pincode: pastOrder.pincode || '',
+                addressType: 'Home',
+                isDefault: true
+              }] : []
             };
           }
         }
         
-        // 3. Save this customer to database so they are registered
-        await fetch('/api/customers', {
+        // 3. Save this customer to database so they are registered permanently
+        const createRes = await fetch('/api/customers', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(userDetails)
         });
+        const created = await createRes.json();
+        if (created.success && created.customer) {
+          userDetails.customerId = created.customer.customerId;
+          userDetails.savedAddresses = created.customer.savedAddresses || [];
+        }
       }
 
       localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
       setUserSession(userDetails);
       loadCustomerOrders(loginEmail);
+      loadCustomerCoupons(loginEmail);
 
       // Handle redirect if needed
       if (redirectUrl) {
@@ -173,6 +264,7 @@ function ProfileContent() {
       const data = await res.json();
       if (data.success && data.customer) {
         const userDetails = {
+          customerId: data.customer.customerId,
           name: data.customer.name,
           email: data.customer.email,
           phone: data.customer.phone || '',
@@ -180,10 +272,12 @@ function ProfileContent() {
           city: data.customer.city || '',
           state: data.customer.state || '',
           pincode: data.customer.pincode || '',
+          savedAddresses: data.customer.savedAddresses || []
         };
         localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
         setUserSession(userDetails);
         setOrders([]);
+        loadCustomerCoupons(data.customer.email);
         if (redirectUrl) {
           router.push(redirectUrl);
         }
@@ -221,6 +315,7 @@ function ProfileContent() {
       const data = await res.json();
       if (data.success && data.customer) {
         const userDetails = {
+          customerId: data.customer.customerId || userSession.customerId,
           name: data.customer.name,
           email: data.customer.email,
           phone: data.customer.phone || '',
@@ -228,6 +323,7 @@ function ProfileContent() {
           city: data.customer.city || '',
           state: data.customer.state || '',
           pincode: data.customer.pincode || '',
+          savedAddresses: data.customer.savedAddresses || []
         };
         localStorage.setItem('sakhi_user_session', JSON.stringify(userDetails));
         setUserSession(userDetails);
@@ -236,6 +332,112 @@ function ProfileContent() {
       }
     } catch (err) {
       console.error('Save profile error:', err);
+    }
+  };
+
+  // Address Book Handlers
+  const handleSaveNewAddress = async (e) => {
+    e.preventDefault();
+    if (!newAddressData.address || !newAddressData.pincode) return;
+    setIsSavingAddress(true);
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userSession.email,
+          newAddress: {
+            ...newAddressData,
+            name: newAddressData.name || userSession.name,
+            phone: newAddressData.phone || userSession.phone || '',
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const updated = {
+          ...userSession,
+          customerId: data.customer.customerId || userSession.customerId,
+          savedAddresses: data.customer.savedAddresses || [],
+          address: data.customer.address,
+          city: data.customer.city,
+          state: data.customer.state,
+          pincode: data.customer.pincode,
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(updated));
+        setUserSession(updated);
+        setShowAddAddressForm(false);
+        setNewAddressData({
+          name: '',
+          phone: '',
+          address: '',
+          city: '',
+          state: '',
+          pincode: '',
+          addressType: 'Home',
+          isDefault: false
+        });
+      }
+    } catch (err) {
+      console.error('Error saving address:', err);
+    } finally {
+      setIsSavingAddress(false);
+    }
+  };
+
+  const handleSetDefaultAddress = async (addrId) => {
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userSession.email,
+          setDefaultAddressId: addrId
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const updated = {
+          ...userSession,
+          savedAddresses: data.customer.savedAddresses || [],
+          address: data.customer.address,
+          city: data.customer.city,
+          state: data.customer.state,
+          pincode: data.customer.pincode,
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(updated));
+        setUserSession(updated);
+      }
+    } catch (err) {
+      console.error('Error setting default address:', err);
+    }
+  };
+
+  const handleDeleteAddress = async (addrId) => {
+    try {
+      const res = await fetch('/api/customers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userSession.email,
+          deleteAddressId: addrId
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.customer) {
+        const updated = {
+          ...userSession,
+          savedAddresses: data.customer.savedAddresses || [],
+          address: data.customer.address,
+          city: data.customer.city,
+          state: data.customer.state,
+          pincode: data.customer.pincode,
+        };
+        localStorage.setItem('sakhi_user_session', JSON.stringify(updated));
+        setUserSession(updated);
+      }
+    } catch (err) {
+      console.error('Error deleting address:', err);
     }
   };
 
@@ -258,76 +460,78 @@ function ProfileContent() {
           </div>
           {redirectUrl && (
             <p className="text-xs text-[#B84D28] font-semibold mt-1 animate-pulse">
-              Please sign in or sign up to complete your checkout purchase.
+              Please sign in to proceed smoothly with your order.
             </p>
           )}
         </div>
 
-        {/* ── NOT LOGGED IN VIEW ── */}
+        {/* ── NOT LOGGED IN: TABS FOR LOGIN OR SIGNUP ── */}
         {!userSession ? (
-          <div className="max-w-md w-full mx-auto bg-[#F3EADF]/80 border border-[#E5DACD] rounded-2xl shadow-lg overflow-hidden p-6 sm:p-8 space-y-6">
+          <div className="max-w-md mx-auto bg-[#F3EADF]/80 border border-[#E5DACD] rounded-2xl p-6 sm:p-8 shadow-md">
             
             {/* Tabs */}
-            <div className="flex border-b border-[#E5DACD]">
+            <div className="flex border-b border-[#E5DACD] mb-6">
               <button
                 type="button"
                 onClick={() => { setActiveTab('login'); setAuthError(''); }}
                 className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${
-                  activeTab === 'login' 
-                    ? 'border-b-2 border-[#6A2B15] text-[#6A2B15]' 
+                  activeTab === 'login'
+                    ? 'border-b-2 border-[#6A2B15] text-[#6A2B15]'
                     : 'text-[#8A786D] hover:text-[#6A2B15]'
                 }`}
               >
                 <LogIn className="w-3.5 h-3.5" />
-                Login
+                <span>Existing Customer</span>
               </button>
               <button
                 type="button"
                 onClick={() => { setActiveTab('signup'); setAuthError(''); }}
                 className={`flex-1 pb-3 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 ${
-                  activeTab === 'signup' 
-                    ? 'border-b-2 border-[#6A2B15] text-[#6A2B15]' 
+                  activeTab === 'signup'
+                    ? 'border-b-2 border-[#6A2B15] text-[#6A2B15]'
                     : 'text-[#8A786D] hover:text-[#6A2B15]'
                 }`}
               >
                 <User className="w-3.5 h-3.5" />
-                Sign Up
+                <span>New Registration</span>
               </button>
             </div>
 
             {authError && (
-              <p className="text-[11px] text-[#B84D28] text-center font-medium bg-[#B84D28]/5 p-2 rounded">
+              <div className="mb-4 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
                 {authError}
-              </p>
+              </div>
             )}
 
-            {/* Login Pane */}
-            {activeTab === 'login' ? (
+            {/* LOGIN FORM */}
+            {activeTab === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
                 <div className="space-y-1">
                   <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase tracking-wider">Email Address</label>
                   <input
                     required
                     type="email"
-                    placeholder="Enter your email (e.g. aishwarya.sen@example.com)"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
-                    className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F] transition-colors"
+                    placeholder="e.g. arjun@example.com"
+                    className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
                   />
-                  <span className="text-[9px] text-[#8A786D] block italic">
-                    Tip: Logging in with a previously used checkout email fetches all past orders.
-                  </span>
+                  <p className="text-[10px] text-[#8A786D] mt-1">
+                    Enter the email registered with your previous purchases.
+                  </p>
                 </div>
                 <button
                   type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors shadow-sm"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors shadow-sm cursor-pointer"
                 >
-                  <span>LOGIN</span>
+                  <span>SIGN IN</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </form>
-            ) : (
-              /* Signup Pane */
+            )}
+
+            {/* SIGNUP FORM */}
+            {activeTab === 'signup' && (
               <form onSubmit={handleSignupSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
@@ -338,6 +542,7 @@ function ProfileContent() {
                       name="name"
                       value={signupData.name}
                       onChange={handleSignupInputChange}
+                      placeholder="Priya Nair"
                       className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
                     />
                   </div>
@@ -349,6 +554,7 @@ function ProfileContent() {
                       name="phone"
                       value={signupData.phone}
                       onChange={handleSignupInputChange}
+                      placeholder="9876543210"
                       className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
                     />
                   </div>
@@ -361,6 +567,7 @@ function ProfileContent() {
                     name="email"
                     value={signupData.email}
                     onChange={handleSignupInputChange}
+                    placeholder="priya@example.com"
                     className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
                   />
                 </div>
@@ -371,6 +578,7 @@ function ProfileContent() {
                     name="address"
                     value={signupData.address}
                     onChange={handleSignupInputChange}
+                    placeholder="Flat/House No, Road, Area"
                     className="w-full bg-white border border-[#DCD0C5] rounded-md px-3 py-2 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
                   />
                 </div>
@@ -408,9 +616,9 @@ function ProfileContent() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors shadow-sm"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-xs font-bold tracking-[0.2em] uppercase py-3 rounded-md transition-colors shadow-sm cursor-pointer"
                 >
-                  <span>SIGN UP</span>
+                  <span>CREATE PROFILE</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </form>
@@ -426,7 +634,7 @@ function ProfileContent() {
           /* ── LOGGED IN VIEW ── */
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
-            {/* LEFT COLUMN: Profile Details & Active Summaries */}
+            {/* LEFT COLUMN: Profile Details, Saved Addresses & Sessions */}
             <div className="lg:col-span-4 space-y-6">
               
               {/* Profile Card */}
@@ -437,9 +645,26 @@ function ProfileContent() {
                   </div>
                   <div>
                     <h2 className="font-serif-luxury text-xl text-[#6A2B15] font-normal">{userSession.name}</h2>
-                    <span className="text-[10px] bg-[#C59B27]/10 text-[#8B5A3C] uppercase tracking-widest px-2 py-0.5 rounded-sm font-bold">
-                      Sakhi Patron
-                    </span>
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 mt-1.5">
+                      <span className="text-[10px] bg-[#C59B27]/10 text-[#8B5A3C] uppercase tracking-widest px-2 py-0.5 rounded-sm font-bold">
+                        Sakhi Patron
+                      </span>
+                      <div className="inline-flex items-center gap-1 bg-white border border-[#E5DACD] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[#8C3B1F]">
+                        <span>ID: {userSession.customerId || 'SK-USR-104928'}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(userSession.customerId || '');
+                            setCopiedUserId(true);
+                            setTimeout(() => setCopiedUserId(false), 2000);
+                          }}
+                          className="text-[#8C3B1F] hover:text-[#6A2B15] cursor-pointer"
+                          title="Copy User ID"
+                        >
+                          {copiedUserId ? <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -510,13 +735,13 @@ function ProfileContent() {
                     <div className="flex gap-2 pt-2">
                       <button
                         onClick={handleSaveEdit}
-                        className="flex-1 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] font-bold uppercase tracking-widest text-[10px] py-2 rounded transition-colors"
+                        className="flex-1 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] font-bold uppercase tracking-widest text-[10px] py-2 rounded transition-colors cursor-pointer"
                       >
                         Save Details
                       </button>
                       <button
                         onClick={() => setIsEditing(false)}
-                        className="flex-1 border border-[#DCD0C5] text-[#8C3B1F] hover:bg-[#8C3B1F]/5 font-bold uppercase tracking-widest text-[10px] py-2 rounded transition-colors"
+                        className="flex-1 border border-[#DCD0C5] text-[#8C3B1F] hover:bg-[#8C3B1F]/5 font-bold uppercase tracking-widest text-[10px] py-2 rounded transition-colors cursor-pointer"
                       >
                         Cancel
                       </button>
@@ -544,7 +769,7 @@ function ProfileContent() {
                       <div className="flex items-start gap-3">
                         <MapPin className="w-4 h-4 text-[#C59B27] mt-0.5 flex-shrink-0" />
                         <div>
-                          <span className="text-[10px] text-[#8A786D] block uppercase font-bold tracking-wider">Shipping Address</span>
+                          <span className="text-[10px] text-[#8A786D] block uppercase font-bold tracking-wider">Primary Address</span>
                           <span className="text-[#6A2B15] font-medium leading-relaxed">
                             {userSession.address}{userSession.city ? `, ${userSession.city}` : ''}{userSession.state ? `, ${userSession.state}` : ''}{userSession.pincode ? ` - ${userSession.pincode}` : ''}
                           </span>
@@ -554,13 +779,13 @@ function ProfileContent() {
                     <div className="flex gap-2 pt-2">
                       <button
                         onClick={handleEditClick}
-                        className="flex-1 border border-[#C5B9AD] text-[#8C3B1F] hover:bg-[#6A2B15] hover:text-[#FFFFF0] hover:border-[#6A2B15] text-[10px] font-bold uppercase tracking-wider py-2 rounded transition-all"
+                        className="flex-1 border border-[#C5B9AD] text-[#8C3B1F] hover:bg-[#6A2B15] hover:text-[#FFFFF0] hover:border-[#6A2B15] text-[10px] font-bold uppercase tracking-wider py-2 rounded transition-all cursor-pointer"
                       >
                         Edit Details
                       </button>
                       <button
                         onClick={handleLogout}
-                        className="flex-1 border border-[#B84D28] text-[#B84D28] hover:bg-[#B84D28] hover:text-[#FFFFF0] text-[10px] font-bold uppercase tracking-wider py-2 rounded transition-all flex items-center justify-center gap-1.5"
+                        className="flex-1 border border-[#B84D28] text-[#B84D28] hover:bg-[#B84D28] hover:text-[#FFFFF0] text-[10px] font-bold uppercase tracking-wider py-2 rounded transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         <LogOut className="w-3.5 h-3.5" />
                         Logout
@@ -568,6 +793,235 @@ function ProfileContent() {
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Saved Delivery Addresses Book (Amazon / Flipkart style) */}
+              <div className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-2xl p-5 shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#E5DACD]/80 pb-3">
+                  <div className="flex items-center gap-2">
+                    <Home className="w-4 h-4 text-[#C59B27]" />
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#6A2B15]">Saved Delivery Addresses</h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!showAddAddressForm) {
+                        setNewAddressData({
+                          name: userSession.name || '',
+                          phone: userSession.phone || '',
+                          address: '',
+                          city: '',
+                          state: '',
+                          pincode: '',
+                          addressType: 'Home',
+                          isDefault: !(userSession.savedAddresses && userSession.savedAddresses.length > 0)
+                        });
+                      }
+                      setShowAddAddressForm(!showAddAddressForm);
+                    }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold bg-[#6A2B15] hover:bg-[#8C3B1F] text-white rounded transition shadow-2xs cursor-pointer"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>{showAddAddressForm ? 'Cancel' : 'Add New'}</span>
+                  </button>
+                </div>
+
+                {/* Add New Address Form */}
+                {showAddAddressForm && (
+                  <form onSubmit={handleSaveNewAddress} className="bg-white border border-[#E5DACD] rounded-xl p-4 space-y-3 text-xs animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between pb-1 border-b border-[#FAF7F2]">
+                      <span className="font-bold text-[#6A2B15] text-[11px] uppercase tracking-wider">New Delivery Address</span>
+                      <span className="text-[10px] text-[#8A786D]">Auto-saved to profile</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">Recipient Name *</label>
+                        <input
+                          required
+                          type="text"
+                          value={newAddressData.name}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder={userSession.name}
+                          className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">Phone Number *</label>
+                        <input
+                          required
+                          type="tel"
+                          value={newAddressData.phone}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, phone: e.target.value }))}
+                          placeholder={userSession.phone || '10-digit mobile'}
+                          className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">Street Address / House / Flat *</label>
+                      <input
+                        required
+                        type="text"
+                        value={newAddressData.address}
+                        onChange={(e) => setNewAddressData(prev => ({ ...prev, address: e.target.value }))}
+                        placeholder="House/flat no, street area, landmark"
+                        className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none focus:border-[#8C3B1F]"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">City *</label>
+                        <input
+                          required
+                          type="text"
+                          value={newAddressData.city}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, city: e.target.value }))}
+                          placeholder="e.g. Mumbai"
+                          className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">State *</label>
+                        <input
+                          required
+                          type="text"
+                          value={newAddressData.state}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, state: e.target.value }))}
+                          placeholder="State"
+                          className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-[#8C3B1F] uppercase mb-0.5">Pincode *</label>
+                        <input
+                          required
+                          type="text"
+                          value={newAddressData.pincode}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, pincode: e.target.value }))}
+                          placeholder="6-digit PIN"
+                          className="w-full bg-[#FAF7F2]/40 border border-[#DCD0C5] rounded px-2.5 py-1.5 text-xs text-[#6A2B15] focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <div className="flex items-center gap-3">
+                        <label className="inline-flex items-center gap-1.5 text-[11px] text-[#5A4438] cursor-pointer">
+                          <input
+                            type="radio"
+                            name="addressType"
+                            checked={newAddressData.addressType === 'Home'}
+                            onChange={() => setNewAddressData(prev => ({ ...prev, addressType: 'Home' }))}
+                            className="accent-[#8C3B1F]"
+                          />
+                          <span>Home</span>
+                        </label>
+                        <label className="inline-flex items-center gap-1.5 text-[11px] text-[#5A4438] cursor-pointer">
+                          <input
+                            type="radio"
+                            name="addressType"
+                            checked={newAddressData.addressType === 'Work'}
+                            onChange={() => setNewAddressData(prev => ({ ...prev, addressType: 'Work' }))}
+                            className="accent-[#8C3B1F]"
+                          />
+                          <span>Work</span>
+                        </label>
+                      </div>
+
+                      <label className="inline-flex items-center gap-1.5 text-[11px] text-[#5A4438] cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={newAddressData.isDefault}
+                          onChange={(e) => setNewAddressData(prev => ({ ...prev, isDefault: e.target.checked }))}
+                          className="accent-[#8C3B1F] rounded"
+                        />
+                        <span>Make Default</span>
+                      </label>
+                    </div>
+
+                    <div className="pt-2 flex gap-2">
+                      <button
+                        type="submit"
+                        disabled={isSavingAddress}
+                        className="flex-1 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white font-bold uppercase tracking-wider text-[10px] py-2 rounded transition cursor-pointer disabled:opacity-50"
+                      >
+                        {isSavingAddress ? 'Saving Address...' : 'Save Address'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowAddAddressForm(false)}
+                        className="px-3 border border-[#DCD0C5] text-[#8C3B1F] hover:bg-[#FAF7F2] text-[10px] font-bold uppercase tracking-wider rounded transition cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                )}
+
+                {/* Saved Addresses List */}
+                <div className="space-y-3">
+                  {(userSession.savedAddresses && userSession.savedAddresses.length > 0) ? (
+                    userSession.savedAddresses.map((addr) => (
+                      <div
+                        key={addr.id}
+                        className={`p-3.5 rounded-xl border text-xs transition relative ${
+                          addr.isDefault
+                            ? 'bg-[#FFFFF0] border-[#8C3B1F] shadow-xs'
+                            : 'bg-white/80 border-[#E5DACD] hover:bg-[#FFFFF0]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-[#6A2B15]">{addr.name}</span>
+                            <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-[#FAF7F2] text-[#8C3B1F] border border-[#E5DACD]">
+                              {addr.addressType || 'Home'}
+                            </span>
+                            {addr.isDefault && (
+                              <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold bg-green-50 text-green-700 border border-green-200">
+                                Default
+                              </span>
+                            )}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAddress(addr.id)}
+                            className="p-1 text-[#8A786D] hover:text-red-700 hover:bg-red-50 rounded transition cursor-pointer"
+                            title="Delete this address"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        <p className="text-[#5A4438] text-[11px] leading-relaxed">
+                          {addr.address}, {addr.city}, {addr.state} - <span className="font-bold text-[#8C3B1F]">{addr.pincode}</span>
+                        </p>
+                        <p className="text-[#8A786D] text-[10px] mt-1 font-medium">
+                          Phone: {addr.phone}
+                        </p>
+
+                        {!addr.isDefault && (
+                          <div className="pt-2 mt-2 border-t border-[#FAF7F2] flex justify-end">
+                            <button
+                              type="button"
+                              onClick={() => handleSetDefaultAddress(addr.id)}
+                              className="text-[10px] font-bold text-[#8C3B1F] hover:underline cursor-pointer"
+                            >
+                              Use as Default Address
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-4 bg-white/60 border border-dashed border-[#E5DACD] rounded-xl text-center space-y-1 text-xs text-[#8A786D]">
+                      <p className="font-semibold text-[#6A2B15]">No saved addresses yet</p>
+                      <p className="text-[10px]">Add your address above so you never need to type it again during checkout!</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Shopping Bag / Wishlist Summaries */}
@@ -596,8 +1050,130 @@ function ProfileContent() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Order History List */}
+            {/* RIGHT COLUMN: Exclusive Rewards & Order History */}
             <div className="lg:col-span-8 space-y-6">
+              
+              {/* EXCLUSIVE REWARDS & COUPONS */}
+              <div className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-2xl p-6 shadow-md space-y-4">
+                <div className="flex items-center justify-between border-b border-[#E5DACD] pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-full bg-[#6A2B15]/10 text-[#6A2B15]">
+                      <Sparkles className="w-4 h-4 text-[#C59B27]" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif-luxury text-lg text-[#6A2B15] font-bold">
+                        My Exclusive Coupons &amp; Offers
+                      </h3>
+                      <p className="text-[11px] text-[#8A786D]">
+                        Personalized rewards and seasonal discounts crafted for you. Each coupon can be redeemed once.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {isLoadingCoupons ? (
+                  <div className="py-6 text-center text-xs text-[#8A786D] animate-pulse">
+                    Loading your exclusive rewards...
+                  </div>
+                ) : myCoupons.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {myCoupons.map((coup) => {
+                      const isRedeemed = coup.isUsed;
+                      const isExpired = coup.isExpired;
+                      return (
+                        <div
+                          key={coup._id}
+                          className={`p-4 rounded-xl border relative transition-all ${
+                            isRedeemed
+                              ? 'bg-gray-50/80 border-gray-200 opacity-60'
+                              : isExpired
+                              ? 'bg-red-50/40 border-red-200 opacity-60'
+                              : 'bg-white border-[#E5DACD] hover:border-[#8C3B1F] shadow-2xs hover:shadow-sm'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-xs font-bold text-[#6A2B15] bg-[#FAF7F2] border border-[#E5DACD] px-2.5 py-1 rounded">
+                                {coup.code}
+                              </span>
+                              {!isRedeemed && !isExpired && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(coup.code);
+                                    setCopiedCouponCode(coup.code);
+                                    setTimeout(() => setCopiedCouponCode(null), 2000);
+                                  }}
+                                  className="p-1 hover:bg-[#FAF7F2] rounded text-[#8C3B1F] transition cursor-pointer"
+                                  title="Copy coupon code"
+                                >
+                                  {copiedCouponCode === coup.code ? (
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                                  ) : (
+                                    <Copy className="w-3.5 h-3.5" />
+                                  )}
+                                </button>
+                              )}
+                            </div>
+
+                            {isRedeemed ? (
+                              <span className="text-[9px] uppercase px-2 py-0.5 rounded font-bold bg-gray-200 text-gray-700">
+                                Redeemed
+                              </span>
+                            ) : isExpired ? (
+                              <span className="text-[9px] uppercase px-2 py-0.5 rounded font-bold bg-red-100 text-red-800">
+                                Expired
+                              </span>
+                            ) : (
+                              <span className="text-[9px] uppercase px-2 py-0.5 rounded font-bold bg-green-50 text-green-700 border border-green-200">
+                                Active
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="text-base font-serif-luxury font-bold text-[#8C3B1F]">
+                              {coup.discountType === 'Percentage' ? `${coup.discountValue}% OFF` : `FLAT ₹${coup.discountValue} OFF`}
+                            </div>
+                            <p className="text-[11px] text-[#5A4438] leading-tight">
+                              {coup.description || (coup.minOrderAmount > 0 ? `Valid on orders above ₹${coup.minOrderAmount.toLocaleString('en-IN')}` : 'Discount on any saree order')}
+                            </p>
+                          </div>
+
+                          <div className="pt-2.5 mt-2.5 border-t border-[#FAF7F2] flex items-center justify-between text-[10px] text-[#8A786D]">
+                            <span>
+                              {coup.minOrderAmount > 0 ? `Min. ₹${coup.minOrderAmount.toLocaleString('en-IN')}` : 'No Min Order'} • 1x Use
+                            </span>
+                            <span>Valid till {new Date(coup.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          </div>
+
+                          {!isRedeemed && !isExpired && (
+                            <div className="pt-2.5">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  localStorage.setItem('sakhi_coupon_code', coup.code);
+                                  router.push('/shop');
+                                }}
+                                className="w-full py-1.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-[10px] font-bold uppercase tracking-wider rounded transition flex items-center justify-center gap-1 cursor-pointer"
+                              >
+                                <Tag className="w-3 h-3" />
+                                <span>Apply &amp; Shop</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-6 text-center space-y-1 text-xs text-[#8A786D] bg-white/60 rounded-xl border border-dashed border-[#E5DACD]">
+                    <Ticket className="w-6 h-6 text-[#C59B27]/60 mx-auto" />
+                    <p className="font-semibold text-[#6A2B15]">No personalized coupons right now</p>
+                    <p className="text-[10px]">Special festive and loyalty coupons will appear here when assigned to you.</p>
+                  </div>
+                )}
+              </div>
               <div className="bg-[#F3EADF]/80 border border-[#E5DACD] rounded-2xl p-6 shadow-md">
                 <h3 className="font-serif-luxury text-xl text-[#6A2B15] border-b border-[#E5DACD] pb-3 mb-5 flex items-center gap-2">
                   <Package className="w-5 h-5 text-[#C59B27]" />
@@ -629,7 +1205,11 @@ function ProfileContent() {
                             </div>
                             <div className="flex items-center gap-1.5 font-bold">
                               <Package className="w-3.5 h-3.5 text-[#C59B27]" />
-                              <span className="text-[#1E5631] uppercase tracking-wider text-[10px]">{order.status}</span>
+                              <span className={`uppercase tracking-wider text-[10px] ${
+                                order.status === 'Delivered' ? 'text-green-700' :
+                                order.status === 'Shipped' ? 'text-purple-700' :
+                                'text-[#1E5631]'
+                              }`}>{order.status}</span>
                             </div>
                           </div>
                         </div>
@@ -656,6 +1236,91 @@ function ProfileContent() {
                             </div>
                           ))}
                         </div>
+
+                        {/* Shipment & Tracking Information */}
+                        {(order.trackingId || order.trackingUrl || order.status === 'Shipped' || order.status === 'Delivered') ? (
+                          <div className="bg-[#FAF7F2] border border-[#E5DACD] rounded-lg p-3.5 space-y-2.5">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                              <div className="flex items-start sm:items-center gap-2.5">
+                                <div className="p-2 rounded-lg bg-[#6A2B15]/10 text-[#6A2B15] shrink-0">
+                                  <Truck className="w-4 h-4 text-[#8C3B1F]" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-[#6A2B15]">
+                                      {order.status === 'Delivered'
+                                        ? 'Delivered'
+                                        : order.status === 'Shipped'
+                                        ? 'Shipped & In Transit'
+                                        : 'Shipment Scheduled'}
+                                    </span>
+                                    {order.courierPartner && (
+                                      <span className="text-[10px] font-semibold text-[#8C3B1F] bg-[#E5DACD]/40 px-2 py-0.5 rounded-full">
+                                        {order.courierPartner}
+                                      </span>
+                                    )}
+                                  </div>
+                                  {order.shippedAt && (
+                                    <p className="text-[10px] text-[#8A786D] mt-0.5">
+                                      Dispatched: {new Date(order.shippedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              {order.trackingUrl && (
+                                <a
+                                  href={order.trackingUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-[#FFFFF0] text-[11px] font-bold uppercase tracking-wider rounded-md transition shadow-sm hover:shadow shrink-0 cursor-pointer"
+                                >
+                                  <span>Track Package</span>
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                            </div>
+
+                            {order.trackingId && (
+                              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#E5DACD]/60 text-xs">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-[10px] uppercase font-bold text-[#8A786D]">AWB / Tracking ID:</span>
+                                  <span className="font-mono font-bold text-[#6A2B15] bg-white px-2 py-0.5 rounded border border-[#E5DACD] text-xs">
+                                    {order.trackingId}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(order.trackingId);
+                                    setCopiedTrackingId(order.trackingId);
+                                    setTimeout(() => setCopiedTrackingId(null), 2000);
+                                  }}
+                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8C3B1F] hover:underline cursor-pointer"
+                                >
+                                  {copiedTrackingId === order.trackingId ? (
+                                    <>
+                                      <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
+                                      <span className="text-green-700">Copied!</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-3.5 h-3.5" />
+                                      <span>Copy ID</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        ) : order.status === 'Processing' ? (
+                          <div className="bg-[#FAF7F2]/60 border border-dashed border-[#E5DACD] rounded-lg p-2.5 flex items-center gap-2 text-xs text-[#8A786D]">
+                            <Package className="w-3.5 h-3.5 text-[#C59B27] shrink-0" />
+                            <span className="text-[11px]">
+                              Order is being prepared and hand-checked for dispatch. Tracking details will be updated once shipped.
+                            </span>
+                          </div>
+                        ) : null}
 
                         {/* Total Invoice */}
                         <div className="flex justify-between items-baseline pt-2 border-t border-[#E5DACD]/40">
@@ -689,6 +1354,7 @@ function ProfileContent() {
 
           </div>
         )}
+
       </main>
     </div>
   );
@@ -697,8 +1363,7 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#FFFFF0] flex flex-col items-center justify-center space-y-4">
-        <div className="w-8 h-8 border-2 border-t-transparent border-[#B84D28] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#FFFFF0]">
         <p className="text-xs text-[#8A786D] animate-pulse uppercase tracking-wider font-bold">Loading Profile...</p>
       </div>
     }>

@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 // 1. Initialize Express
 const app = express();
@@ -133,6 +134,18 @@ const Customer = mongoose.models.Customer || mongoose.model('Customer', Customer
 // Customers Endpoints
 app.get('/api/customers', async (req, res) => {
   try {
+    const { email } = req.query;
+    if (email) {
+      let customer = await Customer.findOne({ email: email.toLowerCase() });
+      if (customer) {
+        if (!customer.customerId) {
+          customer.customerId = `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`;
+          await customer.save();
+        }
+        return res.json({ success: true, customer });
+      }
+      return res.json({ success: true, customer: null });
+    }
     const customers = await Customer.find({}).sort({ createdAt: -1 });
     res.json({ success: true, customers });
   } catch (err) {
@@ -142,15 +155,94 @@ app.get('/api/customers', async (req, res) => {
 
 app.post('/api/customers', async (req, res) => {
   try {
-    const { name, email, phone, address, city, state, pincode } = req.body;
-    if (!name || !email) {
-      return res.status(400).json({ success: false, error: 'Missing name or email' });
+    const { name, email, phone, address, city, state, pincode, newAddress, setDefaultAddressId, deleteAddressId } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, error: 'Missing email' });
     }
-    const customer = await Customer.findOneAndUpdate(
-      { email: email.toLowerCase() },
-      { name, phone, address, city, state, pincode },
-      { new: true, upsert: true }
-    );
+    let customer = await Customer.findOne({ email: email.toLowerCase() });
+    if (!customer) {
+      const initialAddresses = [];
+      if (address) {
+        initialAddresses.push({
+          id: `addr_${Date.now()}`,
+          name: name || 'Customer',
+          phone: phone || '',
+          address,
+          city: city || '',
+          state: state || '',
+          pincode: pincode || '',
+          addressType: 'Home',
+          isDefault: true
+        });
+      }
+      customer = await Customer.create({
+        customerId: `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`,
+        name: name || 'Customer',
+        email: email.toLowerCase(),
+        phone: phone || '',
+        address: address || '',
+        city: city || '',
+        state: state || '',
+        pincode: pincode || '',
+        savedAddresses: initialAddresses
+      });
+      return res.json({ success: true, customer });
+    }
+
+    if (!customer.customerId) customer.customerId = `SK-USR-${Math.floor(100000 + Math.random() * 900000)}`;
+    if (name) customer.name = name;
+    if (phone !== undefined) customer.phone = phone;
+
+    if (newAddress && newAddress.address) {
+      const addresses = [...(customer.savedAddresses || [])];
+      const targetId = newAddress.id || `addr_${Date.now()}`;
+      const addrObj = {
+        id: targetId,
+        name: newAddress.name || customer.name,
+        phone: newAddress.phone || customer.phone || '',
+        address: newAddress.address,
+        city: newAddress.city || '',
+        state: newAddress.state || '',
+        pincode: newAddress.pincode || '',
+        addressType: newAddress.addressType || 'Home',
+        isDefault: newAddress.isDefault ?? (addresses.length === 0)
+      };
+      if (addrObj.isDefault) {
+        addresses.forEach(a => { a.isDefault = false; });
+      }
+      const existingIdx = addresses.findIndex(a => a.id === targetId);
+      if (existingIdx >= 0) {
+        addresses[existingIdx] = { ...addresses[existingIdx], ...addrObj };
+      } else {
+        addresses.push(addrObj);
+      }
+      customer.savedAddresses = addresses;
+    }
+
+    if (setDefaultAddressId) {
+      const addresses = [...(customer.savedAddresses || [])];
+      addresses.forEach(a => { a.isDefault = (a.id === setDefaultAddressId); });
+      customer.savedAddresses = addresses;
+    }
+
+    if (deleteAddressId) {
+      let addresses = (customer.savedAddresses || []).filter(a => a.id !== deleteAddressId);
+      if (addresses.length > 0 && !addresses.some(a => a.isDefault)) {
+        addresses[0].isDefault = true;
+      }
+      customer.savedAddresses = addresses;
+    }
+
+    const defaultAddr = customer.savedAddresses?.find(a => a.isDefault) || customer.savedAddresses?.[0];
+    if (defaultAddr) {
+      customer.address = defaultAddr.address;
+      customer.city = defaultAddr.city;
+      customer.state = defaultAddr.state;
+      customer.pincode = defaultAddr.pincode;
+      if (!customer.phone && defaultAddr.phone) customer.phone = defaultAddr.phone;
+    }
+
+    await customer.save();
     res.json({ success: true, customer });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -218,6 +310,55 @@ app.get('/api/filter-config', async (req, res) => {
   }
 });
 
+// Razorpay Order Creation Endpoint
+app.post('/api/razorpay/create-order', async (req, res) => {
+  try {
+    const { amount, receipt, notes } = req.body;
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid order amount' });
+    }
+
+    const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+
+    if (!keyId || !keySecret) {
+      return res.status(500).json({ success: false, error: 'Razorpay keys are not configured' });
+    }
+
+    const auth = Buffer.from(`${keyId}:${keySecret}`).toString('base64');
+    const amountInPaise = Math.round(Number(amount) * 100);
+
+    const rzpRes = await fetch('https://api.razorpay.com/v1/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${auth}`,
+      },
+      body: JSON.stringify({
+        amount: amountInPaise,
+        currency: 'INR',
+        receipt: receipt || `rcpt_${Date.now()}`,
+        notes: notes || {},
+      }),
+    });
+
+    const data = await rzpRes.json();
+    if (!rzpRes.ok) {
+      return res.status(rzpRes.status).json({ success: false, error: data.error?.description || 'Failed to create order' });
+    }
+
+    res.json({
+      success: true,
+      orderId: data.id,
+      amount: data.amount,
+      currency: data.currency,
+      keyId,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Orders Endpoints
 app.get('/api/orders', async (req, res) => {
   try {
@@ -230,18 +371,49 @@ app.get('/api/orders', async (req, res) => {
 
 app.post('/api/orders', async (req, res) => {
   try {
-    const { customerName, customerEmail, items, totalAmount } = req.body;
+    const {
+      customerName,
+      customerEmail,
+      customerPhone,
+      shippingAddress,
+      items,
+      totalAmount,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
+
     if (!customerName || !customerEmail || !items || !totalAmount) {
       return res.status(400).json({ success: false, error: 'Missing required order details' });
     }
+
+    // Razorpay signature verification
+    if (razorpay_order_id && razorpay_payment_id && razorpay_signature) {
+      const keySecret = process.env.RAZORPAY_KEY_SECRET;
+      if (keySecret) {
+        const generatedSignature = crypto
+          .createHmac('sha256', keySecret)
+          .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+          .digest('hex');
+
+        if (generatedSignature !== razorpay_signature) {
+          return res.status(400).json({ success: false, error: 'Payment signature verification failed' });
+        }
+      }
+    }
+
     const orderNumber = `SK-${Date.now().toString().slice(-6)}`;
     const newOrder = await Order.create({
       orderNumber,
       customerName,
       customerEmail,
+      customerPhone: customerPhone || '',
+      shippingAddress: shippingAddress || {},
       items,
       totalAmount,
-      status: 'Pending',
+      status: 'Processing',
+      paymentStatus: 'Paid',
+      paymentId: razorpay_payment_id || 'manual',
     });
     res.status(201).json({ success: true, order: newOrder });
   } catch (err) {
@@ -251,13 +423,22 @@ app.post('/api/orders', async (req, res) => {
 
 app.put('/api/orders', async (req, res) => {
   try {
-    const { id, status } = req.body;
-    if (!id || !status) {
-      return res.status(400).json({ success: false, error: 'Missing ID or status' });
+    const { id, status, trackingId, trackingUrl, courierPartner } = req.body;
+    if (!id) {
+      return res.status(400).json({ success: false, error: 'Missing order ID' });
     }
+    const updateFields = {};
+    if (status) {
+      updateFields.status = status;
+      if (status === 'Shipped') updateFields.shippedAt = new Date();
+    }
+    if (trackingId !== undefined) updateFields.trackingId = trackingId.trim();
+    if (trackingUrl !== undefined) updateFields.trackingUrl = trackingUrl.trim();
+    if (courierPartner !== undefined) updateFields.courierPartner = courierPartner.trim();
+
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
-      { status },
+      { $set: updateFields },
       { new: true, runValidators: true }
     );
     if (!updatedOrder) {
