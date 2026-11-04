@@ -3,6 +3,7 @@ import connectDB from '@/lib/db';
 import Settings from '@/models/Settings';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -20,21 +21,27 @@ export async function GET() {
         }
       });
     }
-    return NextResponse.json({ success: true, settings });
+    return NextResponse.json(
+      { success: true, settings },
+      { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' } }
+    );
   } catch (error) {
     console.error('GET Settings Error:', error);
-    return NextResponse.json({
-      success: true,
-      settings: {
-        shippingRates: {
-          keralaLocal: 49,
-          panIndiaStandard: 49,
-          international: 1500,
-          freeShippingThreshold: 0,
-          enableFreeShipping: false
+    return NextResponse.json(
+      {
+        success: true,
+        settings: {
+          shippingRates: {
+            keralaLocal: 49,
+            panIndiaStandard: 49,
+            international: 1500,
+            freeShippingThreshold: 0,
+            enableFreeShipping: false
+          }
         }
-      }
-    });
+      },
+      { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' } }
+    );
   }
 }
 
@@ -58,13 +65,17 @@ export async function POST(request) {
           updatedAt: new Date()
         }
       },
-      { upsert: true, returnDocument: 'after' }
+      { upsert: true, new: true }
     );
 
-    return NextResponse.json({ success: true, settings: updated });
+    return NextResponse.json(
+      { success: true, settings: updated },
+      { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0' } }
+    );
   } catch (error) {
     console.error('POST Settings Error:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
+export const PUT = POST;

@@ -177,7 +177,7 @@ export default function AdminDashboard() {
       }
 
       // Fetch Shipping Settings
-      const settingsRes = await fetch('/api/settings');
+      const settingsRes = await fetch('/api/settings', { cache: 'no-store' });
       const settingsData = await settingsRes.json();
       if (settingsData.success && settingsData.settings?.shippingRates) {
         setShippingRates(settingsData.settings.shippingRates);

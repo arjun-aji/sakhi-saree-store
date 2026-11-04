@@ -159,7 +159,7 @@ export default function CheckoutPage() {
 
   // Load Shipping Settings
   useEffect(() => {
-    fetch('/api/settings')
+    fetch('/api/settings', { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         if (data.success && data.settings?.shippingRates) {

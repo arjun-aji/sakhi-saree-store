@@ -122,7 +122,7 @@ export default function Cart() {
         const query = customerEmail 
           ? `?customerEmail=${encodeURIComponent(customerEmail)}` 
           : '?forCustomer=true';
-        const res = await fetch(`/api/coupons${query}`);
+        const res = await fetch(`/api/coupons${query}`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success && Array.isArray(data.coupons)) {
           setDbCoupons(data.coupons);
@@ -134,7 +134,7 @@ export default function Cart() {
 
     async function loadSettings() {
       try {
-        const res = await fetch('/api/settings');
+        const res = await fetch('/api/settings', { cache: 'no-store' });
         const data = await res.json();
         if (data.success && data.settings?.shippingRates) {
           setShippingRates(data.settings.shippingRates);
@@ -210,41 +210,15 @@ export default function Cart() {
     setPincodeMessage(`Rate for ${clean}: ${info.isFree ? 'FREE Delivery' : `₹${info.fee} (${info.region})`}`);
   };
 
-  // Available coupons list (with default welcome offers included)
+  // Available coupons list (strictly active, valid, unexpired database coupons only)
   const availableCoupons = useMemo(() => {
-    const list = [...dbCoupons];
-    const hasWelcome10 = list.some(c => c.code === 'WELCOME10');
-    if (!hasWelcome10) {
-      list.push({
-        _id: 'default_welcome10',
-        code: 'WELCOME10',
-        discountType: 'Percentage',
-        discountValue: 10,
-        minOrderAmount: 0,
-        description: 'First order special: 10% OFF on all handcrafted sarees',
-        targetType: 'all',
-        canRedeem: true
-      });
-    }
-    const hasFestive30 = list.some(c => c.code === 'FESTIVE30' || c.code === 'SAKHI-SEASON-30');
-    if (!hasFestive30) {
-      list.push({
-        _id: 'default_festive30',
-        code: 'FESTIVE30',
-        discountType: 'Percentage',
-        discountValue: 30,
-        minOrderAmount: 1499,
-        description: 'Seasonal Delight: 30% OFF on premium orders above ₹1,499',
-        targetType: 'all',
-        canRedeem: true
-      });
-    }
-    return list;
+    return (dbCoupons || []).filter(c => c && c.active !== false && !c.isExpired && !c.isUsed && c.canRedeem !== false);
   }, [dbCoupons]);
 
   // Free shipping progress calculations
-  const progressPercent = Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100));
-  const amountNeededForFreeShipping = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const freeThreshold = shippingRates.freeShippingThreshold > 0 ? shippingRates.freeShippingThreshold : 1499;
+  const progressPercent = Math.min(100, Math.round((subtotal / freeThreshold) * 100));
+  const amountNeededForFreeShipping = Math.max(0, freeThreshold - subtotal);
 
   /* ── Coupon Handler ── */
   const applySpecificCoupon = async (targetCode) => {
@@ -289,39 +263,7 @@ export default function Cart() {
       }
     } catch (err) {
       console.warn('Coupon verification network error:', err);
-    }
-
-    // Static fallback coupons
-    if (code === 'WELCOME10' || code === 'SAKHI10') {
-      const disc = Math.round(subtotal * 0.1) || 600;
-      setDiscount(disc);
-      setAppliedCoupon(code);
-      localStorage.setItem('sakhi_coupon_code', code);
-      localStorage.setItem('sakhi_coupon_discount', String(disc));
-      setCouponSuccess(`Coupon ${code} applied successfully!`);
-      setShowCouponsModal(false);
-    } else if (code === 'FESTIVE30') {
-      if (subtotal < 1499) {
-        setCouponError('FESTIVE30 requires a minimum order of ₹1,499.');
-        return;
-      }
-      const disc = Math.round(subtotal * 0.3);
-      setDiscount(disc);
-      setAppliedCoupon(code);
-      localStorage.setItem('sakhi_coupon_code', code);
-      localStorage.setItem('sakhi_coupon_discount', String(disc));
-      setCouponSuccess('Coupon FESTIVE30 applied (-30%)!');
-      setShowCouponsModal(false);
-    } else if (code === 'SAKHI500') {
-      const disc = 500;
-      setDiscount(disc);
-      setAppliedCoupon(code);
-      localStorage.setItem('sakhi_coupon_code', code);
-      localStorage.setItem('sakhi_coupon_discount', String(disc));
-      setCouponSuccess('Coupon SAKHI500 applied (-₹500)!');
-      setShowCouponsModal(false);
-    } else {
-      setCouponError('Invalid coupon code.');
+      setCouponError('Network error verifying coupon code. Please try again.');
     }
   };
 
@@ -466,28 +408,40 @@ export default function Cart() {
                         <div className="flex items-center justify-between pt-1 sm:pt-2">
                           {/* Quantity Controller Pill [ - 1 + ] */}
                           {/* Reducing from 1 to 0 automatically removes the product via updateQuantity(id, -1) */}
-                          <div className="inline-flex items-center border border-[#DCD0C5] rounded-md bg-[#FFFFF0] px-2 py-0.5 sm:py-1 text-xs font-semibold text-[#8C3B1F]">
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, -1)}
-                              className="px-1.5 py-0.5 hover:text-[#B84D28] transition-colors font-bold text-sm"
-                              title={item.quantity === 1 ? 'Remove product from cart' : 'Decrease quantity'}
-                              aria-label="Decrease quantity"
-                            >
-                              −
-                            </button>
-                            <span className="px-3 text-xs font-bold text-[#6A2B15]">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, 1)}
-                              className="px-1.5 py-0.5 hover:text-[#B84D28] transition-colors font-bold text-sm"
-                              title="Increase quantity"
-                              aria-label="Increase quantity"
-                            >
-                              +
-                            </button>
+                          <div className="flex flex-col gap-1">
+                            <div className="inline-flex items-center border border-[#DCD0C5] rounded-md bg-[#FFFFF0] px-2 py-0.5 sm:py-1 text-xs font-semibold text-[#8C3B1F] w-fit">
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(item.id, -1)}
+                                className="px-1.5 py-0.5 hover:text-[#B84D28] transition-colors font-bold text-sm cursor-pointer"
+                                title={item.quantity === 1 ? 'Remove product from cart' : 'Decrease quantity'}
+                                aria-label="Decrease quantity"
+                              >
+                                −
+                              </button>
+                              <span className="px-3 text-xs font-bold text-[#6A2B15]">
+                                {item.quantity}
+                              </span>
+                              <button
+                                type="button"
+                                disabled={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock)}
+                                onClick={() => updateQuantity(item.id, 1)}
+                                className={`px-1.5 py-0.5 transition-colors font-bold text-sm ${
+                                  item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock)
+                                    ? 'opacity-30 cursor-not-allowed text-gray-400'
+                                    : 'hover:text-[#B84D28] cursor-pointer'
+                                }`}
+                                title={item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock) ? `Max stock reached (${item.stock} available)` : 'Increase quantity'}
+                                aria-label="Increase quantity"
+                              >
+                                +
+                              </button>
+                            </div>
+                            {item.stock !== undefined && item.stock !== null && item.quantity >= Number(item.stock) && (
+                              <span className="text-[10px] text-amber-700 font-semibold">
+                                Max available stock reached ({item.stock})
+                              </span>
+                            )}
                           </div>
 
                           {/* Explicit Remove Button (Trash Icon + Text) */}
@@ -642,20 +596,26 @@ export default function Cart() {
                               <p className="font-serif-luxury text-xs sm:text-sm font-bold text-[#6A2B15]">
                                 ₹{rec.price.toLocaleString('en-IN')}
                               </p>
-                              <button
-                                type="button"
-                                onClick={() => handleAddRecommendation(rec)}
-                                className="inline-flex items-center gap-1 bg-[#6A2B15] text-[#FFFFF0] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#8C3B1F] transition-colors"
-                              >
-                                {addedRecId === rec.id ? (
-                                  <Check className="w-3 h-3 text-white" />
-                                ) : (
-                                  <>
-                                    <span>ADD</span>
-                                    <ShoppingCart className="w-2.5 h-2.5" />
-                                  </>
-                                )}
-                              </button>
+                              {rec.stock !== undefined && Number(rec.stock) <= 0 ? (
+                                <span className="text-[9px] uppercase font-bold px-2 py-1 bg-gray-200 text-gray-500 rounded border border-gray-300">
+                                  Out of Stock
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddRecommendation(rec)}
+                                  className="inline-flex items-center gap-1 bg-[#6A2B15] text-[#FFFFF0] text-[9px] uppercase font-bold px-2 py-1 rounded hover:bg-[#8C3B1F] transition-colors cursor-pointer"
+                                >
+                                  {addedRecId === rec.id ? (
+                                    <Check className="w-3 h-3 text-white" />
+                                  ) : (
+                                    <>
+                                      <span>ADD</span>
+                                      <ShoppingCart className="w-2.5 h-2.5" />
+                                    </>
+                                  )}
+                                </button>
+                              )}
                             </div>
                           </div>
                         ))
@@ -1073,9 +1033,11 @@ export default function Cart() {
             <div className="flex flex-col items-center p-2 space-y-1">
               <Truck className="w-5 h-5 text-[#C59B27]" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
-                FREE SHIPPING
+                {shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0 ? 'FREE SHIPPING' : 'STANDARD DELIVERY'}
               </span>
-              <span className="text-[9.5px] text-[#5A4438]">On orders above ₹1499</span>
+              <span className="text-[9.5px] text-[#5A4438]">
+                {shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0 ? `Above ₹${shippingRates.freeShippingThreshold}` : `₹${shippingRates.panIndiaStandard || 49}`}
+              </span>
             </div>
 
             <div className="flex flex-col items-center p-2 space-y-1">

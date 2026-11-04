@@ -62,6 +62,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
   /* ── Product State & Loading ── */
   const [productsList, setProductsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [shippingRates, setShippingRates] = useState({ panIndiaStandard: 49, enableFreeShipping: false, freeShippingThreshold: 0 });
 
   useEffect(() => {
     async function loadProducts() {
@@ -84,7 +85,19 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
         setIsLoading(false);
       }
     }
+
+    async function loadSettings() {
+      try {
+        const res = await fetch('/api/settings', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success && data.settings?.shippingRates) {
+          setShippingRates(data.settings.shippingRates);
+        }
+      } catch (err) {}
+    }
+
     loadProducts();
+    loadSettings();
   }, []);
 
   /* ── Filter States ── */
@@ -339,7 +352,9 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
                 Timeless Elegance, Delivered to You
               </h2>
               <p className="text-xs sm:text-sm text-[#5A4438] font-medium">
-                Free shipping on orders above ₹1499
+                {shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0
+                  ? `Free shipping on orders above ₹${shippingRates.freeShippingThreshold}`
+                  : `Standard delivery across India at ₹${shippingRates.panIndiaStandard || 49}`}
               </p>
               <p className="text-[11px] sm:text-xs text-[#8A786D] pt-1">
                 Secure Packaging &nbsp;•&nbsp; Easy Returns &nbsp;•&nbsp; 100% Quality Assured
@@ -378,9 +393,11 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
             <div className="flex flex-col items-center p-2 space-y-1">
               <Truck className="w-5 h-5 text-[#C59B27]" />
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#6A2B15]">
-                FREE SHIPPING
+                {shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0 ? 'FREE SHIPPING' : 'STANDARD DELIVERY'}
               </span>
-              <span className="text-[9.5px] text-[#5A4438]">Above ₹1499</span>
+              <span className="text-[9.5px] text-[#5A4438]">
+                {shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0 ? `Above ₹${shippingRates.freeShippingThreshold}` : `₹${shippingRates.panIndiaStandard || 49}`}
+              </span>
             </div>
 
             <div className="flex flex-col items-center p-2 space-y-1">

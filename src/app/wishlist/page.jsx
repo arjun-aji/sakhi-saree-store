@@ -113,6 +113,7 @@ export default function WishlistPage() {
                 fabric={product.fabric}
                 color={product.color}
                 slug={product.slug}
+                stock={product.stock}
                 description={product.description}
                 images={product.images}
                 gridImage={product.gridImage}

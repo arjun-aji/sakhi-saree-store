@@ -18,6 +18,7 @@ export default function ProductCard({
   fabric,
   color,
   slug,
+  stock = 10,
   description,
   images = [],
   gridImage,
@@ -25,6 +26,9 @@ export default function ProductCard({
   const { addToCart, wishlistItems, toggleWishlist } = useCart();
   const [addedToCart, setAddedToCart] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const numericStock = stock !== undefined && stock !== null ? Number(stock) : 10;
+  const isOutOfStock = numericStock <= 0;
   
   // Modal states
   const [activeImage, setActiveImage] = useState(image);
@@ -74,6 +78,7 @@ export default function ProductCard({
   const handleAddToCartClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOutOfStock) return;
     
     addToCart({
       id,
@@ -84,6 +89,7 @@ export default function ProductCard({
       color,
       image,
       slug,
+      stock: numericStock,
     });
 
     setAddedToCart(true);
@@ -152,12 +158,18 @@ export default function ProductCard({
             className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
 
-          {/* Top Left Badge */}
-          {displayBadge && (
+          {/* Out of Stock Overlay / Top Left Badge */}
+          {isOutOfStock ? (
+            <div className="absolute inset-0 bg-black/45 backdrop-blur-[1px] flex items-center justify-center z-10 pointer-events-none">
+              <span className="bg-[#8C3B1F] text-white font-serif-luxury font-bold text-[9px] sm:text-[10px] tracking-widest uppercase px-2.5 py-1 rounded shadow-md border border-[#FAF7EC]/50">
+                OUT OF STOCK
+              </span>
+            </div>
+          ) : displayBadge ? (
             <div className="absolute top-2 left-2 bg-[#6A2B15] text-[#FFFFF0] text-[8px] sm:text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-sm shadow-xs z-10 pointer-events-none">
               {displayBadge}
             </div>
-          )}
+          ) : null}
 
           {/* Top Right Wishlist Heart Button */}
           <button
@@ -202,6 +214,23 @@ export default function ProductCard({
               </span>
             )}
           </div>
+
+          {/* Stock Display */}
+          <div className="pt-0.5">
+            {isOutOfStock ? (
+              <span className="text-[9.5px] font-bold text-red-600 uppercase tracking-wide block">
+                Out of Stock
+              </span>
+            ) : numericStock <= 5 ? (
+              <span className="text-[9.5px] font-bold text-amber-700 block">
+                Only {numericStock} left in stock!
+              </span>
+            ) : (
+              <span className="text-[9.5px] font-medium text-emerald-700 block">
+                In Stock ({numericStock} left)
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Add To Cart & WhatsApp Row */}
@@ -209,14 +238,19 @@ export default function ProductCard({
           {/* Add To Cart Button */}
           <button
             type="button"
+            disabled={isOutOfStock}
             onClick={handleAddToCartClick}
             className={`flex-grow inline-flex items-center justify-center gap-1 border py-1.5 px-1.5 text-[8.5px] sm:text-[9.5px] font-bold tracking-widest uppercase rounded-md transition-all duration-300 ${
-              addedToCart
+              isOutOfStock
+                ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                : addedToCart
                 ? 'bg-[#1E5631] text-white border-[#1E5631]'
-                : 'bg-transparent hover:bg-[#6A2B15] border-[#E5D9C8] hover:border-[#6A2B15] text-[#8C3B1F] hover:text-[#FFFFF0]'
+                : 'bg-transparent hover:bg-[#6A2B15] border-[#E5D9C8] hover:border-[#6A2B15] text-[#8C3B1F] hover:text-[#FFFFF0] cursor-pointer'
             }`}
           >
-            {addedToCart ? (
+            {isOutOfStock ? (
+              <span>OUT OF STOCK</span>
+            ) : addedToCart ? (
               <>
                 <span>ADDED</span>
                 <Check className="w-3.5 h-3.5" />
@@ -305,14 +339,30 @@ export default function ProductCard({
                   {name}
                 </h2>
                 
-                {/* Price */}
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="font-serif-luxury text-lg font-bold text-[#6A2B15]">
-                    ₹{price?.toLocaleString('en-IN')}
-                  </span>
-                  {originalPrice && (
-                    <span className="text-xs text-[#8A786D] line-through font-normal">
-                      ₹{originalPrice?.toLocaleString('en-IN')}
+                {/* Price & Stock Badge */}
+                <div className="flex flex-wrap items-center justify-between gap-2 mt-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-serif-luxury text-lg sm:text-xl font-bold text-[#6A2B15]">
+                      ₹{price?.toLocaleString('en-IN')}
+                    </span>
+                    {originalPrice && (
+                      <span className="text-xs text-[#8A786D] line-through font-normal">
+                        ₹{originalPrice?.toLocaleString('en-IN')}
+                      </span>
+                    )}
+                  </div>
+
+                  {isOutOfStock ? (
+                    <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-700 border border-red-300 uppercase">
+                      Out of Stock
+                    </span>
+                  ) : (
+                    <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold ${
+                      numericStock <= 5 
+                        ? 'bg-amber-100 text-amber-800 border border-amber-300' 
+                        : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    }`}>
+                      {numericStock <= 5 ? `Only ${numericStock} left in stock!` : `In Stock (${numericStock} available)`}
                     </span>
                   )}
                 </div>
@@ -358,15 +408,18 @@ export default function ProductCard({
                 <div className="flex gap-2">
                   <button
                     type="button"
+                    disabled={isOutOfStock}
                     onClick={handleAddToCartClick}
                     className={`flex-1 inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-bold tracking-widest uppercase transition-all duration-300 border ${
-                      addedToCart
+                      isOutOfStock
+                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                        : addedToCart
                         ? 'bg-[#1E5631] text-white border-[#1E5631]'
-                        : 'bg-[#6A2B15] border-[#6A2B15] text-[#FFFFF0] hover:bg-[#8C3B1F]'
+                        : 'bg-[#6A2B15] border-[#6A2B15] text-[#FFFFF0] hover:bg-[#8C3B1F] cursor-pointer'
                     }`}
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    <span>{addedToCart ? 'ADDED TO CART' : 'ADD TO CART'}</span>
+                    <span>{isOutOfStock ? 'OUT OF STOCK' : addedToCart ? 'ADDED TO CART' : 'ADD TO CART'}</span>
                   </button>
 
                   <button

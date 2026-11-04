@@ -43,14 +43,27 @@ export function CartProvider({ children }) {
 
   /* ── Add Product To Cart ── */
   const addToCart = (product) => {
+    const itemStock = product.stock !== undefined && product.stock !== null ? Number(product.stock) : 10;
+    if (itemStock <= 0) {
+      return false;
+    }
+
     setCartItems((prevItems) => {
       const existingIndex = prevItems.findIndex((item) => item.id === product.id);
       if (existingIndex > -1) {
-        // Increment quantity if item already exists
+        const currentItem = prevItems[existingIndex];
+        const maxStock = currentItem.stock !== undefined && currentItem.stock !== null ? Number(currentItem.stock) : itemStock;
+        
+        // Prevent adding more than available inventory stock
+        if (currentItem.quantity >= maxStock) {
+          return prevItems;
+        }
+
         const updated = [...prevItems];
         updated[existingIndex] = {
-          ...updated[existingIndex],
-          quantity: updated[existingIndex].quantity + 1,
+          ...currentItem,
+          stock: maxStock,
+          quantity: currentItem.quantity + 1,
         };
         return updated;
       } else {
@@ -63,20 +76,27 @@ export function CartProvider({ children }) {
           price: product.price,
           originalPrice: product.originalPrice || Math.round(product.price * 1.25),
           quantity: 1,
+          stock: itemStock,
           image: product.image || '/assets/about/hero_stack.jpg',
           wishlisted: wishlistItems.includes(product.id),
         };
         return [...prevItems, newItem];
       }
     });
+    return true;
   };
 
-  /* ── Update Quantity (Auto-remove when reduced from 1 to 0) ── */
+  /* ── Update Quantity (Strictly capped at available stock) ── */
   const updateQuantity = (id, delta) => {
     setCartItems((prevItems) => {
       return prevItems
         .map((item) => {
           if (item.id === id) {
+            const maxStock = item.stock !== undefined && item.stock !== null ? Number(item.stock) : 10;
+            if (delta > 0 && item.quantity >= maxStock) {
+              // Cannot exceed stock
+              return item;
+            }
             const newQty = item.quantity + delta;
             if (newQty <= 0) {
               return null; // Marked for removal

@@ -1,13 +1,36 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import { Truck, PackageCheck, ShieldCheck, Headphones } from 'lucide-react';
+import { DEFAULT_SHIPPING_RATES } from '@/lib/shipping';
 
 export default function FeatureBar() {
+  const [shippingRates, setShippingRates] = useState(DEFAULT_SHIPPING_RATES);
+
+  useEffect(() => {
+    fetch('/api/settings', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.settings?.shippingRates) {
+          setShippingRates(data.settings.shippingRates);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const shippingTitle = shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0
+    ? 'Free Shipping'
+    : 'Fast Delivery';
+  const shippingDesc = shippingRates.enableFreeShipping && shippingRates.freeShippingThreshold > 0
+    ? `On orders above ₹${shippingRates.freeShippingThreshold}`
+    : `Pan-India at ₹${shippingRates.panIndiaStandard || 49}`;
+
   const features = [
     {
       icon: Truck,
-      title: 'Free Shipping',
-      shortTitle: 'Free Shipping',
-      description: 'On orders above ₹1499',
+      title: shippingTitle,
+      shortTitle: shippingTitle,
+      description: shippingDesc,
     },
     {
       icon: PackageCheck,
