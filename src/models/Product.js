@@ -17,6 +17,8 @@ const ProductSchema = new mongoose.Schema({
   images: [{ type: String }],
   gridImage: { type: String },
   createdAt: { type: Date, default: Date.now }
+}, {
+  suppressReservedKeysWarning: true
 });
 
 export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
