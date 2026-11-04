@@ -21,7 +21,7 @@ const slides = [
 ];
 
 export default function Hero() {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className={`relative w-full bg-[#FFFFF0] overflow-hidden transition-opacity duration-700 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+    <section className="relative w-full bg-[#FFFFF0] overflow-hidden opacity-100">
 
       {/* ========================================================= */}
       {/* MOBILE HERO VIEW                                          */}
