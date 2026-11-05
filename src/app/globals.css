@@ -4,6 +4,8 @@
 
 html {
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -17,7 +19,10 @@ html {
     font-family: var(--font-sans);
     background-color: #FFFFF0;
     color: #2D2625;
+    max-width: 100%;
     overflow-x: hidden;
+    position: relative;
+    width: 100%;
   }
 }
 

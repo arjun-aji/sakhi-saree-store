@@ -17,14 +17,14 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFFFF0]">
+    <div className="min-h-screen flex flex-col bg-[#FFFFF0] w-full max-w-full overflow-x-hidden">
       {/* Luxury Loading Preloader */}
       <Preloader />
 
       {/* Sticky top bar: Announcement + Navbar */}
-      <div className="sticky top-0 z-50 bg-[#FFFFF0]/95 backdrop-blur-md">
+      <div className="sticky top-0 z-50 bg-[#FFFFF0]/95 backdrop-blur-md w-full max-w-full">
         <AnnouncementBar />
-        <div className="border-b border-[#E5D9C8]/50">
+        <div className="border-b border-[#E5D9C8]/50 w-full">
           <Navbar />
         </div>
       </div>

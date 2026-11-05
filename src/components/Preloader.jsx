@@ -85,8 +85,8 @@ export default function Preloader() {
       <div
         className={`absolute top-0 left-0 bottom-0 w-1/2 z-20 origin-left transition-all duration-[2400ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${
           isOpen
-            ? 'scale-x-[0.06] -translate-x-6 opacity-0'
-            : 'scale-x-100 translate-x-0 opacity-100'
+            ? 'scale-x-[0.06] opacity-0'
+            : 'scale-x-100 opacity-100'
         }`}
         style={{
           boxShadow: '15px 0 40px rgba(0,0,0,0.85)',
@@ -128,8 +128,8 @@ export default function Preloader() {
       <div
         className={`absolute top-0 right-0 bottom-0 w-1/2 z-20 origin-right transition-all duration-[2400ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${
           isOpen
-            ? 'scale-x-[0.06] translate-x-6 opacity-0'
-            : 'scale-x-100 translate-x-0 opacity-100'
+            ? 'scale-x-[0.06] opacity-0'
+            : 'scale-x-100 opacity-100'
         }`}
         style={{
           boxShadow: '-15px 0 40px rgba(0,0,0,0.85)',
@@ -174,7 +174,7 @@ export default function Preloader() {
         }`}
       >
         {/* Soft Radial Spotlight on the Curtain */}
-        <div className="absolute w-[450px] h-[450px] rounded-full bg-amber-400/10 blur-3xl pointer-events-none" />
+        <div className="absolute w-72 sm:w-[450px] h-72 sm:h-[450px] max-w-full rounded-full bg-amber-400/10 blur-3xl pointer-events-none" />
 
         <div className="relative flex flex-col items-center max-w-sm z-10">
           {/* Sakhi Logo */}

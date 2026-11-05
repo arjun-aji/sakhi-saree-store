@@ -81,7 +81,7 @@ export default function NewArrivalsPreview() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 w-full max-w-full min-w-0">
       <div className="flex items-center gap-2">
         <span className="text-[11px] sm:text-xs tracking-[0.25em] font-bold text-[#8C3B1F] uppercase">
           New Arrivals
@@ -89,7 +89,7 @@ export default function NewArrivalsPreview() {
         <span className="h-[1px] w-6 bg-[#8C3B1F]/30"></span>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1 scrollbar-none">
+      <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1 scrollbar-none w-full max-w-full">
         {loading ? (
           // Skeleton loaders for circles
           Array.from({ length: 4 }).map((_, idx) => (

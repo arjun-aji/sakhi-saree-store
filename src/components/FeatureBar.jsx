@@ -57,18 +57,18 @@ export default function FeatureBar() {
       {/* ========================================================= */}
       {/* MOBILE VIEW: 1x4 Grid (4 Small Compact Boxes Side-by-Side) */}
       {/* ========================================================= */}
-      <div className="grid sm:hidden grid-cols-4 gap-1.5 w-full">
+      <div className="grid sm:hidden grid-cols-4 gap-1.5 w-full max-w-full">
         {features.map((item, index) => {
           const Icon = item.icon;
           return (
             <div 
               key={index} 
-              className="bg-[#8C3B1F] text-[#FFFFF0] rounded-lg p-1.5 flex flex-col items-center justify-center text-center border border-[#A34320]/80 shadow-md min-h-[72px]"
+              className="bg-[#8C3B1F] text-[#FFFFF0] rounded-lg p-1.5 flex flex-col items-center justify-center text-center border border-[#A34320]/80 shadow-md min-h-[72px] min-w-0"
             >
-              <div className="w-6 h-6 rounded-full border border-[#D4AF37]/50 flex items-center justify-center bg-[#6A2B15]/60 mb-1">
+              <div className="w-6 h-6 rounded-full border border-[#D4AF37]/50 flex items-center justify-center bg-[#6A2B15]/60 mb-1 flex-shrink-0">
                 <Icon className="w-3 h-3 text-[#D4AF37] stroke-[1.75]" />
               </div>
-              <span className="text-[9px] font-bold tracking-tight uppercase leading-tight text-white">
+              <span className="text-[9px] font-bold tracking-tight uppercase leading-tight text-white line-clamp-2">
                 {item.shortTitle}
               </span>
             </div>

@@ -78,7 +78,7 @@ export default function Hero() {
         </div>
 
         {/* Mobile Content Layer — animated in after preloader */}
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-4 w-full max-w-full min-w-0">
           {/* Tagline */}
           <div className="flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 text-[#8C3B1F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -145,7 +145,7 @@ export default function Hero() {
         <div className="relative z-10 h-48 sm:h-64 my-2" />
 
         {/* Mobile New Arrivals & Feature Bar at Bottom */}
-        <div className="relative z-10 space-y-4">
+        <div className="relative z-10 space-y-4 w-full max-w-full min-w-0">
           <NewArrivalsPreview />
           <FeatureBar />
         </div>
