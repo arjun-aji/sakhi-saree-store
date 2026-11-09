@@ -7,7 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import NewArrivalsPreview from './NewArrivalsPreview';
 import FeatureBar from './FeatureBar';
 
-const slides = [
+const DEFAULT_SLIDES = [
   {
     desktop: "/assets/desktop/herodesk.jpeg",
     mobile: "/assets/mobile/heromob.jpeg",
@@ -22,7 +22,24 @@ const slides = [
 
 export default function Hero() {
   const [visible, setVisible] = useState(true);
+  const [slides, setSlides] = useState(DEFAULT_SLIDES);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Fetch dynamic hero slides from MongoDB database
+  useEffect(() => {
+    async function fetchHeroSlides() {
+      try {
+        const res = await fetch('/api/hero-slides', { cache: 'no-store' });
+        const data = await res.json();
+        if (data.success && Array.isArray(data.slides) && data.slides.length > 0) {
+          setSlides(data.slides);
+        }
+      } catch (err) {
+        console.error('Error fetching dynamic hero slides:', err);
+      }
+    }
+    fetchHeroSlides();
+  }, []);
 
   useEffect(() => {
     // If preloader already done (e.g. hot reload / subsequent visits), show immediately
@@ -40,12 +57,14 @@ export default function Hero() {
     };
   }, []);
 
+  // Automatic slideshow transition
   useEffect(() => {
+    if (slides.length <= 1) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section className="relative w-full bg-[#FFFFF0] overflow-hidden opacity-100">
@@ -59,14 +78,14 @@ export default function Hero() {
         <div className="absolute inset-0 z-0">
           {slides.map((slide, idx) => (
             <div
-              key={idx}
+              key={slide._id || idx}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
                 idx === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
               <Image
-                src={slide.mobile}
-                alt={slide.alt}
+                src={slide.mobile || slide.desktop}
+                alt={slide.alt || 'Sakhi Saree'}
                 fill
                 priority={idx === 0}
                 className="object-cover object-center"
@@ -78,7 +97,7 @@ export default function Hero() {
         </div>
 
         {/* Mobile Content Layer — animated in after preloader */}
-        <div className="relative z-10 space-y-4 w-full max-w-full min-w-0">
+        <div className="relative z-10 space-y-4">
           {/* Tagline */}
           <div className="flex items-center gap-1.5">
             <svg className="w-3.5 h-3.5 text-[#8C3B1F]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -139,15 +158,12 @@ export default function Hero() {
               <span>Buy on WhatsApp</span>
             </a>
           </div>
-        </div>
 
-        {/* Mobile Spacer */}
-        <div className="relative z-10 h-48 sm:h-64 my-2" />
+          {/* Mobile Feature Bar at Bottom */}
+          <div className="pt-2">
+            <FeatureBar />
+          </div>
 
-        {/* Mobile New Arrivals & Feature Bar at Bottom */}
-        <div className="relative z-10 space-y-4 w-full max-w-full min-w-0">
-          <NewArrivalsPreview />
-          <FeatureBar />
         </div>
 
       </div>
@@ -160,14 +176,14 @@ export default function Hero() {
         <div className="absolute inset-0 z-0">
           {slides.map((slide, idx) => (
             <div
-              key={idx}
+              key={slide._id || idx}
               className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
                 idx === currentSlide ? 'opacity-100' : 'opacity-0'
               }`}
             >
               <Image
-                src={slide.desktop}
-                alt={slide.alt}
+                src={slide.desktop || slide.mobile}
+                alt={slide.alt || 'Sakhi Saree'}
                 fill
                 priority={idx === 0}
                 className="object-cover object-center"
@@ -257,18 +273,20 @@ export default function Hero() {
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-        {slides.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => setCurrentSlide(idx)}
-            className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-              idx === currentSlide ? 'bg-[#8C3B1F] w-6' : 'bg-[#8C3B1F]/30 hover:bg-[#8C3B1F]/60'
-            }`}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
-      </div>
+      {slides.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                idx === currentSlide ? 'bg-[#8C3B1F] w-6' : 'bg-[#8C3B1F]/30 hover:bg-[#8C3B1F]/60'
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
 
     </section>
   );

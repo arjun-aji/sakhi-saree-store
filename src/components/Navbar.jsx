@@ -126,6 +126,15 @@ export default function Navbar() {
               </span>
             )}
           </Link>
+
+          {/* User to Admin Switch Button */}
+          <Link
+            href="/admin"
+            title="Open Admin CMS Portal"
+            className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#6A2B15] bg-[#FAF7EC] hover:bg-[#6A2B15] hover:text-[#FFFFF0] px-2.5 py-1 rounded-sm border border-[#E5DACD] transition-all duration-200 shadow-xs"
+          >
+            <span>Admin</span>
+          </Link>
         </div>
 
       </div>
@@ -204,6 +213,26 @@ export default function Navbar() {
             >
               Contact
             </Link>
+
+            {/* Mobile Account & Admin Switch */}
+            <div className="pt-4 border-t border-[#E5D9C8]/60 mt-2 space-y-2">
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-xs font-bold tracking-widest text-[#8C3B1F] uppercase hover:text-[#B84D28] transition-colors py-1"
+              >
+                <User className="w-4 h-4" />
+                <span>My Account</span>
+              </Link>
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between text-xs font-bold tracking-widest text-[#6A2B15] bg-[#FAF7EC] px-3 py-2 rounded-sm border border-[#E5DACD] uppercase hover:bg-[#6A2B15] hover:text-white transition-colors"
+              >
+                <span>Admin CMS</span>
+                <span className="text-[9px] bg-[#6A2B15] text-white px-1.5 py-0.5 rounded font-mono">PORTAL</span>
+              </Link>
+            </div>
           </nav>
         </div>
       )}

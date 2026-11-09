@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -36,7 +37,12 @@ import {
   Copy,
   CheckCircle2,
   ExternalLink,
-  Gift
+  Gift,
+  Image,
+  Megaphone,
+  ShieldCheck,
+  ArrowUp,
+  ArrowDown
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -52,6 +58,35 @@ export default function AdminDashboard() {
   const [faqs, setFaqs] = useState([]);
   const [messages, setMessages] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [heroSlides, setHeroSlides] = useState([]);
+  const [editingSlide, setEditingSlide] = useState(null);
+  const [slideForm, setSlideForm] = useState({
+    desktop: '',
+    mobile: '',
+    alt: 'Sakhi Handcrafted Saree Collection',
+    title: '',
+    subtitle: '',
+    link: '/shop',
+    order: 1,
+    active: true
+  });
+  const [savingSlide, setSavingSlide] = useState(false);
+  const [announcementsConfig, setAnnouncementsConfig] = useState({
+    enabled: true,
+    items: [
+      { text: 'Pan-India Shipping at ₹49 | Free Shipping Above ₹999', icon: 'truck', link: '', active: true },
+      { text: 'Cash on Delivery (COD) Available', icon: 'shield', link: '', active: true },
+      { text: '10% Off On First Order | Use Code: SAKHI10', icon: 'tag', link: '/shop', active: true }
+    ]
+  });
+  const [editingAnnouncementIdx, setEditingAnnouncementIdx] = useState(null);
+  const [announcementForm, setAnnouncementForm] = useState({
+    text: '',
+    icon: 'truck',
+    link: '',
+    active: true
+  });
+  const [savingAnnouncements, setSavingAnnouncements] = useState(false);
   const [filterConfig, setFilterConfig] = useState({
     categories: [],
     fabrics: [],
@@ -176,11 +211,23 @@ export default function AdminDashboard() {
         });
       }
 
-      // Fetch Shipping Settings
+      // Fetch Shipping & Announcement Settings
       const settingsRes = await fetch('/api/settings', { cache: 'no-store' });
       const settingsData = await settingsRes.json();
-      if (settingsData.success && settingsData.settings?.shippingRates) {
-        setShippingRates(settingsData.settings.shippingRates);
+      if (settingsData.success && settingsData.settings) {
+        if (settingsData.settings.shippingRates) {
+          setShippingRates(settingsData.settings.shippingRates);
+        }
+        if (settingsData.settings.announcements) {
+          setAnnouncementsConfig(settingsData.settings.announcements);
+        }
+      }
+
+      // Fetch Hero Slides
+      const slideRes = await fetch('/api/hero-slides?all=true', { cache: 'no-store' });
+      const slideData = await slideRes.json();
+      if (slideData.success && Array.isArray(slideData.slides)) {
+        setHeroSlides(slideData.slides);
       }
     } catch (error) {
       console.error('Error fetching admin dashboard data:', error);
@@ -292,6 +339,10 @@ export default function AdminDashboard() {
             setProductForm(prev => ({ ...prev, image: data.url }));
           } else if (formType === 'blog') {
             setBlogForm(prev => ({ ...prev, image: data.url }));
+          } else if (formType === 'slide-desktop') {
+            setSlideForm(prev => ({ ...prev, desktop: data.url }));
+          } else if (formType === 'slide-mobile') {
+            setSlideForm(prev => ({ ...prev, mobile: data.url }));
           }
           showNotification('Image uploaded successfully to Cloudinary!');
         } else {
@@ -593,6 +644,164 @@ export default function AdminDashboard() {
     }
   };
 
+  // Hero Slide CRUD
+  const saveSlide = async (e) => {
+    e.preventDefault();
+    if (!slideForm.desktop || !slideForm.mobile) {
+      showNotification('Please provide both Desktop and Mobile banner images.', 'error');
+      return;
+    }
+    setSavingSlide(true);
+    try {
+      const body = editingSlide ? { ...slideForm, _id: editingSlide._id } : slideForm;
+      const res = await fetch('/api/hero-slides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification(editingSlide ? 'Hero slide updated successfully!' : 'Hero slide created successfully!');
+        setEditingSlide(null);
+        setSlideForm({
+          desktop: '',
+          mobile: '',
+          alt: 'Sakhi Handcrafted Saree Collection',
+          title: '',
+          subtitle: '',
+          link: '/shop',
+          order: heroSlides.length + 1,
+          active: true
+        });
+        fetchData();
+      } else {
+        showNotification(data.error || 'Failed to save slide', 'error');
+      }
+    } catch (err) {
+      showNotification('Failed to save slide', 'error');
+    } finally {
+      setSavingSlide(false);
+    }
+  };
+
+  const deleteSlide = async (id) => {
+    if (!confirm('Are you sure you want to delete this hero slide?')) return;
+    try {
+      const res = await fetch(`/api/hero-slides?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Hero slide deleted successfully');
+        fetchData();
+      } else {
+        showNotification(data.error || 'Failed to delete slide', 'error');
+      }
+    } catch (err) {
+      showNotification('Failed to delete slide', 'error');
+    }
+  };
+
+  const toggleSlideActive = async (slide) => {
+    try {
+      const res = await fetch('/api/hero-slides', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...slide, active: !slide.active })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification(`Slide is now ${!slide.active ? 'Active' : 'Hidden'}`);
+        fetchData();
+      }
+    } catch (err) {
+      showNotification('Failed to update slide status', 'error');
+    }
+  };
+
+  // Top Announcement Bar Handlers
+  const saveAnnouncements = async (updatedConfig) => {
+    setSavingAnnouncements(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ announcements: updatedConfig })
+      });
+      const data = await res.json();
+      if (data.success && data.settings?.announcements) {
+        setAnnouncementsConfig(data.settings.announcements);
+        showNotification('Announcements updated successfully!');
+      } else {
+        showNotification(data.error || 'Failed to update announcements', 'error');
+      }
+    } catch (err) {
+      showNotification('Failed to update announcements', 'error');
+    } finally {
+      setSavingAnnouncements(false);
+    }
+  };
+
+  const handleSaveAnnouncementItem = (e) => {
+    e.preventDefault();
+    if (!announcementForm.text.trim()) {
+      showNotification('Please enter announcement text', 'error');
+      return;
+    }
+
+    const currentItems = Array.isArray(announcementsConfig.items) ? [...announcementsConfig.items] : [];
+    if (editingAnnouncementIdx !== null && editingAnnouncementIdx >= 0 && editingAnnouncementIdx < currentItems.length) {
+      currentItems[editingAnnouncementIdx] = { ...announcementForm };
+    } else {
+      currentItems.push({ ...announcementForm });
+    }
+
+    const updated = {
+      ...announcementsConfig,
+      items: currentItems
+    };
+
+    saveAnnouncements(updated);
+    setEditingAnnouncementIdx(null);
+    setAnnouncementForm({ text: '', icon: 'truck', link: '', active: true });
+  };
+
+  const handleDeleteAnnouncementItem = (idx) => {
+    if (!confirm('Are you sure you want to delete this announcement?')) return;
+    const currentItems = [...(announcementsConfig.items || [])];
+    currentItems.splice(idx, 1);
+    const updated = { ...announcementsConfig, items: currentItems };
+    saveAnnouncements(updated);
+    if (editingAnnouncementIdx === idx) {
+      setEditingAnnouncementIdx(null);
+      setAnnouncementForm({ text: '', icon: 'truck', link: '', active: true });
+    }
+  };
+
+  const handleToggleAnnouncementItem = (idx) => {
+    const currentItems = [...(announcementsConfig.items || [])];
+    if (currentItems[idx]) {
+      currentItems[idx].active = !currentItems[idx].active;
+      saveAnnouncements({ ...announcementsConfig, items: currentItems });
+    }
+  };
+
+  const handleMoveAnnouncementItem = (idx, direction) => {
+    const currentItems = [...(announcementsConfig.items || [])];
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= currentItems.length) return;
+    const temp = currentItems[idx];
+    currentItems[idx] = currentItems[targetIdx];
+    currentItems[targetIdx] = temp;
+    saveAnnouncements({ ...announcementsConfig, items: currentItems });
+  };
+
+  const handleToggleAnnouncementsEnabled = () => {
+    const updated = {
+      ...announcementsConfig,
+      enabled: !announcementsConfig.enabled
+    };
+    saveAnnouncements(updated);
+  };
+
   const saveFilterConfig = async (updatedConfig) => {
     try {
       const res = await fetch('/api/filter-config', {
@@ -621,6 +830,637 @@ export default function AdminDashboard() {
   const pendingOrdersCount = orders.filter(o => o.status === 'Pending').length;
   const customersCount = customers.length || new Set(orders.map(o => o.customerEmail)).size;
 
+  // Render Hero Slideshow Workspace
+  const renderHeroSlideshowWorkspace = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+        <div>
+          <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+            <Image className="w-5 h-5 text-[#8C3B1F]" />
+            <span>Hero Slideshow Manager</span>
+            <span className="text-xs font-sans font-bold bg-[#FAF7EC] text-[#8C3B1F] px-2.5 py-0.5 rounded-full border border-[#E5DACD]">
+              {heroSlides.length} Slide{heroSlides.length === 1 ? '' : 's'} in Database
+            </span>
+          </h3>
+          <p className="text-xs text-[#8C7A6B] mt-1">
+            Slides are stored in MongoDB and dynamically rendered on the website homepage with 6-second smooth transitions. Both desktop and mobile images are supported.
+          </p>
+        </div>
+        {editingSlide && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingSlide(null);
+              setSlideForm({
+                desktop: '',
+                mobile: '',
+                alt: 'Sakhi Handcrafted Saree Collection',
+                title: '',
+                subtitle: '',
+                link: '/shop',
+                order: heroSlides.length + 1,
+                active: true
+              });
+            }}
+            className="px-3 py-1.5 text-xs font-semibold text-[#8C3B1F] border border-[#8C3B1F]/40 rounded-lg hover:bg-[#FAF7EC] cursor-pointer"
+          >
+            + Cancel Edit / New Slide
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left: Create/Edit Slide Form */}
+        <form onSubmit={saveSlide} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+          <div className="border-b pb-2 flex items-center justify-between">
+            <h4 className="font-serif font-bold text-[#6A2B15]">
+              {editingSlide ? 'Edit Hero Slide' : 'Add New Hero Slide'}
+            </h4>
+            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Real-Time Sync
+            </span>
+          </div>
+
+          {/* Desktop Image */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs uppercase font-semibold text-[#8C7A6B]">
+                Desktop Banner Image *
+              </label>
+              <span className="text-[10px] text-[#A59483]">Recommended: 1920x1080</span>
+            </div>
+            
+            <div className="border-2 border-dashed border-[#E5D9C8] hover:border-[#6A2B15] transition rounded-lg p-3 text-center cursor-pointer relative bg-[#FAF7F2]">
+              <input 
+                type="file" 
+                onChange={(e) => handleImageUpload(e, 'slide-desktop')}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                accept="image/*"
+                disabled={uploadingImage}
+              />
+              <Upload className="w-4 h-4 text-[#8C7A6B] mx-auto" />
+              <p className="text-[11px] text-[#6A2B15] font-semibold mt-1">
+                {uploadingImage ? 'Uploading to Cloudinary...' : 'Upload Desktop File (Cloudinary)'}
+              </p>
+            </div>
+
+            <input 
+              type="text" 
+              required
+              placeholder="Or paste Desktop Image URL"
+              value={slideForm.desktop}
+              onChange={(e) => setSlideForm(prev => ({ ...prev, desktop: e.target.value }))}
+              className="w-full p-2 border rounded text-xs bg-white mt-1.5 font-mono text-[#6A2B15]"
+            />
+            {slideForm.desktop && (
+              <div className="mt-1.5 relative w-full h-24 rounded border overflow-hidden bg-black/5">
+                <img src={slideForm.desktop} alt="Desktop Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Image */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs uppercase font-semibold text-[#8C7A6B]">
+                Mobile Banner Image *
+              </label>
+              <span className="text-[10px] text-[#A59483]">Recommended: 1080x1920</span>
+            </div>
+            
+            <div className="border-2 border-dashed border-[#E5D9C8] hover:border-[#6A2B15] transition rounded-lg p-3 text-center cursor-pointer relative bg-[#FAF7F2]">
+              <input 
+                type="file" 
+                onChange={(e) => handleImageUpload(e, 'slide-mobile')}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                accept="image/*"
+                disabled={uploadingImage}
+              />
+              <Upload className="w-4 h-4 text-[#8C7A6B] mx-auto" />
+              <p className="text-[11px] text-[#6A2B15] font-semibold mt-1">
+                {uploadingImage ? 'Uploading to Cloudinary...' : 'Upload Mobile File (Cloudinary)'}
+              </p>
+            </div>
+
+            <input 
+              type="text" 
+              required
+              placeholder="Or paste Mobile Image URL"
+              value={slideForm.mobile}
+              onChange={(e) => setSlideForm(prev => ({ ...prev, mobile: e.target.value }))}
+              className="w-full p-2 border rounded text-xs bg-white mt-1.5 font-mono text-[#6A2B15]"
+            />
+            {slideForm.mobile && (
+              <div className="mt-1.5 relative w-20 h-28 rounded border overflow-hidden bg-black/5 mx-auto">
+                <img src={slideForm.mobile} alt="Mobile Preview" className="w-full h-full object-cover" />
+              </div>
+            )}
+          </div>
+
+          {/* Slide Title / Alt */}
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              Slide Title / Alt Tag *
+            </label>
+            <input 
+              type="text" 
+              required
+              placeholder="e.g. Royal Banarasi Silk Festival"
+              value={slideForm.alt}
+              onChange={(e) => setSlideForm(prev => ({ ...prev, alt: e.target.value }))}
+              className="w-full p-2 border rounded text-xs bg-white"
+            />
+          </div>
+
+          {/* Link and Order */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Target Link
+              </label>
+              <input 
+                type="text" 
+                placeholder="/shop"
+                value={slideForm.link}
+                onChange={(e) => setSlideForm(prev => ({ ...prev, link: e.target.value }))}
+                className="w-full p-2 border rounded text-xs bg-white font-mono text-[#6A2B15]"
+              />
+            </div>
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Sort Order
+              </label>
+              <input 
+                type="number" 
+                min="1"
+                value={slideForm.order}
+                onChange={(e) => setSlideForm(prev => ({ ...prev, order: Number(e.target.value) }))}
+                className="w-full p-2 border rounded text-xs bg-white font-bold text-[#6A2B15]"
+              />
+            </div>
+          </div>
+
+          {/* Active toggle */}
+          <div className="flex items-center gap-2 pt-1">
+            <input
+              type="checkbox"
+              id="slideActiveDirect"
+              checked={slideForm.active}
+              onChange={(e) => setSlideForm(prev => ({ ...prev, active: e.target.checked }))}
+              className="w-4 h-4 text-[#6A2B15] rounded border-[#E5DACD] cursor-pointer"
+            />
+            <label htmlFor="slideActiveDirect" className="text-xs font-semibold text-[#6A2B15] cursor-pointer">
+              Active (Publish immediately on Homepage)
+            </label>
+          </div>
+
+          <button 
+            type="submit" 
+            disabled={savingSlide || uploadingImage}
+            className="w-full py-2.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white rounded-lg text-xs font-bold transition shadow-xs disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Check className="w-4 h-4" />
+            <span>{savingSlide ? 'Saving Slide...' : editingSlide ? 'Update Hero Slide' : 'Add Hero Slide'}</span>
+          </button>
+        </form>
+
+        {/* Right: Existing Slides List */}
+        <div className="lg:col-span-2 space-y-4">
+          {heroSlides.length === 0 ? (
+            <div className="bg-white p-8 rounded-xl border border-[#E5D9C8]/60 text-center text-xs text-[#8C7A6B]">
+              No hero slides found. Add your first slide above!
+            </div>
+          ) : (
+            heroSlides.map((slide, idx) => (
+              <div 
+                key={slide._id || idx}
+                className={`bg-white border rounded-xl p-4 sm:p-5 shadow-xs transition hover:shadow-md flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between ${
+                  slide.active ? 'border-[#E5D9C8]' : 'border-dashed border-gray-300 opacity-60'
+                }`}
+              >
+                {/* Thumbnail Pair */}
+                <div className="flex gap-2 shrink-0">
+                  <div className="w-32 h-20 bg-black/5 rounded-lg border overflow-hidden relative group">
+                    <img 
+                      src={slide.desktop} 
+                      alt={slide.alt || 'Desktop'} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} 
+                    />
+                    <span className="absolute bottom-1 left-1 bg-black/75 text-white text-[9px] px-1 py-0.2 rounded font-mono">
+                      Desktop
+                    </span>
+                  </div>
+
+                  <div className="w-14 h-20 bg-black/5 rounded-lg border overflow-hidden relative group">
+                    <img 
+                      src={slide.mobile} 
+                      alt={slide.alt || 'Mobile'} 
+                      className="w-full h-full object-cover" 
+                      onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} 
+                    />
+                    <span className="absolute bottom-1 left-0.5 bg-black/75 text-white text-[8px] px-1 py-0.2 rounded font-mono">
+                      Mobile
+                    </span>
+                  </div>
+                </div>
+
+                {/* Slide Info */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FAF7EC] text-[#6A2B15] border border-[#E5DACD]">
+                      Slide #{slide.order || idx + 1}
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                      slide.active 
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                        : 'bg-gray-100 text-gray-600 border border-gray-300'
+                    }`}>
+                      {slide.active ? '● LIVE ON STORE' : '○ HIDDEN'}
+                    </span>
+                  </div>
+
+                  <h4 className="font-serif font-bold text-sm text-[#6A2B15] truncate">
+                    {slide.alt || slide.title || 'Sakhi Collection Slide'}
+                  </h4>
+
+                  <p className="text-[11px] text-[#8C7A6B] truncate font-mono">
+                    Link: {slide.link || '/shop'}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="flex sm:flex-col items-center gap-1.5 self-end sm:self-auto shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleSlideActive(slide)}
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded border transition cursor-pointer ${
+                      slide.active 
+                        ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100' 
+                        : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                    }`}
+                  >
+                    {slide.active ? 'Hide' : 'Activate'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingSlide(slide);
+                      setSlideForm({
+                        desktop: slide.desktop || '',
+                        mobile: slide.mobile || '',
+                        alt: slide.alt || 'Sakhi Collection',
+                        title: slide.title || '',
+                        subtitle: slide.subtitle || '',
+                        link: slide.link || '/shop',
+                        order: slide.order || 1,
+                        active: slide.active !== undefined ? slide.active : true
+                      });
+                    }}
+                    className="px-2.5 py-1 text-[11px] font-bold rounded border border-[#E5D9C8] hover:bg-[#FAF7EC] text-[#6A2B15] flex items-center gap-1 cursor-pointer"
+                  >
+                    <Edit className="w-3 h-3" />
+                    <span>Edit</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteSlide(slide._id)}
+                    className="p-1 text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                    title="Delete Slide"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // Render Top Announcements Workspace
+  const renderAnnouncementsWorkspace = () => (
+    <div className="space-y-6">
+      {/* Header Card with Master Toggle */}
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+        <div>
+          <div className="flex items-center gap-3">
+            <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+              <Megaphone className="w-5 h-5 text-[#8C3B1F]" />
+              <span>Top Announcement Bar Manager</span>
+            </h3>
+            <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${
+              announcementsConfig.enabled
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                : 'bg-gray-100 text-gray-600 border-gray-300'
+            }`}>
+              {announcementsConfig.enabled ? '● BAR ENABLED' : '○ BAR DISABLED'}
+            </span>
+          </div>
+          <p className="text-xs text-[#8C7A6B] mt-1">
+            Configure the rotating ticker line at the very top of the storefront. Displays across all desktop and mobile pages.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleToggleAnnouncementsEnabled}
+            className={`px-4 py-2 text-xs font-bold rounded-lg border transition cursor-pointer flex items-center gap-1.5 ${
+              announcementsConfig.enabled
+                ? 'bg-amber-50 text-amber-900 border-amber-300 hover:bg-amber-100'
+                : 'bg-emerald-600 text-white border-emerald-700 hover:bg-emerald-700'
+            }`}
+          >
+            {announcementsConfig.enabled ? 'Pause Entire Bar' : 'Enable Announcement Bar'}
+          </button>
+
+          {editingAnnouncementIdx !== null && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingAnnouncementIdx(null);
+                setAnnouncementForm({ text: '', icon: 'truck', link: '', active: true });
+              }}
+              className="px-3 py-2 text-xs font-semibold text-[#8C3B1F] border border-[#8C3B1F]/40 rounded-lg hover:bg-[#FAF7EC] cursor-pointer"
+            >
+              + Cancel Edit / New Item
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Live Storefront Preview */}
+      <div className="bg-white p-5 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-2">
+        <div className="flex items-center justify-between text-xs font-semibold text-[#8C7A6B]">
+          <span className="flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5 text-[#6A2B15]" />
+            <span>Live Storefront Preview</span>
+          </span>
+          <span>
+            {announcementsConfig.enabled ? 'Showing active notices' : 'Currently Hidden on Storefront'}
+          </span>
+        </div>
+
+        <div className={`rounded overflow-hidden border ${announcementsConfig.enabled ? 'border-[#8C3B1F]/40' : 'border-gray-200 opacity-50'}`}>
+          <div className="bg-[#6A2B15] text-[#FFFFF0] text-xs tracking-wider uppercase py-2 px-4 flex items-center justify-around flex-wrap gap-2 text-center">
+            {(announcementsConfig.items || []).filter(i => i.active && i.text).length === 0 ? (
+              <span className="text-white/60 text-xs italic">No active announcements to display</span>
+            ) : (
+              (announcementsConfig.items || []).filter(i => i.active && i.text).map((item, idx) => {
+                const Icon = item.icon === 'shield' ? ShieldCheck :
+                             item.icon === 'tag' ? Tag :
+                             item.icon === 'gift' ? Gift :
+                             item.icon === 'sparkles' ? Sparkles :
+                             item.icon === 'megaphone' ? Megaphone : Truck;
+                return (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Icon className="w-3.5 h-3.5 text-[#D4AF37]" />
+                    <span className="font-medium text-[11px]">{item.text}</span>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Form: Add / Edit Announcement */}
+        <form onSubmit={handleSaveAnnouncementItem} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+          <div className="border-b pb-2 flex items-center justify-between">
+            <h4 className="font-serif font-bold text-[#6A2B15]">
+              {editingAnnouncementIdx !== null ? 'Edit Announcement Item' : 'Add New Announcement'}
+            </h4>
+            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Instant Sync
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              Announcement Text *
+            </label>
+            <textarea
+              required
+              rows={2}
+              placeholder="e.g. Pan-India Shipping at ₹49 | Free Shipping Above ₹999"
+              value={announcementForm.text}
+              onChange={(e) => setAnnouncementForm(prev => ({ ...prev, text: e.target.value }))}
+              className="w-full p-2.5 border border-[#E5D9C8] rounded-lg text-xs bg-white text-[#6A2B15] focus:outline-[#8C3B1F]"
+            />
+            <p className="text-[10px] text-[#8C7A6B] mt-0.5">Keep messages brief for optimal mobile rotation.</p>
+          </div>
+
+          {/* Icon Selector */}
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1.5">
+              Select Icon
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'truck', label: 'Delivery', icon: Truck },
+                { id: 'shield', label: 'COD / Trust', icon: ShieldCheck },
+                { id: 'tag', label: 'Discount', icon: Tag },
+                { id: 'gift', label: 'Festive Offer', icon: Gift },
+                { id: 'sparkles', label: 'New Arrival', icon: Sparkles },
+                { id: 'megaphone', label: 'Notice', icon: Megaphone }
+              ].map(opt => {
+                const OptIcon = opt.icon;
+                const isSelected = announcementForm.icon === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setAnnouncementForm(prev => ({ ...prev, icon: opt.id }))}
+                    className={`p-2 rounded-lg border text-xs flex flex-col items-center gap-1 transition cursor-pointer ${
+                      isSelected
+                        ? 'border-[#6A2B15] bg-[#FAF7EC] text-[#6A2B15] font-bold shadow-xs'
+                        : 'border-[#E5D9C8] text-[#8C7A6B] hover:bg-[#FAF7F2]'
+                    }`}
+                  >
+                    <OptIcon className={`w-4 h-4 ${isSelected ? 'text-[#8C3B1F]' : 'text-[#8C7A6B]'}`} />
+                    <span className="text-[10px]">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Target Link */}
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              Target Link URL (Optional)
+            </label>
+            <input
+              type="text"
+              placeholder="/shop or /collections"
+              value={announcementForm.link}
+              onChange={(e) => setAnnouncementForm(prev => ({ ...prev, link: e.target.value }))}
+              className="w-full p-2 border border-[#E5D9C8] rounded-lg text-xs bg-white font-mono text-[#6A2B15]"
+            />
+            <p className="text-[10px] text-[#8C7A6B] mt-0.5">Optional. Leave empty for informational text only.</p>
+          </div>
+
+          {/* Active Toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-[#E5DACD] bg-[#FAF7EC]/50">
+            <div>
+              <span className="text-xs font-bold text-[#6A2B15] block">Show on Website</span>
+              <span className="text-[10px] text-[#8C7A6B]">Enable or hide without deleting</span>
+            </div>
+            <input
+              type="checkbox"
+              checked={announcementForm.active}
+              onChange={(e) => setAnnouncementForm(prev => ({ ...prev, active: e.target.checked }))}
+              className="w-4 h-4 accent-[#6A2B15] cursor-pointer"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingAnnouncements}
+            className="w-full py-2.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded-lg transition shadow cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+          >
+            <Check className="w-4 h-4" />
+            <span>
+              {savingAnnouncements ? 'Saving...' : editingAnnouncementIdx !== null ? 'Update Announcement' : 'Add Announcement Item'}
+            </span>
+          </button>
+        </form>
+
+        {/* Right: List of Existing Announcements */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+            <h4 className="font-serif font-bold text-[#6A2B15] text-sm">
+              Active Store Announcements ({announcementsConfig.items?.length || 0})
+            </h4>
+            <span className="text-xs text-[#8C7A6B]">
+              Desktop shows all items | Mobile rotates every 3.5s
+            </span>
+          </div>
+
+          <div className="space-y-3">
+            {(!announcementsConfig.items || announcementsConfig.items.length === 0) ? (
+              <div className="p-8 text-center bg-white rounded-xl border border-[#E5D9C8]/60 text-xs text-[#8C7A6B]">
+                No announcements created yet. Use the form on the left to add one.
+              </div>
+            ) : (
+              announcementsConfig.items.map((item, idx) => {
+                const Icon = item.icon === 'shield' ? ShieldCheck :
+                             item.icon === 'tag' ? Tag :
+                             item.icon === 'gift' ? Gift :
+                             item.icon === 'sparkles' ? Sparkles :
+                             item.icon === 'megaphone' ? Megaphone : Truck;
+                return (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-xl border bg-white shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition ${
+                      item.active ? 'border-[#E5D9C8]/70' : 'border-gray-200 opacity-60 bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                      <div className="p-2.5 rounded-lg bg-[#FAF7EC] border border-[#E5DACD] text-[#6A2B15] shrink-0">
+                        <Icon className="w-5 h-5 text-[#8C3B1F]" />
+                      </div>
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FAF7EC] text-[#6A2B15] border border-[#E5DACD]">
+                            #{idx + 1}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                            item.active
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                              : 'bg-gray-100 text-gray-600 border border-gray-300'
+                          }`}>
+                            {item.active ? '● LIVE' : '○ HIDDEN'}
+                          </span>
+                          {item.link && (
+                            <span className="text-[10px] text-[#8C7A6B] font-mono bg-stone-50 px-1.5 py-0.5 rounded border">
+                              Link: {item.link}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs font-medium text-[#6A2B15] leading-relaxed">
+                          {item.text}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-1.5 self-end sm:self-auto shrink-0">
+                      {/* Reorder Buttons */}
+                      <div className="flex items-center border border-[#E5D9C8] rounded overflow-hidden">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => handleMoveAnnouncementItem(idx, 'up')}
+                          className="p-1 hover:bg-[#FAF7EC] disabled:opacity-30 text-[#6A2B15] cursor-pointer"
+                          title="Move Up"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === announcementsConfig.items.length - 1}
+                          onClick={() => handleMoveAnnouncementItem(idx, 'down')}
+                          className="p-1 hover:bg-[#FAF7EC] disabled:opacity-30 text-[#6A2B15] cursor-pointer border-l border-[#E5D9C8]"
+                          title="Move Down"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleToggleAnnouncementItem(idx)}
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded border transition cursor-pointer ${
+                          item.active
+                            ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                            : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                        }`}
+                      >
+                        {item.active ? 'Hide' : 'Activate'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingAnnouncementIdx(idx);
+                          setAnnouncementForm({
+                            text: item.text || '',
+                            icon: item.icon || 'truck',
+                            link: item.link || '',
+                            active: item.active !== undefined ? item.active : true
+                          });
+                        }}
+                        className="px-2.5 py-1 text-[11px] font-bold rounded border border-[#E5D9C8] hover:bg-[#FAF7EC] text-[#6A2B15] flex items-center gap-1 cursor-pointer"
+                      >
+                        <Edit className="w-3 h-3" />
+                        <span>Edit</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteAnnouncementItem(idx)}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded cursor-pointer"
+                        title="Delete Announcement"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-[#2D2625] flex flex-col md:flex-row antialiased font-sans">
       
@@ -645,12 +1485,21 @@ export default function AdminDashboard() {
           </button>
           <span className="font-serif tracking-widest text-[#E3C397] font-bold text-sm">SAKHI CMS</span>
         </div>
-        <button 
-          onClick={fetchData} 
-          className="p-1.5 rounded bg-[#8C3B1F] text-[#E3C397] hover:bg-[#521C21] transition-colors"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/"
+            className="text-[11px] font-bold text-[#E3C397] hover:text-white px-2.5 py-1 rounded bg-[#8C3B1F] flex items-center gap-1 border border-[#E3C397]/30"
+          >
+            <ExternalLink className="w-3 h-3" />
+            <span>Store</span>
+          </Link>
+          <button 
+            onClick={fetchData} 
+            className="p-1.5 rounded bg-[#8C3B1F] text-[#E3C397] hover:bg-[#521C21] transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer (Overlay and Menu) */}
@@ -681,6 +1530,8 @@ export default function AdminDashboard() {
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { id: 'hero-slides', label: 'Hero Slideshow', icon: Image },
+                { id: 'announcements', label: 'Top Announcements', icon: Megaphone },
                 { id: 'products', label: 'Products', icon: ShoppingBag },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
                 { id: 'customers', label: 'Customers', icon: Users },
@@ -765,6 +1616,8 @@ export default function AdminDashboard() {
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'hero-slides', label: 'Hero Slideshow', icon: Image },
+            { id: 'announcements', label: 'Top Announcements', icon: Megaphone },
             { id: 'products', label: 'Products', icon: ShoppingBag },
             { id: 'orders', label: 'Orders', icon: ShoppingCart },
             { id: 'customers', label: 'Customers', icon: Users },
@@ -827,7 +1680,12 @@ export default function AdminDashboard() {
         <header className="hidden md:flex h-16 bg-white border-b border-[#E5D9C8]/60 items-center justify-between px-8 shadow-sm">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-serif text-[#6A2B15] font-bold capitalize">
-              {activeTab === 'contact' ? 'Contact Messages' : activeTab}
+              {activeTab === 'contact' ? 'Contact Messages' :
+               activeTab === 'hero-slides' ? 'Hero Slideshow & Banners' :
+               activeTab === 'announcements' ? 'Top Announcement Bar' :
+               activeTab === 'filters' ? 'Filter Settings' :
+               activeTab === 'content' ? 'Content Hub' :
+               activeTab}
             </h2>
             {subTab && (
               <>
@@ -837,6 +1695,26 @@ export default function AdminDashboard() {
             )}
           </div>
           <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 bg-[#FAF7EC] hover:bg-[#E5DACD] text-[#6A2B15] text-xs font-bold rounded-lg border border-[#E5DACD] transition flex items-center gap-1.5 shadow-xs"
+              title="Open storefront as customer in new tab"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Live Storefront</span>
+            </Link>
+
+            <Link
+              href="/profile"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-[#8C7A6B] hover:text-[#6A2B15] transition hidden lg:inline"
+            >
+              User Profile
+            </Link>
+
             {loading && <div className="text-xs text-[#9E2A2B] font-medium animate-pulse">Fetching changes...</div>}
             <div className="w-px h-6 bg-[#E5D9C8]"></div>
             <div className="flex items-center gap-2">
@@ -861,6 +1739,39 @@ export default function AdminDashboard() {
               {/* 1. OVERVIEW DASHBOARD VIEW */}
               {activeTab === 'dashboard' && (
                 <div className="space-y-8 animate-fadeIn">
+
+                  {/* Storefront Customizer Quick Links Banner */}
+                  <div className="bg-gradient-to-r from-[#6A2B15] to-[#8C3B1F] text-[#FFFFF0] p-5 rounded-xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold tracking-widest uppercase bg-[#FAF7EC]/20 text-[#E3C397] px-2.5 py-0.5 rounded-full inline-block">
+                        Storefront Appearance
+                      </span>
+                      <h3 className="text-base sm:text-lg font-serif font-bold text-[#FFFFF0] mt-1">
+                        Hero Slideshow &amp; Top Announcements
+                      </h3>
+                      <p className="text-xs text-[#E3C397] max-w-xl mt-0.5">
+                        Manage dynamic desktop and mobile hero banner slides and customize the live top announcement ticker bar.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => { setActiveTab('hero-slides'); setSubTab(''); }}
+                        className="px-3.5 py-2 bg-[#E3C397] hover:bg-[#F3D7B5] text-[#6A2B15] font-bold text-xs rounded-lg transition shadow flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Image className="w-4 h-4" />
+                        <span>Hero Slideshow</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setActiveTab('announcements'); setSubTab(''); }}
+                        className="px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-lg border border-white/25 transition flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Megaphone className="w-4 h-4 text-[#D4AF37]" />
+                        <span>Top Announcements</span>
+                      </button>
+                    </div>
+                  </div>
                   
                   {/* Stats Row */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -1039,6 +1950,20 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* HERO SLIDESHOW WORKSPACE */}
+              {activeTab === 'hero-slides' && (
+                <div className="space-y-6 animate-fadeIn">
+                  {renderHeroSlideshowWorkspace()}
+                </div>
+              )}
+
+              {/* TOP ANNOUNCEMENTS WORKSPACE */}
+              {activeTab === 'announcements' && (
+                <div className="space-y-6 animate-fadeIn">
+                  {renderAnnouncementsWorkspace()}
                 </div>
               )}
 
@@ -2366,7 +3291,7 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* Marketing SubTabs */}
-                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6">
+                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6 flex-wrap">
                     <button
                       onClick={() => setSubTab('')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
@@ -2377,11 +3302,21 @@ export default function AdminDashboard() {
                     </button>
                     <button
                       onClick={() => setSubTab('banners')}
-                      className={`px-4 py-2 text-sm font-medium rounded-lg ${
+                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 ${
                         subTab === 'banners' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
                       }`}
                     >
-                      Homepage Banners
+                      <Image className="w-4 h-4 text-[#8C3B1F]" />
+                      <span>Hero Slideshow</span>
+                    </button>
+                    <button
+                      onClick={() => setSubTab('announcements')}
+                      className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 ${
+                        subTab === 'announcements' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
+                      }`}
+                    >
+                      <Megaphone className="w-4 h-4 text-[#8C3B1F]" />
+                      <span>Top Announcements</span>
                     </button>
                   </div>
 
@@ -2641,23 +3576,10 @@ export default function AdminDashboard() {
                   )}
 
                   {/* Homepage Banners Configurer */}
-                  {subTab === 'banners' && (
-                    <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-6">
-                      <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-3">Homepage Carousel Banners</h3>
-                      
-                      <div className="space-y-4">
-                        <div className="border border-[#E5D9C8] rounded-lg p-4 flex gap-4 bg-[#FAF7F2]/35">
-                          <img src="/assets/desktop/herodesk.png" alt="Hero Banner" className="w-32 h-20 object-cover rounded border" onError={(e) => { e.target.src = '/assets/about/story_tradition.jpg'; }} />
-                          <div className="flex-1 space-y-2">
-                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-green-100 text-green-800">Desktop Banner 1</span>
-                            <h4 className="font-serif font-bold text-sm text-[#6A2B15]">Bridal Kasavu Silk Collection</h4>
-                            <p className="text-xs text-[#8C7A6B]">Active and rendering on main page header slider.</p>
-                          </div>
-                          <button className="px-3 py-1.5 border hover:bg-[#FAF7F2] rounded text-xs font-semibold h-fit self-center">Edit Slide</button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {subTab === 'banners' && renderHeroSlideshowWorkspace()}
+
+                  {/* Top Announcements Configurer */}
+                  {subTab === 'announcements' && renderAnnouncementsWorkspace()}
 
                 </div>
               )}
@@ -2890,7 +3812,7 @@ export default function AdminDashboard() {
                 <div className="space-y-6 animate-fadeIn">
                   
                   {/* Content Hub tabs */}
-                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6">
+                  <div className="flex gap-2 border-b border-[#E5D9C8]/60 pb-6 flex-wrap">
                     <button
                       onClick={() => setSubTab('')}
                       className={`px-4 py-2 text-sm font-medium rounded-lg ${
@@ -2906,6 +3828,20 @@ export default function AdminDashboard() {
                       }`}
                     >
                       FAQ Management
+                    </button>
+                    <button
+                      onClick={() => { setActiveTab('hero-slides'); setSubTab(''); }}
+                      className="px-4 py-2 text-sm font-medium rounded-lg bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2] text-[#6A2B15] flex items-center gap-1.5"
+                    >
+                      <Image className="w-4 h-4 text-[#8C3B1F]" />
+                      <span>Hero Slideshow</span>
+                    </button>
+                    <button
+                      onClick={() => { setActiveTab('announcements'); setSubTab(''); }}
+                      className="px-4 py-2 text-sm font-medium rounded-lg bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2] text-[#6A2B15] flex items-center gap-1.5"
+                    >
+                      <Megaphone className="w-4 h-4 text-[#8C3B1F]" />
+                      <span>Top Announcements</span>
                     </button>
                   </div>
 
@@ -3188,6 +4124,32 @@ export default function AdminDashboard() {
                         <input type="password" value="sk_live_••••••••" disabled className="w-full p-2 border text-xs bg-gray-100 rounded" />
                         <span className="text-[10px] text-[#A59483] block">Sandbox Testing mode</span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Storefront Customizer Shortcuts */}
+                  <div className="bg-[#FAF7EC] p-4 rounded-xl border border-[#E5DACD] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                      <h4 className="font-serif font-bold text-sm text-[#6A2B15]">Top Announcement Bar &amp; Hero Banners</h4>
+                      <p className="text-xs text-[#8C7A6B]">Edit store notifications, coupon tickers, delivery text, and desktop/mobile slideshow.</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => { setActiveTab('announcements'); setSubTab(''); }}
+                        className="px-3 py-1.5 bg-[#6A2B15] text-white font-bold text-xs rounded hover:bg-[#8C3B1F] flex items-center gap-1 cursor-pointer"
+                      >
+                        <Megaphone className="w-3.5 h-3.5" />
+                        <span>Edit Announcements</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setActiveTab('hero-slides'); setSubTab(''); }}
+                        className="px-3 py-1.5 border border-[#6A2B15] text-[#6A2B15] font-bold text-xs rounded hover:bg-white flex items-center gap-1 cursor-pointer"
+                      >
+                        <Image className="w-3.5 h-3.5" />
+                        <span>Hero Slideshow</span>
+                      </button>
                     </div>
                   </div>
 
