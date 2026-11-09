@@ -572,6 +572,7 @@ export default function Cart() {
                                   src={rec.image}
                                   alt={rec.name}
                                   fill
+                                  sizes="(max-width: 640px) 50vw, 20vw"
                                   className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                                 />
                                 <button

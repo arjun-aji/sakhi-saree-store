@@ -300,6 +300,7 @@ export default function ProductCard({
                   src={activeImage || '/assets/about/hero_stack.jpg'}
                   alt={name}
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover object-center"
                 />
                 {displayBadge && (
@@ -324,6 +325,7 @@ export default function ProductCard({
                         src={img}
                         alt={`${name} gallery ${idx + 1}`}
                         fill
+                        sizes="48px"
                         className="object-cover"
                       />
                     </button>

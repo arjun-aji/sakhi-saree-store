@@ -1,28 +1,17 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 export default function Preloader() {
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [videoAvailable, setVideoAvailable] = useState(false);
-  const videoRef = useRef(null);
 
   useEffect(() => {
     // Lock scroll during preloader
     document.documentElement.style.overflow = 'hidden';
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-
-    // Check if custom video exists in assets
-    fetch('/assets/curtain.mp4', { method: 'HEAD' })
-      .then((res) => {
-        if (res.ok && res.headers.get('content-type')?.includes('video')) {
-          setVideoAvailable(true);
-        }
-      })
-      .catch(() => {});
 
     // Stage 1: Closed curtains with illuminated Sakhi emblem (1200ms)
     const openTimer = setTimeout(() => {
@@ -48,27 +37,6 @@ export default function Preloader() {
   }, []);
 
   if (!loading) return null;
-
-  // If a custom curtain opening video is placed in /assets/curtain.mp4, play it
-  if (videoAvailable) {
-    return (
-      <div className={`fixed inset-0 z-[9999] bg-black flex items-center justify-center transition-opacity duration-1000 ${isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <video
-          ref={videoRef}
-          src="/assets/curtain.mp4"
-          autoPlay
-          muted
-          playsInline
-          onEnded={() => {
-            setIsOpen(true);
-            window.dispatchEvent(new CustomEvent('preloader-done'));
-            setTimeout(() => setLoading(false), 500);
-          }}
-          className="w-full h-full object-cover"
-        />
-      </div>
-    );
-  }
 
   // Multi-pleat array for rich, realistic cloth folding
   const pleatCount = 10;

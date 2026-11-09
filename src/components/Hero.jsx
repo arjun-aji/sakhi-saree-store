@@ -89,7 +89,7 @@ export default function Hero() {
                 fill
                 priority={idx === 0}
                 className="object-cover object-center"
-                sizes="100vw"
+                sizes="(max-width: 768px) 100vw, 1px"
                 quality={95}
               />
             </div>
@@ -187,7 +187,7 @@ export default function Hero() {
                 fill
                 priority={idx === 0}
                 className="object-cover object-center"
-                sizes="100vw"
+                sizes="(min-width: 768px) 100vw, 1px"
                 quality={95}
               />
             </div>

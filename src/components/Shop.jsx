@@ -369,6 +369,7 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
                     src="/assets/logo.png"
                     alt="Sakhi Packaging Box"
                     fill
+                    sizes="(max-width: 640px) 112px, 128px"
                     className="object-contain"
                   />
                 </div>

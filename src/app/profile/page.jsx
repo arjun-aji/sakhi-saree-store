@@ -1253,6 +1253,7 @@ function ProfileContent() {
                                   src={item.image || '/assets/about/story_tradition.jpg'}
                                   alt={item.name}
                                   fill
+                                  sizes="48px"
                                   className="object-cover"
                                 />
                               </div>
