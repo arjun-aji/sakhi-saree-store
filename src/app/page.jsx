@@ -30,12 +30,12 @@ export default function HomePage() {
       </div>
 
       {/* ── SECTION 1: HERO ── */}
-      <section id="home" className="w-full">
+      <section id="home" className="w-full relative z-20">
         <Hero />
       </section>
 
       {/* ── SECTION 2: SHOP ── */}
-      <section id="shop" className="w-full scroll-mt-24">
+      <section id="shop" className="w-full scroll-mt-24 pt-14 sm:pt-20 lg:pt-24">
         <Suspense
           fallback={
             <div className="w-full py-24 text-center">

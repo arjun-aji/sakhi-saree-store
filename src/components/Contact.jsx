@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, Send, ShieldCheck, Heart, Sparkles, Clock } from 'lucide-react';
 
@@ -82,6 +82,43 @@ export default function Contact() {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // Dynamic Contact Information from CMS / Settings
+    const [contactDetails, setContactDetails] = useState({
+        phone: '+91 97465 98789',
+        email: 'sakhibymayas@gmail.com',
+        address: "Sakhi By Maya's\nKochi, Kerala, India - 682001",
+        headline: "We'd Love to Hear from You!",
+        subtitle: "Have a question, need styling advice, or just want to say hello? We're here for you.",
+        stylingNote: "Looking for custom saree consultations or bridal styling? Drop us a message or call us directly.",
+        whatsappNumber: '919746598789',
+        instagramUrl: 'https://instagram.com',
+        facebookUrl: 'https://facebook.com',
+        pinterestUrl: 'https://pinterest.com'
+    });
+
+    useEffect(() => {
+        async function loadContactSettings() {
+            try {
+                const res = await fetch('/api/settings', { cache: 'no-store' });
+                const data = await res.json();
+                if (data.success && data.settings?.contactInfo) {
+                    setContactDetails(prev => ({ ...prev, ...data.settings.contactInfo }));
+                }
+            } catch (err) {
+                console.warn('Failed to fetch contact settings:', err);
+            }
+        }
+        loadContactSettings();
+
+        // Refresh when user returns to tab or settings are updated
+        window.addEventListener('focus', loadContactSettings);
+        window.addEventListener('settings-updated', loadContactSettings);
+        return () => {
+            window.removeEventListener('focus', loadContactSettings);
+            window.removeEventListener('settings-updated', loadContactSettings);
+        };
+    }, []);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -97,11 +134,12 @@ export default function Contact() {
                 body: JSON.stringify(formData),
             });
 
+            const recipient = contactDetails.email || 'sakhibymayas@gmail.com';
             const mailtoSubject = encodeURIComponent(formData.subject || 'New Contact Inquiry from Sakhi Store');
             const mailtoBody = encodeURIComponent(
                 `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'N/A'}\n\nMessage:\n${formData.message}`
             );
-            const mailtoUrl = `mailto:sakhibymayas@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+            const mailtoUrl = `mailto:${recipient}?subject=${mailtoSubject}&body=${mailtoBody}`;
 
             window.location.href = mailtoUrl;
         } catch (err) {
@@ -203,11 +241,11 @@ export default function Contact() {
                             <LotusIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#B84D28]" />
                         </div>
                         <h2 className="font-serif-luxury text-base sm:text-4xl lg:text-5xl font-normal text-[#6A2B15] tracking-tight leading-tight">
-                            We&apos;d Love to Hear from You!
+                            {contactDetails.headline || "We'd Love to Hear from You!"}
                         </h2>
                         <GoldDivider className="my-1.5 sm:my-4" />
                         <p className="text-[10px] sm:text-sm text-[#4A3B32] leading-relaxed max-w-md">
-                            Have a question, need styling advice, or just want to say hello? We&apos;re here for you.
+                            {contactDetails.subtitle || "Have a question, need styling advice, or just want to say hello? We're here for you."}
                         </p>
                     </div>
 
@@ -226,10 +264,10 @@ export default function Contact() {
                                         Phone
                                     </h4>
                                     <a
-                                        href="tel:+919746598789"
+                                        href={`tel:${contactDetails.phone.replace(/[^0-9+]/g, '')}`}
                                         className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#B84D28] transition-colors"
                                     >
-                                        +91 97465 98789
+                                        {contactDetails.phone}
                                     </a>
                                 </div>
                             </div>
@@ -244,10 +282,10 @@ export default function Contact() {
                                         Email
                                     </h4>
                                     <a
-                                        href="mailto:sakhibymayas@gmail.com"
+                                        href={`mailto:${contactDetails.email}`}
                                         className="text-[10px] sm:text-sm text-[#4A3B32] hover:text-[#B84D28] transition-colors font-medium"
                                     >
-                                        sakhibymayas@gmail.com
+                                        {contactDetails.email}
                                     </a>
                                 </div>
                             </div>
@@ -261,10 +299,8 @@ export default function Contact() {
                                     <h4 className="font-serif-luxury text-xs sm:text-base font-semibold text-[#6A2B15] tracking-wide">
                                         Address
                                     </h4>
-                                    <p className="text-[10px] sm:text-sm text-[#4A3B32] leading-relaxed">
-                                        Sakhi By Maya&apos;s
-                                        <br />
-                                        Kochi, Kerala, India - 682001
+                                    <p className="text-[10px] sm:text-sm text-[#4A3B32] leading-relaxed whitespace-pre-line">
+                                        {contactDetails.address}
                                     </p>
                                 </div>
                             </div>
@@ -279,7 +315,7 @@ export default function Contact() {
                                     </span>
                                 </div>
                                 <p className="text-[10px] sm:text-xs text-[#FAF7EC]/90 leading-relaxed">
-                                    Looking for custom saree consultations or bridal styling? Drop us a message or call us directly.
+                                    {contactDetails.stylingNote || 'Looking for custom saree consultations or bridal styling? Drop us a message or call us directly.'}
                                 </p>
                             </div>
 
@@ -289,7 +325,7 @@ export default function Contact() {
                                     <p className="text-[10px] tracking-[0.2em] font-bold uppercase text-[#8C3B1F] mb-3">Follow Us</p>
                                     <div className="flex items-center gap-3">
                                         <a
-                                            href="https://instagram.com"
+                                            href={contactDetails.instagramUrl || 'https://instagram.com'}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             aria-label="Instagram"
@@ -300,7 +336,7 @@ export default function Contact() {
                                             </svg>
                                         </a>
                                         <a
-                                            href="https://facebook.com"
+                                            href={contactDetails.facebookUrl || 'https://facebook.com'}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             aria-label="Facebook"
@@ -312,7 +348,7 @@ export default function Contact() {
                                         </a>
                                         {/* Pinterest */}
                                         <a
-                                            href="https://pinterest.com"
+                                            href={contactDetails.pinterestUrl || 'https://pinterest.com'}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             aria-label="Pinterest"
@@ -324,7 +360,7 @@ export default function Contact() {
                                         </a>
                                         {/* WhatsApp */}
                                         <a
-                                            href="https://wa.me/919746598789"
+                                            href={`https://wa.me/${(contactDetails.whatsappNumber || '919746598789').replace(/[^0-9]/g, '')}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             aria-label="WhatsApp"

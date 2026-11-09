@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { Heart, ArrowLeft, RefreshCw, ShoppingBag } from 'lucide-react';
 
 export default function WishlistPage() {
-  const { wishlistItems } = useCart();
+  const { wishlistItems, syncWishlist, clearWishlist } = useCart();
   const [productsList, setProductsList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -42,6 +42,18 @@ export default function WishlistPage() {
   const wishlistedProducts = productsList.filter(
     (product) => wishlistItems.includes(product.id) || wishlistItems.includes(product._id)
   );
+
+  // Prune any deleted or stale non-existent IDs from wishlist items
+  useEffect(() => {
+    if (!isLoading && productsList.length > 0) {
+      if (wishlistedProducts.length === 0 && wishlistItems.length > 0) {
+        clearWishlist();
+      } else if (wishlistItems.length > wishlistedProducts.length) {
+        const validIds = productsList.map((p) => p.id || p._id);
+        syncWishlist(validIds);
+      }
+    }
+  }, [isLoading, productsList, wishlistedProducts.length, wishlistItems.length]);
 
   return (
     <div className="min-h-screen bg-[#FFFFF0] text-[#2D2625] flex flex-col">

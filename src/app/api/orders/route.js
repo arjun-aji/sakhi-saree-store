@@ -4,6 +4,7 @@ import connectDB from '@/lib/db';
 import Order from '@/models/Order';
 import Customer from '@/models/Customer';
 import Coupon from '@/models/Coupon';
+import Product from '@/models/Product';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +41,25 @@ export async function PUT(request) {
     if (trackingId !== undefined) updateFields.trackingId = trackingId.trim();
     if (trackingUrl !== undefined) updateFields.trackingUrl = trackingUrl.trim();
     if (courierPartner !== undefined) updateFields.courierPartner = courierPartner.trim();
+
+    // If order status is being updated to Cancelled, automatically restore inventory stock
+    if (status === 'Cancelled') {
+      try {
+        const orderToCancel = await Order.findById(id);
+        if (orderToCancel && orderToCancel.status !== 'Cancelled' && Array.isArray(orderToCancel.items)) {
+          for (const item of orderToCancel.items) {
+            const qty = Math.max(1, Number(item.quantity) || 1);
+            if (item.productId && /^[0-9a-fA-F]{24}$/.test(String(item.productId))) {
+              await Product.findByIdAndUpdate(item.productId, { $inc: { stock: qty } });
+            } else if (item.name) {
+              await Product.findOneAndUpdate({ name: item.name.trim() }, { $inc: { stock: qty } });
+            }
+          }
+        }
+      } catch (cancelStockErr) {
+        console.error('Error restoring stock on order cancellation:', cancelStockErr);
+      }
+    }
 
     const updatedOrder = await Order.findByIdAndUpdate(
       id,
@@ -172,6 +192,49 @@ export async function POST(request) {
       razorpayPaymentId: razorpay_payment_id,
       razorpaySignature: razorpay_signature,
     });
+
+    // ── AUTO-DECREMENT PRODUCT INVENTORY STOCK ──
+    if (Array.isArray(items) && items.length > 0) {
+      for (const item of items) {
+        try {
+          const qtyPurchased = Math.max(1, Number(item.quantity) || 1);
+          let targetProduct = null;
+
+          // Try decrement by explicit productId if valid ObjectId string
+          if (item.productId && /^[0-9a-fA-F]{24}$/.test(String(item.productId))) {
+            targetProduct = await Product.findByIdAndUpdate(
+              item.productId,
+              { $inc: { stock: -qtyPurchased } },
+              { new: true }
+            );
+          } else if (item.id && /^[0-9a-fA-F]{24}$/.test(String(item.id))) {
+            targetProduct = await Product.findByIdAndUpdate(
+              item.id,
+              { $inc: { stock: -qtyPurchased } },
+              { new: true }
+            );
+          }
+
+          // Fallback: match by product title / name if ID didn't match
+          if (!targetProduct && item.name) {
+            targetProduct = await Product.findOneAndUpdate(
+              { name: item.name.trim() },
+              { $inc: { stock: -qtyPurchased } },
+              { new: true }
+            );
+          }
+
+          // Safeguard: clamp stock to minimum 0 (prevent negative inventory)
+          if (targetProduct && targetProduct.stock < 0) {
+            await Product.findByIdAndUpdate(targetProduct._id, { $set: { stock: 0 } });
+          }
+
+          console.log(`Auto-decremented stock for "${item.name}": -${qtyPurchased}. Remaining: ${targetProduct ? Math.max(0, targetProduct.stock) : 'N/A'}`);
+        } catch (stockErr) {
+          console.error(`Failed to auto-decrement stock for item "${item.name}":`, stockErr.message);
+        }
+      }
+    }
 
     // Update or create Customer in DB for CRM records and address persistence
     try {

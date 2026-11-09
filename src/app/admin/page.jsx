@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   LayoutDashboard,
@@ -42,7 +42,12 @@ import {
   Megaphone,
   ShieldCheck,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Layers,
+  Headphones,
+  Award,
+  Star,
+  Clock
 } from 'lucide-react';
 
 export default function AdminDashboard() {
@@ -92,6 +97,32 @@ export default function AdminDashboard() {
     fabrics: [],
     colors: []
   });
+
+  // Parent Categories State
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryForm, setCategoryForm] = useState({
+    name: '',
+    slug: '',
+    subtitle: '',
+    description: '',
+    image: '',
+    order: 1,
+    active: true
+  });
+  const [savingCategory, setSavingCategory] = useState(false);
+
+  // Store Feature Tiles (The 4 Feature Badges)
+  const [featureTiles, setFeatureTiles] = useState([]);
+  const [editingTileIdx, setEditingTileIdx] = useState(null);
+  const [tileForm, setTileForm] = useState({
+    icon: 'truck',
+    title: '',
+    shortTitle: '',
+    description: '',
+    active: true
+  });
+  const [savingFeatureTiles, setSavingFeatureTiles] = useState(false);
   
   // UI & Loading States
   const [loading, setLoading] = useState(true);
@@ -117,9 +148,22 @@ export default function AdminDashboard() {
   const [editingBlog, setEditingBlog] = useState(null);
   const [editingFaq, setEditingFaq] = useState(null);
 
+  // Quick-Add states for Product Add/Edit form
+  const [showQuickAddParentCat, setShowQuickAddParentCat] = useState(false);
+  const [quickParentCatName, setQuickParentCatName] = useState('');
+  const [savingQuickParentCat, setSavingQuickParentCat] = useState(false);
+
+  const [showQuickAddSubCat, setShowQuickAddSubCat] = useState(false);
+  const [quickSubCatName, setQuickSubCatName] = useState('');
+  const [savingQuickSubCat, setSavingQuickSubCat] = useState(false);
+
+  const [showQuickAddFabric, setShowQuickAddFabric] = useState(false);
+  const [quickFabricName, setQuickFabricName] = useState('');
+  const [savingQuickFabric, setSavingQuickFabric] = useState(false);
+
   // Form States
   const [productForm, setProductForm] = useState({
-    name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: ''
+    name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', parentCategory: 'Sarees', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: ''
   });
   const [couponForm, setCouponForm] = useState({
     code: '',
@@ -150,6 +194,20 @@ export default function AdminDashboard() {
     enableFreeShipping: false
   });
   const [savingShippingRates, setSavingShippingRates] = useState(false);
+
+  // Contact Section Content Management State
+  const [contactInfo, setContactInfo] = useState({
+    phone: '+91 97465 98789',
+    email: 'sakhibymayas@gmail.com',
+    address: "Sakhi By Maya's\nKochi, Kerala, India - 682001",
+    headline: "We'd Love to Hear from You!",
+    subtitle: "Have a question, need styling advice, or just want to say hello? We're here for you.",
+    stylingNote: "Looking for custom saree consultations or bridal styling? Drop us a message or call us directly.",
+    whatsappNumber: '919746598789',
+    instagramUrl: 'https://instagram.com',
+    facebookUrl: 'https://facebook.com'
+  });
+  const [savingContactInfo, setSavingContactInfo] = useState(false);
 
   const showNotification = (message, type = 'success') => {
     setNotification({ message, type });
@@ -211,7 +269,7 @@ export default function AdminDashboard() {
         });
       }
 
-      // Fetch Shipping & Announcement Settings
+      // Fetch Shipping & Announcement & Feature Tiles Settings
       const settingsRes = await fetch('/api/settings', { cache: 'no-store' });
       const settingsData = await settingsRes.json();
       if (settingsData.success && settingsData.settings) {
@@ -221,6 +279,12 @@ export default function AdminDashboard() {
         if (settingsData.settings.announcements) {
           setAnnouncementsConfig(settingsData.settings.announcements);
         }
+        if (Array.isArray(settingsData.settings.featureTiles)) {
+          setFeatureTiles(settingsData.settings.featureTiles);
+        }
+        if (settingsData.settings.contactInfo) {
+          setContactInfo(prev => ({ ...prev, ...settingsData.settings.contactInfo }));
+        }
       }
 
       // Fetch Hero Slides
@@ -228,6 +292,13 @@ export default function AdminDashboard() {
       const slideData = await slideRes.json();
       if (slideData.success && Array.isArray(slideData.slides)) {
         setHeroSlides(slideData.slides);
+      }
+
+      // Fetch Parent Categories
+      const catRes = await fetch('/api/categories?all=true', { cache: 'no-store' });
+      const catData = await catRes.json();
+      if (catData.success && Array.isArray(catData.categories)) {
+        setCategoriesList(catData.categories);
       }
     } catch (error) {
       console.error('Error fetching admin dashboard data:', error);
@@ -259,6 +330,34 @@ export default function AdminDashboard() {
       showNotification('Failed to update shipping rates', 'error');
     } finally {
       setSavingShippingRates(false);
+    }
+  };
+
+  const handleSaveContactInfo = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    setSavingContactInfo(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactInfo })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Contact section content saved successfully!');
+        if (data.settings?.contactInfo) {
+          setContactInfo(prev => ({ ...prev, ...data.settings.contactInfo }));
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('settings-updated'));
+        }
+      } else {
+        showNotification(data.error || 'Failed to save contact information', 'error');
+      }
+    } catch {
+      showNotification('Failed to save contact information', 'error');
+    } finally {
+      setSavingContactInfo(false);
     }
   };
 
@@ -343,6 +442,8 @@ export default function AdminDashboard() {
             setSlideForm(prev => ({ ...prev, desktop: data.url }));
           } else if (formType === 'slide-mobile') {
             setSlideForm(prev => ({ ...prev, mobile: data.url }));
+          } else if (formType === 'category') {
+            setCategoryForm(prev => ({ ...prev, image: data.url }));
           }
           showNotification('Image uploaded successfully to Cloudinary!');
         } else {
@@ -372,7 +473,7 @@ export default function AdminDashboard() {
       if (data.success) {
         showNotification(editingProduct ? 'Product updated successfully' : 'Product created successfully');
         setEditingProduct(null);
-        setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
+        setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', parentCategory: 'Sarees', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
         setSubTab('');
         fetchData();
       } else {
@@ -802,6 +903,157 @@ export default function AdminDashboard() {
     saveAnnouncements(updated);
   };
 
+  // ──── PARENT CATEGORIES CRUD ────
+  const saveCategory = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!categoryForm.name.trim()) {
+      showNotification('Category name is required', 'error');
+      return;
+    }
+    setSavingCategory(true);
+    try {
+      const payload = editingCategory
+        ? { ...categoryForm, _id: editingCategory._id }
+        : categoryForm;
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification(editingCategory ? 'Category updated successfully!' : 'Category created successfully!');
+        setEditingCategory(null);
+        setCategoryForm({
+          name: '',
+          slug: '',
+          subtitle: '',
+          description: '',
+          image: '',
+          order: (categoriesList.length || 0) + 1,
+          active: true
+        });
+        const catRes = await fetch('/api/categories?all=true', { cache: 'no-store' });
+        const catData = await catRes.json();
+        if (catData.success && Array.isArray(catData.categories)) {
+          setCategoriesList(catData.categories);
+        }
+      } else {
+        showNotification(data.error || 'Failed to save category', 'error');
+      }
+    } catch (err) {
+      showNotification('Error saving category', 'error');
+    } finally {
+      setSavingCategory(false);
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    if (!confirm('Are you sure you want to delete this category? Category cards will be updated on the store.')) return;
+    try {
+      const res = await fetch(`/api/categories?id=${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Category deleted successfully');
+        setCategoriesList(prev => prev.filter(c => c._id !== id));
+      } else {
+        showNotification(data.error || 'Failed to delete category', 'error');
+      }
+    } catch (err) {
+      showNotification('Error deleting category', 'error');
+    }
+  };
+
+  const toggleCategoryActive = async (cat) => {
+    try {
+      const updated = { ...cat, active: !cat.active };
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated)
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification(`Category is now ${updated.active ? 'Active' : 'Hidden'}`);
+        setCategoriesList(prev => prev.map(c => c._id === cat._id ? { ...c, active: updated.active } : c));
+      }
+    } catch (err) {
+      showNotification('Failed to toggle category', 'error');
+    }
+  };
+
+  // ──── STORE FEATURE TILES (4 TILES) CRUD ────
+  const saveAllFeatureTiles = async (tilesToSave) => {
+    setSavingFeatureTiles(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ featureTiles: tilesToSave })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification('Store Feature Tiles updated successfully!');
+        setFeatureTiles(tilesToSave);
+      } else {
+        showNotification(data.error || 'Failed to save feature tiles', 'error');
+      }
+    } catch (err) {
+      showNotification('Error saving feature tiles', 'error');
+    } finally {
+      setSavingFeatureTiles(false);
+    }
+  };
+
+  const handleSaveTileForm = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!tileForm.title.trim()) {
+      showNotification('Tile title is required', 'error');
+      return;
+    }
+    let updated;
+    if (editingTileIdx !== null) {
+      updated = [...featureTiles];
+      updated[editingTileIdx] = { ...tileForm };
+    } else {
+      updated = [...featureTiles, { ...tileForm }];
+    }
+    saveAllFeatureTiles(updated);
+    setEditingTileIdx(null);
+    setTileForm({
+      icon: 'truck',
+      title: '',
+      shortTitle: '',
+      description: '',
+      active: true
+    });
+  };
+
+  const handleDeleteTile = (idx) => {
+    if (!confirm('Are you sure you want to delete this feature tile?')) return;
+    const updated = featureTiles.filter((_, i) => i !== idx);
+    saveAllFeatureTiles(updated);
+    if (editingTileIdx === idx) {
+      setEditingTileIdx(null);
+      setTileForm({ icon: 'truck', title: '', shortTitle: '', description: '', active: true });
+    }
+  };
+
+  const handleToggleTileActive = (idx) => {
+    const updated = featureTiles.map((t, i) => i === idx ? { ...t, active: !t.active } : t);
+    saveAllFeatureTiles(updated);
+  };
+
+  const handleMoveTile = (idx, direction) => {
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= featureTiles.length) return;
+    const updated = [...featureTiles];
+    const temp = updated[idx];
+    updated[idx] = updated[targetIdx];
+    updated[targetIdx] = temp;
+    saveAllFeatureTiles(updated);
+  };
+
   const saveFilterConfig = async (updatedConfig) => {
     try {
       const res = await fetch('/api/filter-config', {
@@ -823,6 +1075,157 @@ export default function AdminDashboard() {
       showNotification('Failed to update filter settings', 'error');
     }
   };
+
+  // ──── QUICK ADD PRODUCT CATEGORY / STYLE / FABRIC HANDLERS ────
+  const handleQuickAddParentCategory = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = quickParentCatName.trim();
+    if (!name) return;
+    setSavingQuickParentCat(true);
+    try {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          slug,
+          subtitle: '',
+          description: '',
+          image: '',
+          order: (categoriesList.length || 0) + 1,
+          active: true
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        showNotification(`Parent Category "${name}" created & selected!`);
+        const catRes = await fetch('/api/categories?all=true', { cache: 'no-store' });
+        const catData = await catRes.json();
+        if (catData.success && Array.isArray(catData.categories)) {
+          setCategoriesList(catData.categories);
+        }
+        setProductForm(prev => ({ ...prev, parentCategory: name }));
+        setQuickParentCatName('');
+        setShowQuickAddParentCat(false);
+      } else {
+        showNotification(data.error || 'Failed to add parent category', 'error');
+      }
+    } catch {
+      showNotification('Network error adding parent category', 'error');
+    } finally {
+      setSavingQuickParentCat(false);
+    }
+  };
+
+  const handleQuickAddSubCategory = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = quickSubCatName.trim();
+    if (!name) return;
+    setSavingQuickSubCat(true);
+    try {
+      const existing = filterConfig.categories || [];
+      const alreadyExists = existing.some(c => (c.value || c.label || '').toLowerCase() === name.toLowerCase());
+      if (!alreadyExists) {
+        const updated = [...existing, { label: name, value: name }];
+        await saveFilterConfig({ ...filterConfig, categories: updated });
+      }
+      setProductForm(prev => ({ ...prev, category: name }));
+      setQuickSubCatName('');
+      setShowQuickAddSubCat(false);
+      showNotification(`Sub-category "${name}" added & selected!`);
+    } catch {
+      showNotification('Failed to add sub-category', 'error');
+    } finally {
+      setSavingQuickSubCat(false);
+    }
+  };
+
+  const handleQuickAddFabric = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const name = quickFabricName.trim();
+    if (!name) return;
+    setSavingQuickFabric(true);
+    try {
+      const existing = filterConfig.fabrics || [];
+      const alreadyExists = existing.some(f => (f.value || f.label || '').toLowerCase() === name.toLowerCase());
+      if (!alreadyExists) {
+        const updated = [...existing, { label: name, value: name }];
+        await saveFilterConfig({ ...filterConfig, fabrics: updated });
+      }
+      setProductForm(prev => ({ ...prev, fabric: name }));
+      setQuickFabricName('');
+      setShowQuickAddFabric(false);
+      showNotification(`Fabric "${name}" added & selected!`);
+    } catch {
+      showNotification('Failed to add fabric', 'error');
+    } finally {
+      setSavingQuickFabric(false);
+    }
+  };
+
+  // Dynamic available subcategories merged from filterConfig, products, and default list
+  const availableSubCategories = useMemo(() => {
+    const map = new Map();
+    const defaults = [
+      { label: 'Banarasi Silk', value: 'Banarasi' },
+      { label: 'Kanjivaram Silk', value: 'Kanjivaram' },
+      { label: 'Pure Silk', value: 'Silk Sarees' },
+      { label: 'Traditional Cotton', value: 'Cotton Sarees' },
+      { label: 'Kerala Kasavu', value: 'Kerala Kasavu' },
+      { label: 'Churidar Set', value: 'Churidar Set' },
+      { label: 'Anarkali Suit', value: 'Anarkali' },
+      { label: 'Designer Dress', value: 'Designer Dress' },
+      { label: 'Daily Wear', value: 'Daily Wear' },
+      { label: 'Party Wear', value: 'Party Wear' },
+    ];
+    defaults.forEach(d => map.set(d.value, d.label));
+    (filterConfig.categories || []).forEach(c => {
+      const val = c.value || c.label;
+      if (val) map.set(val, c.label || val);
+    });
+    (products || []).forEach(p => {
+      if (p.category && !map.has(p.category)) {
+        map.set(p.category, p.category);
+      }
+    });
+    if (productForm.category && !map.has(productForm.category)) {
+      map.set(productForm.category, productForm.category);
+    }
+    return Array.from(map.entries()).map(([value, label]) => ({ value, label }));
+  }, [filterConfig.categories, products, productForm.category]);
+
+  // Dynamic available fabrics merged from filterConfig, products, and default list
+  const availableFabrics = useMemo(() => {
+    const map = new Map();
+    const defaults = [
+      { label: 'Kanjivaram Silk', value: 'Kanjivaram Silk' },
+      { label: 'Banarasi Silk', value: 'Banarasi Silk' },
+      { label: 'Pure Georgette', value: 'Pure Georgette' },
+      { label: 'Chanderi Silk', value: 'Chanderi Silk' },
+      { label: 'Cotton Silk', value: 'Cotton Silk' },
+      { label: 'Tussar Silk', value: 'Tussar Silk' },
+      { label: 'Organza Silk', value: 'Organza Silk' },
+      { label: 'Pure Cotton', value: 'Pure Cotton' },
+      { label: 'Linen', value: 'Linen' },
+      { label: 'Crepe Silk', value: 'Crepe Silk' },
+      { label: 'Chiffon', value: 'Chiffon' },
+    ];
+    defaults.forEach(d => map.set(d.value, d.label));
+    (filterConfig.fabrics || []).forEach(f => {
+      const val = f.value || f.label;
+      if (val) map.set(val, f.label || val);
+    });
+    (products || []).forEach(p => {
+      if (p.fabric && !map.has(p.fabric)) {
+        map.set(p.fabric, p.fabric);
+      }
+    });
+    if (productForm.fabric && !map.has(productForm.fabric)) {
+      map.set(productForm.fabric, productForm.fabric);
+    }
+    return Array.from(map.entries()).map(([value, label]) => ({ value, label }));
+  }, [filterConfig.fabrics, products, productForm.fabric]);
 
   // Calculate quick metrics for Dashboard Overview
   const totalRevenue = orders.reduce((sum, order) => order.status !== 'Cancelled' ? sum + order.totalAmount : sum, 0);
@@ -1461,8 +1864,607 @@ export default function AdminDashboard() {
     </div>
   );
 
+  // ──── RENDER PARENT CATEGORIES WORKSPACE ────
+  const renderCategoriesWorkspace = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+        <div>
+          <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[#8C3B1F]" />
+            <span>Parent Categories &amp; Dress Types</span>
+            <span className="text-xs font-sans font-bold bg-[#FAF7EC] text-[#8C3B1F] px-2.5 py-0.5 rounded-full border border-[#E5DACD]">
+              {categoriesList.length} Categories
+            </span>
+          </h3>
+          <p className="text-xs text-[#8C7A6B] mt-1">
+            Organize outfits into top-level parent categories (Sarees, Churidars, Women Dresses, etc.). These appear as visual banner cards beneath the feature tiles on the homepage and as main outfit tabs in the Shop.
+          </p>
+        </div>
+        {editingCategory && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingCategory(null);
+              setCategoryForm({
+                name: '',
+                slug: '',
+                subtitle: '',
+                description: '',
+                image: '',
+                order: categoriesList.length + 1,
+                active: true
+              });
+            }}
+            className="px-3 py-1.5 text-xs font-semibold text-[#8C3B1F] border border-[#8C3B1F]/40 rounded-lg hover:bg-[#FAF7EC] cursor-pointer"
+          >
+            + Cancel Edit / New Category
+          </button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left: Category Form */}
+        <form onSubmit={saveCategory} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+          <div className="border-b pb-2 flex items-center justify-between">
+            <h4 className="font-serif font-bold text-[#6A2B15]">
+              {editingCategory ? 'Edit Parent Category' : 'Add New Category'}
+            </h4>
+            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+              Homepage Cards &amp; Shop
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              Category Name *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Sarees, Churidars, Women Dresses"
+              value={categoryForm.name}
+              onChange={(e) => {
+                const val = e.target.value;
+                setCategoryForm(prev => ({
+                  ...prev,
+                  name: val,
+                  slug: editingCategory ? prev.slug : val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                }));
+              }}
+              className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-[#2D2625]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              URL Slug *
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. sarees, churidars, women-dresses"
+              value={categoryForm.slug}
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
+              className="w-full p-2 border rounded-lg text-xs bg-[#FAF7F2] font-mono text-[#6A2B15]"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+              Subtitle / Tagline
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Traditional Handlooms &amp; Pure Silks"
+              value={categoryForm.subtitle}
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, subtitle: e.target.value }))}
+              className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15]"
+            />
+          </div>
+
+          {/* Banner Image */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <label className="text-xs uppercase font-semibold text-[#8C7A6B]">
+                Card Image / Banner *
+              </label>
+              <span className="text-[10px] text-[#A59483]">Recommended: 800x1000</span>
+            </div>
+
+            <div className="border-2 border-dashed border-[#E5D9C8] hover:border-[#6A2B15] transition rounded-lg p-3 text-center cursor-pointer relative bg-[#FAF7F2]">
+              <input
+                type="file"
+                onChange={(e) => handleImageUpload(e, 'category')}
+                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                accept="image/*"
+                disabled={uploadingImage}
+              />
+              <Upload className="w-4 h-4 text-[#8C7A6B] mx-auto" />
+              <p className="text-[11px] text-[#6A2B15] font-semibold mt-1">
+                {uploadingImage ? 'Uploading to Cloudinary...' : 'Upload Image File'}
+              </p>
+            </div>
+
+            <input
+              type="text"
+              required
+              placeholder="Or paste Category Image URL"
+              value={categoryForm.image}
+              onChange={(e) => setCategoryForm(prev => ({ ...prev, image: e.target.value }))}
+              className="w-full p-2 border rounded text-xs bg-white mt-1.5 font-mono text-[#6A2B15]"
+            />
+
+            {categoryForm.image && (
+              <div className="mt-2 relative w-full h-28 rounded-lg border overflow-hidden bg-black/5">
+                <img
+                  src={categoryForm.image}
+                  alt="Category Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => { e.target.src = '/assets/mobile/heromob.jpeg'; }}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Display Order
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={categoryForm.order}
+                onChange={(e) => setCategoryForm(prev => ({ ...prev, order: Number(e.target.value) }))}
+                className="w-full p-2 border rounded-lg text-xs bg-white text-center font-bold"
+              />
+            </div>
+            <div className="flex items-center pt-5">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#6A2B15]">
+                <input
+                  type="checkbox"
+                  checked={categoryForm.active}
+                  onChange={(e) => setCategoryForm(prev => ({ ...prev, active: e.target.checked }))}
+                  className="rounded text-[#6A2B15] focus:ring-[#6A2B15] w-4 h-4 cursor-pointer"
+                />
+                <span>Active on Store</span>
+              </label>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingCategory || uploadingImage}
+            className="w-full py-2.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded-lg transition shadow cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+          >
+            <Check className="w-4 h-4" />
+            <span>{savingCategory ? 'Saving Category...' : editingCategory ? 'Update Category' : 'Create Parent Category'}</span>
+          </button>
+        </form>
+
+        {/* Right: Existing Categories Grid */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+            <h4 className="font-serif font-bold text-[#6A2B15] text-sm">
+              Current Parent Categories ({categoriesList.length})
+            </h4>
+            <span className="text-xs text-[#8C7A6B]">
+              Shown on Homepage &amp; Shop filters
+            </span>
+          </div>
+
+          {categoriesList.length === 0 ? (
+            <div className="bg-white p-8 rounded-xl border border-[#E5D9C8]/60 text-center text-xs text-[#8C7A6B]">
+              No categories configured. Use the form on the left to add one!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {categoriesList.map((cat, idx) => {
+                const assignedCount = products.filter(p => (p.parentCategory || 'Sarees').toLowerCase() === cat.name.toLowerCase()).length;
+                return (
+                  <div
+                    key={cat._id || idx}
+                    className={`bg-white border rounded-xl overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between ${
+                      cat.active ? 'border-[#E5D9C8]' : 'border-dashed border-gray-300 opacity-60'
+                    }`}
+                  >
+                    {/* Image Banner */}
+                    <div className="relative h-36 bg-stone-100 overflow-hidden group">
+                      <img
+                        src={cat.image}
+                        alt={cat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => { e.target.src = '/assets/mobile/heromob.jpeg'; }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+                      
+                      <div className="absolute top-2 left-2 flex gap-1.5">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-black/60 text-white backdrop-blur-xs font-mono">
+                          #{cat.order || idx + 1}
+                        </span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-xs ${
+                          cat.active
+                            ? 'bg-emerald-500/90 text-white'
+                            : 'bg-gray-700/90 text-gray-200'
+                        }`}>
+                          {cat.active ? 'LIVE' : 'HIDDEN'}
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-2 left-3 right-3 text-white">
+                        <h4 className="font-serif font-bold text-base tracking-wide drop-shadow-sm">
+                          {cat.name}
+                        </h4>
+                        <p className="text-[11px] text-[#FAF7EC]/90 line-clamp-1">
+                          {cat.subtitle || 'Premium Collection'}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Card Meta & Actions */}
+                    <div className="p-3.5 space-y-3 bg-white">
+                      <div className="flex items-center justify-between text-xs text-[#8C7A6B]">
+                        <span className="font-mono text-[11px]">Slug: /{cat.slug}</span>
+                        <span className="font-semibold text-[#6A2B15] bg-[#FAF7EC] px-2 py-0.5 rounded border border-[#E5DACD]">
+                          {assignedCount} product{assignedCount === 1 ? '' : 's'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-[#E5D9C8]/60 gap-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => toggleCategoryActive(cat)}
+                            className={`px-2.5 py-1 text-[11px] font-bold rounded border transition cursor-pointer ${
+                              cat.active
+                                ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                                : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                            }`}
+                          >
+                            {cat.active ? 'Hide' : 'Activate'}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCategory(cat);
+                              setCategoryForm({
+                                name: cat.name || '',
+                                slug: cat.slug || '',
+                                subtitle: cat.subtitle || '',
+                                description: cat.description || '',
+                                image: cat.image || '',
+                                order: cat.order || idx + 1,
+                                active: cat.active !== undefined ? cat.active : true
+                              });
+                            }}
+                            className="px-2.5 py-1 text-[11px] font-bold rounded border border-[#E5D9C8] hover:bg-[#FAF7EC] text-[#6A2B15] flex items-center gap-1 cursor-pointer"
+                          >
+                            <Edit className="w-3 h-3" />
+                            <span>Edit</span>
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <Link
+                            href={`/shop?parentCategory=${encodeURIComponent(cat.name)}`}
+                            target="_blank"
+                            className="p-1.5 text-[#8C3B1F] hover:bg-[#FAF7EC] rounded transition"
+                            title="View category in store"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => deleteCategory(cat._id)}
+                            className="p-1.5 text-red-600 hover:bg-red-50 rounded cursor-pointer transition"
+                            title="Delete Category"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ──── RENDER STORE FEATURE BAR (4 TILES) WORKSPACE ────
+  const renderFeatureTilesWorkspace = () => {
+    const iconMap = {
+      truck: Truck,
+      package: Package,
+      shield: ShieldCheck,
+      headphones: Headphones,
+      award: Award,
+      sparkles: Sparkles,
+      star: Star,
+      clock: Clock,
+      gift: Gift,
+      check: CheckCircle2
+    };
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+          <div>
+            <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-[#8C3B1F]" />
+              <span>Store Feature Bar (Homepage 4 Tiles)</span>
+              <span className="text-xs font-sans font-bold bg-[#FAF7EC] text-[#8C3B1F] px-2.5 py-0.5 rounded-full border border-[#E5DACD]">
+                {featureTiles.length} Tiles Configured
+              </span>
+            </h3>
+            <p className="text-xs text-[#8C7A6B] mt-1">
+              Customize the trust badges shown directly below the hero section on both mobile and desktop (e.g. Free Shipping, Easy Returns, 100% Secure, 24/7 Support). You can edit text, choose icons, reorder, or delete tiles.
+            </p>
+          </div>
+          {editingTileIdx !== null && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingTileIdx(null);
+                setTileForm({
+                  icon: 'truck',
+                  title: '',
+                  shortTitle: '',
+                  description: '',
+                  active: true
+                });
+              }}
+              className="px-3 py-1.5 text-xs font-semibold text-[#8C3B1F] border border-[#8C3B1F]/40 rounded-lg hover:bg-[#FAF7EC] cursor-pointer"
+            >
+              + Cancel Edit / New Tile
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left: Tile Form */}
+          <form onSubmit={handleSaveTileForm} className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4 h-fit">
+            <div className="border-b pb-2 flex items-center justify-between">
+              <h4 className="font-serif font-bold text-[#6A2B15]">
+                {editingTileIdx !== null ? `Edit Feature Tile #${editingTileIdx + 1}` : 'Add Feature Tile'}
+              </h4>
+              <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                Hero Section Bar
+              </span>
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Tile Icon *
+              </label>
+              <select
+                value={tileForm.icon}
+                onChange={(e) => setTileForm(prev => ({ ...prev, icon: e.target.value }))}
+                className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15]"
+              >
+                <option value="truck">🚚 Truck — Free Shipping / Delivery</option>
+                <option value="package">📦 Package — Easy Returns / Quality Packaging</option>
+                <option value="shield">🛡️ Shield — 100% Secure Payment</option>
+                <option value="headphones">🎧 Headphones — 24/7 Customer Support</option>
+                <option value="award">🏅 Award — Handcrafted Quality / Certified</option>
+                <option value="sparkles">✨ Sparkles — Pure Luxury / Exclusives</option>
+                <option value="star">⭐ Star — Top Rated</option>
+                <option value="clock">⏰ Clock — Fast Dispatch</option>
+                <option value="gift">🎁 Gift — Festive Packaging</option>
+                <option value="check">✅ Check — Guaranteed Authenticity</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Main Title *
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. FREE SHIPPING, EASY RETURNS"
+                value={tileForm.title}
+                onChange={(e) => setTileForm(prev => ({ ...prev, title: e.target.value }))}
+                className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15] uppercase font-semibold text-[#6A2B15]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Short Title (Mobile display)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. FREE SHIPPING, EASY RETURNS"
+                value={tileForm.shortTitle}
+                onChange={(e) => setTileForm(prev => ({ ...prev, shortTitle: e.target.value }))}
+                className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15] uppercase text-[#8C3B1F]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs uppercase font-semibold text-[#8C7A6B] mb-1">
+                Description Subtitle (Desktop display)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. On orders over ₹999, 7-day return policy"
+                value={tileForm.description}
+                onChange={(e) => setTileForm(prev => ({ ...prev, description: e.target.value }))}
+                className="w-full p-2.5 border rounded-lg text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#6A2B15]"
+              />
+            </div>
+
+            <div className="flex items-center pt-2">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#6A2B15]">
+                <input
+                  type="checkbox"
+                  checked={tileForm.active}
+                  onChange={(e) => setTileForm(prev => ({ ...prev, active: e.target.checked }))}
+                  className="rounded text-[#6A2B15] focus:ring-[#6A2B15] w-4 h-4 cursor-pointer"
+                />
+                <span>Active / Display on Storefront</span>
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingFeatureTiles}
+              className="w-full py-2.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded-lg transition shadow cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
+            >
+              <Check className="w-4 h-4" />
+              <span>
+                {savingFeatureTiles ? 'Saving Tiles...' : editingTileIdx !== null ? 'Update Feature Tile' : 'Add Feature Tile'}
+              </span>
+            </button>
+          </form>
+
+          {/* Right: Existing Tiles List */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
+              <h4 className="font-serif font-bold text-[#6A2B15] text-sm">
+                Active Feature Tiles ({featureTiles.length})
+              </h4>
+              <span className="text-xs text-[#8C7A6B]">
+                Positioned directly under Hero slideshow
+              </span>
+            </div>
+
+            {featureTiles.length === 0 ? (
+              <div className="p-8 text-center bg-white rounded-xl border border-[#E5D9C8]/60 text-xs text-[#8C7A6B]">
+                No feature tiles configured yet. Use the form on the left to add one.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {featureTiles.map((tile, idx) => {
+                  const Icon = iconMap[tile.icon] || Truck;
+                  return (
+                    <div
+                      key={idx}
+                      className={`p-4 rounded-xl border bg-white shadow-xs hover:shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition ${
+                        tile.active ? 'border-[#E5D9C8]' : 'border-dashed border-gray-300 opacity-60 bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                        {/* Tile Icon Badge */}
+                        <div className="w-12 h-12 rounded-xl bg-[#FAF7EC] border border-[#E5DACD] text-[#8C3B1F] flex items-center justify-center shrink-0">
+                          <Icon className="w-6 h-6 stroke-[1.6]" />
+                        </div>
+
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#FAF7EC] text-[#6A2B15] border border-[#E5DACD]">
+                              Tile #{idx + 1}
+                            </span>
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                              tile.active
+                                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                                : 'bg-gray-100 text-gray-600 border border-gray-300'
+                            }`}>
+                              {tile.active ? 'LIVE' : 'HIDDEN'}
+                            </span>
+                            <span className="text-[10px] font-mono text-[#8C7A6B]">
+                              Icon: {tile.icon}
+                            </span>
+                          </div>
+
+                          <h5 className="font-serif font-bold text-sm tracking-wide text-[#6A2B15] uppercase">
+                            {tile.title}
+                          </h5>
+
+                          <p className="text-xs text-[#8C7A6B]">
+                            {tile.description || 'No subtitle provided'}
+                            {tile.shortTitle && tile.shortTitle !== tile.title && (
+                              <span className="ml-2 font-mono text-[10px] text-[#8C3B1F]">(Mobile: {tile.shortTitle})</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Controls */}
+                      <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                        {/* Move Up/Down */}
+                        <div className="flex items-center border border-[#E5D9C8] rounded-lg overflow-hidden bg-white">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => handleMoveTile(idx, 'up')}
+                            className="p-1.5 hover:bg-[#FAF7EC] disabled:opacity-30 text-[#6A2B15] cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === featureTiles.length - 1}
+                            onClick={() => handleMoveTile(idx, 'down')}
+                            className="p-1.5 hover:bg-[#FAF7EC] disabled:opacity-30 text-[#6A2B15] cursor-pointer border-l border-[#E5D9C8]"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Toggle Active */}
+                        <button
+                          type="button"
+                          onClick={() => handleToggleTileActive(idx)}
+                          className={`px-2.5 py-1 text-[11px] font-bold rounded border transition cursor-pointer ${
+                            tile.active
+                              ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                              : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                          }`}
+                        >
+                          {tile.active ? 'Hide' : 'Activate'}
+                        </button>
+
+                        {/* Edit */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingTileIdx(idx);
+                            setTileForm({
+                              icon: tile.icon || 'truck',
+                              title: tile.title || '',
+                              shortTitle: tile.shortTitle || '',
+                              description: tile.description || '',
+                              active: tile.active !== undefined ? tile.active : true
+                            });
+                          }}
+                          className="px-2.5 py-1 text-[11px] font-bold rounded border border-[#E5D9C8] hover:bg-[#FAF7EC] text-[#6A2B15] flex items-center gap-1 cursor-pointer"
+                        >
+                          <Edit className="w-3 h-3" />
+                          <span>Edit</span>
+                        </button>
+
+                        {/* Delete */}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTile(idx)}
+                          className="p-1.5 text-red-600 hover:bg-red-50 rounded cursor-pointer transition"
+                          title="Delete Feature Tile"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#2D2625] flex flex-col md:flex-row antialiased font-sans">
+    <div className="h-screen overflow-hidden bg-[#FDFBF7] text-[#2D2625] flex flex-col md:flex-row antialiased font-sans">
       
       {/* Toast Notification Banner */}
       {notification && (
@@ -1475,7 +2477,7 @@ export default function AdminDashboard() {
       )}
 
       {/* Mobile Top Bar */}
-      <div className="flex md:hidden items-center justify-between bg-[#6A2B15] text-[#FFFFF0] px-4 py-3 border-b border-[#8C3B1F] sticky top-0 z-40">
+      <div className="flex md:hidden items-center justify-between bg-[#6A2B15] text-[#FFFFF0] px-4 py-3 border-b border-[#8C3B1F] flex-shrink-0 z-40">
         <div className="flex items-center gap-2">
           <button 
             onClick={() => setIsMobileSidebarOpen(true)}
@@ -1530,6 +2532,8 @@ export default function AdminDashboard() {
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
               {[
                 { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { id: 'categories', label: 'Parent Categories', icon: Layers },
+                { id: 'feature-tiles', label: 'Store Features (4 Tiles)', icon: Sparkles },
                 { id: 'hero-slides', label: 'Hero Slideshow', icon: Image },
                 { id: 'announcements', label: 'Top Announcements', icon: Megaphone },
                 { id: 'products', label: 'Products', icon: ShoppingBag },
@@ -1540,7 +2544,6 @@ export default function AdminDashboard() {
                 { id: 'filters', label: 'Filter Settings', icon: SlidersHorizontal },
                 { id: 'content', label: 'Content Hub', icon: FileText },
                 { id: 'contact', label: 'Contact Messages', icon: Mail },
-                { id: 'reports', label: 'Sales Reports', icon: BarChart3 },
                 { id: 'settings', label: 'Settings', icon: Settings },
               ].map((item) => {
                 const Icon = item.icon;
@@ -1596,7 +2599,7 @@ export default function AdminDashboard() {
       )}
 
       {/* ──── DESKTOP SIDEBAR ──── */}
-      <aside className="hidden md:flex w-64 bg-[#6A2B15] text-[#FFFFF0] flex-shrink-0 flex-col border-r border-[#8C3B1F]">
+      <aside className="hidden md:flex w-64 bg-[#6A2B15] text-[#FFFFF0] flex-shrink-0 flex-col border-r border-[#8C3B1F] h-full overflow-hidden">
         {/* Logo Banner */}
         <div className="p-6 border-b border-[#8C3B1F] flex items-center justify-between">
           <div className="flex flex-col">
@@ -1616,6 +2619,8 @@ export default function AdminDashboard() {
         <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { id: 'categories', label: 'Parent Categories', icon: Layers },
+            { id: 'feature-tiles', label: 'Store Features (4 Tiles)', icon: Sparkles },
             { id: 'hero-slides', label: 'Hero Slideshow', icon: Image },
             { id: 'announcements', label: 'Top Announcements', icon: Megaphone },
             { id: 'products', label: 'Products', icon: ShoppingBag },
@@ -1626,7 +2631,6 @@ export default function AdminDashboard() {
             { id: 'filters', label: 'Filter Settings', icon: SlidersHorizontal },
             { id: 'content', label: 'Content Hub', icon: FileText },
             { id: 'contact', label: 'Contact Messages', icon: Mail },
-            { id: 'reports', label: 'Sales Reports', icon: BarChart3 },
             { id: 'settings', label: 'Settings', icon: Settings },
           ].map((item) => {
             const Icon = item.icon;
@@ -1674,13 +2678,15 @@ export default function AdminDashboard() {
       </aside>
 
       {/* ──── MAIN CONTENT AREA ──── */}
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         
-        {/* Upper Header bar */}
-        <header className="hidden md:flex h-16 bg-white border-b border-[#E5D9C8]/60 items-center justify-between px-8 shadow-sm">
+        {/* Upper Header bar (Fixed, does not scroll) */}
+        <header className="hidden md:flex h-16 bg-white border-b border-[#E5D9C8]/60 items-center justify-between px-8 shadow-sm flex-shrink-0">
           <div className="flex items-center gap-3">
             <h2 className="text-xl font-serif text-[#6A2B15] font-bold capitalize">
               {activeTab === 'contact' ? 'Contact Messages' :
+               activeTab === 'categories' ? 'Parent Categories & Dress Types' :
+               activeTab === 'feature-tiles' ? 'Store Feature Bar (Tiles)' :
                activeTab === 'hero-slides' ? 'Hero Slideshow & Banners' :
                activeTab === 'announcements' ? 'Top Announcement Bar' :
                activeTab === 'filters' ? 'Filter Settings' :
@@ -1726,8 +2732,8 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        {/* Dynamic Tab Body */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        {/* Dynamic Tab Body (Scrolls smoothly inside fixed frame) */}
+        <div className="flex-1 p-4 sm:p-8 overflow-y-auto">
           {loading && products.length === 0 ? (
             <div className="h-96 flex flex-col items-center justify-center gap-3 text-center">
               <RefreshCw className="w-10 h-10 text-[#9E2A2B] animate-spin" />
@@ -1953,6 +2959,20 @@ export default function AdminDashboard() {
                 </div>
               )}
 
+              {/* PARENT CATEGORIES WORKSPACE */}
+              {activeTab === 'categories' && (
+                <div className="space-y-6 animate-fadeIn">
+                  {renderCategoriesWorkspace()}
+                </div>
+              )}
+
+              {/* STORE FEATURE TILES WORKSPACE */}
+              {activeTab === 'feature-tiles' && (
+                <div className="space-y-6 animate-fadeIn">
+                  {renderFeatureTilesWorkspace()}
+                </div>
+              )}
+
               {/* HERO SLIDESHOW WORKSPACE */}
               {activeTab === 'hero-slides' && (
                 <div className="space-y-6 animate-fadeIn">
@@ -1986,7 +3006,7 @@ export default function AdminDashboard() {
                         onClick={() => {
                           setSubTab('add-product');
                           setEditingProduct(null);
-                          setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
+                          setProductForm({ name: '', price: '', originalPrice: '', image: '', category: 'Banarasi', parentCategory: 'Sarees', fabric: '', color: '', stock: 10, isNew: false, isBestSeller: false, badge: '', description: '', images: [], gridImage: '' });
                         }}
                         className={`px-4 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 ${
                           subTab === 'add-product' ? 'bg-[#6A2B15] text-white' : 'bg-white border border-[#E5D9C8]/80 hover:bg-[#FAF7F2]'
@@ -2050,7 +3070,12 @@ export default function AdminDashboard() {
                                   {p.name}
                                   {p.badge && <span className="ml-2 text-[9px] bg-[#9E2A2B] text-white px-1.5 py-0.5 rounded font-bold">{p.badge}</span>}
                                 </td>
-                                <td className="p-4 text-[#5C4D3E]">{p.category}</td>
+                                <td className="p-4 text-[#5C4D3E]">
+                                  <div className="font-medium">{p.category}</div>
+                                  <span className="inline-block mt-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#FAF7EC] text-[#8C3B1F] border border-[#E5DACD]">
+                                    {p.parentCategory || 'Sarees'}
+                                  </span>
+                                </td>
                                 <td className="p-4 font-semibold text-[#6A2B15]">₹{p.price}</td>
                                 <td className="p-4 text-xs text-[#8C7A6B]">
                                   <div>{p.fabric || 'N/A'}</div>
@@ -2074,6 +3099,7 @@ export default function AdminDashboard() {
                                           originalPrice: p.originalPrice || '',
                                           image: p.image,
                                           category: p.category,
+                                          parentCategory: p.parentCategory || 'Sarees',
                                           fabric: p.fabric || '',
                                           color: p.color || '',
                                           stock: p.stock || 10,
@@ -2149,30 +3175,214 @@ export default function AdminDashboard() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* 1. Parent Category (Dress Type) */}
                             <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Category *</label>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B]">
+                                  Parent Category *
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowQuickAddParentCat(prev => !prev)}
+                                  className="text-[10px] text-[#8C3B1F] hover:text-[#6A2B15] font-bold hover:underline flex items-center gap-0.5"
+                                  title="Add new parent category / dress type"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>Add New</span>
+                                </button>
+                              </div>
+
+                              {showQuickAddParentCat && (
+                                <div className="mb-2 p-2 bg-[#FAF7EC] border border-[#E5DACD] rounded-md flex items-center gap-1.5 animate-fadeIn">
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Lehengas"
+                                    value={quickParentCatName}
+                                    onChange={(e) => setQuickParentCatName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleQuickAddParentCategory();
+                                      }
+                                    }}
+                                    className="flex-1 p-1.5 text-xs rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] bg-white"
+                                    autoFocus
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={handleQuickAddParentCategory}
+                                    disabled={savingQuickParentCat || !quickParentCatName.trim()}
+                                    className="px-2.5 py-1.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-[10px] font-bold uppercase tracking-wider rounded transition disabled:opacity-50 shrink-0"
+                                  >
+                                    {savingQuickParentCat ? 'Adding...' : 'Add'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setShowQuickAddParentCat(false);
+                                      setQuickParentCatName('');
+                                    }}
+                                    className="p-1 text-[#8C7A6B] hover:text-[#2D2625] rounded transition"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              )}
+
                               <select 
-                                value={productForm.category}
+                                value={productForm.parentCategory || 'Sarees'}
+                                onChange={(e) => setProductForm(prev => ({ ...prev, parentCategory: e.target.value }))}
+                                className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white font-medium text-[#6A2B15]"
+                              >
+                                {categoriesList.length > 0 ? (
+                                  categoriesList.map(cat => (
+                                    <option key={cat._id || cat.slug || cat.name} value={cat.name}>
+                                      {cat.name}
+                                    </option>
+                                  ))
+                                ) : (
+                                  <>
+                                    <option value="Sarees">Sarees</option>
+                                    <option value="Churidars">Churidars</option>
+                                    <option value="Women Dresses">Women Dresses</option>
+                                  </>
+                                )}
+                              </select>
+                            </div>
+
+                            {/* 2. Sub-Category / Style */}
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B]">
+                                  Sub-Category / Style *
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowQuickAddSubCat(prev => !prev)}
+                                  className="text-[10px] text-[#8C3B1F] hover:text-[#6A2B15] font-bold hover:underline flex items-center gap-0.5"
+                                  title="Add new subcategory / style"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>Add New</span>
+                                </button>
+                              </div>
+
+                              {showQuickAddSubCat && (
+                                <div className="mb-2 p-2 bg-[#FAF7EC] border border-[#E5DACD] rounded-md flex items-center gap-1.5 animate-fadeIn">
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Chanderi Silk"
+                                    value={quickSubCatName}
+                                    onChange={(e) => setQuickSubCatName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleQuickAddSubCategory();
+                                      }
+                                    }}
+                                    className="flex-1 p-1.5 text-xs rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] bg-white"
+                                    autoFocus
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={handleQuickAddSubCategory}
+                                    disabled={savingQuickSubCat || !quickSubCatName.trim()}
+                                    className="px-2.5 py-1.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-[10px] font-bold uppercase tracking-wider rounded transition disabled:opacity-50 shrink-0"
+                                  >
+                                    {savingQuickSubCat ? 'Adding...' : 'Add'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setShowQuickAddSubCat(false);
+                                      setQuickSubCatName('');
+                                    }}
+                                    className="p-1 text-[#8C7A6B] hover:text-[#2D2625] rounded transition"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              )}
+
+                              <select 
+                                value={productForm.category || availableSubCategories[0]?.value || 'Banarasi'}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, category: e.target.value }))}
                                 className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
                               >
-                                <option value="Banarasi">Banarasi Silk</option>
-                                <option value="Kanjivaram">Kanjivaram Silk</option>
-                                <option value="Silk Sarees">Pure Silk</option>
-                                <option value="Cotton Sarees">Traditional Cotton</option>
-                                <option value="Kerala Kasavu">Kerala Kasavu</option>
+                                {availableSubCategories.map(sc => (
+                                  <option key={sc.value} value={sc.value}>
+                                    {sc.label}
+                                  </option>
+                                ))}
                               </select>
                             </div>
+
+                            {/* 3. Fabric Details */}
                             <div>
-                              <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">Fabric details</label>
-                              <input 
-                                type="text"
-                                placeholder="e.g. Kanjivaram Silk"
-                                value={productForm.fabric}
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B]">
+                                  Fabric Details *
+                                </label>
+                                <button
+                                  type="button"
+                                  onClick={() => setShowQuickAddFabric(prev => !prev)}
+                                  className="text-[10px] text-[#8C3B1F] hover:text-[#6A2B15] font-bold hover:underline flex items-center gap-0.5"
+                                  title="Add new fabric"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  <span>Add New</span>
+                                </button>
+                              </div>
+
+                              {showQuickAddFabric && (
+                                <div className="mb-2 p-2 bg-[#FAF7EC] border border-[#E5DACD] rounded-md flex items-center gap-1.5 animate-fadeIn">
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Mulberry Silk"
+                                    value={quickFabricName}
+                                    onChange={(e) => setQuickFabricName(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleQuickAddFabric();
+                                      }
+                                    }}
+                                    className="flex-1 p-1.5 text-xs rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] bg-white"
+                                    autoFocus
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={handleQuickAddFabric}
+                                    disabled={savingQuickFabric || !quickFabricName.trim()}
+                                    className="px-2.5 py-1.5 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-[10px] font-bold uppercase tracking-wider rounded transition disabled:opacity-50 shrink-0"
+                                  >
+                                    {savingQuickFabric ? 'Adding...' : 'Add'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setShowQuickAddFabric(false);
+                                      setQuickFabricName('');
+                                    }}
+                                    className="p-1 text-[#8C7A6B] hover:text-[#2D2625] rounded transition"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              )}
+
+                              <select 
+                                value={productForm.fabric || availableFabrics[0]?.value || 'Kanjivaram Silk'}
                                 onChange={(e) => setProductForm(prev => ({ ...prev, fabric: e.target.value }))}
                                 className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
-                              />
+                              >
+                                {availableFabrics.map(fab => (
+                                  <option key={fab.value} value={fab.value}>
+                                    {fab.label}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
 
@@ -4065,67 +5275,183 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* 9. SALES & PERFORMANCE REPORTS */}
-              {activeTab === 'reports' && (
-                <div className="space-y-8 animate-fadeIn">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
-                      <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Average Order Basket</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">₹3,450</h4>
-                      <p className="text-[11px] text-green-700 mt-2 font-medium">↑ 12% vs last month</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
-                      <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Conversion rate</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">3.12%</h4>
-                      <p className="text-[11px] text-green-700 mt-2 font-medium">↑ 0.4% vs last month</p>
-                    </div>
-                    <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm">
-                      <p className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Return Rate percentage</p>
-                      <h4 className="text-2xl font-serif font-bold text-[#6A2B15] mt-1">1.8%</h4>
-                      <p className="text-[11px] text-red-700 mt-2 font-medium">↓ 0.2% improvement</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-6 rounded-xl border border-[#E5D9C8]/60 shadow-sm space-y-4">
-                    <h3 className="text-lg font-serif font-bold text-[#6A2B15]">Monthly Revenue Target Reports</h3>
-                    <p className="text-xs text-[#8C7A6B]">Graphical projection metrics for Q3 2026 sales performance.</p>
-                    <div className="h-60 bg-[#FAF7F2] rounded-lg p-6 flex flex-col justify-end border">
-                      <div className="h-full flex items-end gap-10 justify-center">
-                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[40%] text-center text-white text-[10px] py-1 font-bold">₹12k</div>
-                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[55%] text-center text-white text-[10px] py-1 font-bold">₹18k</div>
-                        <div className="w-12 bg-[#8C3B1F] hover:bg-[#6A2B15] transition-all rounded-t-md h-[70%] text-center text-white text-[10px] py-1 font-bold">₹22k</div>
-                        <div className="w-12 bg-[#E3C397] hover:bg-[#c9a777] transition-all rounded-t-md h-[95%] text-center text-[#6A2B15] text-[10px] py-1 font-bold">₹31k</div>
-                      </div>
-                      <div className="flex justify-between border-t border-[#E5D9C8] pt-2 text-xs text-[#8C7A6B] font-semibold mt-2 px-10">
-                        <span>April</span>
-                        <span>May</span>
-                        <span>June</span>
-                        <span>July (Goal Met)</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* 10. APP SETTINGS */}
               {activeTab === 'settings' && (
                 <div className="bg-white rounded-xl border border-[#E5D9C8]/60 shadow-sm p-8 max-w-4xl mx-auto space-y-8 animate-fadeIn">
                   
+                  {/* Payment Gateway Status Card */}
                   <div>
-                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b pb-2 mb-4">Payment Gateways</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 border border-[#E5D9C8] rounded bg-[#FAF7F2]/30 space-y-2">
-                        <span className="text-xs font-bold text-[#6A2B15]">Razorpay API Integration</span>
-                        <input type="text" placeholder="Key ID: rzp_live_xxxxxxxx" className="w-full p-2 border text-xs bg-white rounded" />
-                        <span className="text-[10px] text-green-700 font-bold block">● Connected &amp; Live</span>
+                    <h3 className="text-lg font-serif font-bold text-[#6A2B15] border-b border-[#E5D9C8]/60 pb-2 mb-4 flex items-center justify-between">
+                      <span>Payment Gateway</span>
+                      <span className="text-[11px] font-sans font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Live &amp; Operational
+                      </span>
+                    </h3>
+
+                    <div className="p-5 border border-[#E5D9C8] rounded-xl bg-[#FAF7F2]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-[#8C7A6B] uppercase tracking-wider">Payment Gateway:</span>
+                          <span className="text-sm font-bold text-[#6A2B15] font-serif tracking-wide">Razorpay</span>
+                        </div>
+                        <p className="text-xs text-[#8C7A6B]">
+                          Live online payments enabled via UPI (GPay, PhonePe, Paytm), Net Banking, Cards &amp; Wallets.
+                        </p>
                       </div>
-                      <div className="p-4 border border-[#E5D9C8] rounded bg-[#FAF7F2]/30 space-y-2">
-                        <span className="text-xs font-bold text-[#6A2B15]">Stripe Payments</span>
-                        <input type="password" value="sk_live_••••••••" disabled className="w-full p-2 border text-xs bg-gray-100 rounded" />
-                        <span className="text-[10px] text-[#A59483] block">Sandbox Testing mode</span>
+
+                      <div className="flex items-center gap-2 self-start sm:self-auto">
+                        <span className="text-xs font-semibold text-[#8C7A6B]">Status:</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-300 px-3 py-1 rounded-full">
+                          <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                          Live
+                        </span>
                       </div>
                     </div>
                   </div>
+
+                  {/* Contact Section Content Editor */}
+                  <form onSubmit={handleSaveContactInfo} className="border border-[#E5D9C8] rounded-xl bg-white p-6 shadow-sm space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#E5D9C8]/60 gap-3">
+                      <div>
+                        <h3 className="text-lg font-serif font-bold text-[#6A2B15] flex items-center gap-2">
+                          <Mail className="w-5 h-5 text-[#8C3B1F]" />
+                          Contact Us Section Content
+                        </h3>
+                        <p className="text-xs text-[#8C7A6B]">
+                          Customize the phone number, email, address, messaging, and headlines shown in the storefront Contact section.
+                        </p>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={savingContactInfo}
+                        className="px-4 py-2 bg-[#6A2B15] hover:bg-[#8C3B1F] text-white text-xs font-bold rounded-lg transition shadow-xs cursor-pointer disabled:opacity-50 flex items-center gap-1.5 self-start sm:self-auto shrink-0"
+                      >
+                        <Check className="w-4 h-4" />
+                        <span>{savingContactInfo ? 'Saving...' : 'Save Contact Content'}</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Section Headline */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          Section Headline *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={contactInfo.headline}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, headline: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="e.g. We'd Love to Hear from You!"
+                        />
+                      </div>
+
+                      {/* Section Subtitle */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          Section Subtitle *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={contactInfo.subtitle}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, subtitle: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="e.g. Have a question, need styling advice, or just want to say hello?"
+                        />
+                      </div>
+
+                      {/* Phone Number */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          Phone Number *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={contactInfo.phone}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, phone: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="e.g. +91 97465 98789"
+                        />
+                      </div>
+
+                      {/* Email Address */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          Email Address *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={contactInfo.email}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, email: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="e.g. sakhibymayas@gmail.com"
+                        />
+                      </div>
+
+                      {/* WhatsApp Number (For Direct Click-to-Chat) */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          WhatsApp Number (with country code, digits only)
+                        </label>
+                        <input
+                          type="text"
+                          value={contactInfo.whatsappNumber}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, whatsappNumber: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="e.g. 919746598789"
+                        />
+                      </div>
+
+                      {/* Instagram Profile URL */}
+                      <div>
+                        <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                          Instagram Profile URL
+                        </label>
+                        <input
+                          type="url"
+                          value={contactInfo.instagramUrl}
+                          onChange={(e) => setContactInfo(prev => ({ ...prev, instagramUrl: e.target.value }))}
+                          className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                          placeholder="https://instagram.com/sakhibymayas"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Store Physical Address */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                        Physical Store Address *
+                      </label>
+                      <textarea
+                        rows={2}
+                        required
+                        value={contactInfo.address}
+                        onChange={(e) => setContactInfo(prev => ({ ...prev, address: e.target.value }))}
+                        className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                        placeholder="e.g. Sakhi By Maya's, Kochi, Kerala, India - 682001"
+                      />
+                    </div>
+
+                    {/* Personalized Styling / Consultation Note */}
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-wider text-[#8C7A6B] mb-1">
+                        Personalized Styling &amp; Bridal Consultation Note
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={contactInfo.stylingNote}
+                        onChange={(e) => setContactInfo(prev => ({ ...prev, stylingNote: e.target.value }))}
+                        className="w-full p-2.5 rounded border border-[#E5D9C8] focus:outline-none focus:ring-1 focus:ring-[#6A2B15] text-sm bg-white"
+                        placeholder="e.g. Looking for custom saree consultations or bridal styling? Drop us a message or call us directly."
+                      />
+                    </div>
+                  </form>
 
                   {/* Storefront Customizer Shortcuts */}
                   <div className="bg-[#FAF7EC] p-4 rounded-xl border border-[#E5DACD] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

@@ -9,6 +9,7 @@ const ProductSchema = new mongoose.Schema({
   isNew: { type: Boolean, default: false },
   isBestSeller: { type: Boolean, default: false },
   category: { type: String, required: true },
+  parentCategory: { type: String, default: 'Sarees' },
   fabric: { type: String },
   color: { type: String },
   slug: { type: String, required: true, unique: true },

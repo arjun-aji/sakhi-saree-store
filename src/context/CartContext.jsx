@@ -17,7 +17,15 @@ export function CartProvider({ children }) {
       }
       const savedWishlist = localStorage.getItem('sakhi_wishlist_items');
       if (savedWishlist) {
-        setWishlistItems(JSON.parse(savedWishlist));
+        const parsed = JSON.parse(savedWishlist);
+        if (Array.isArray(parsed)) {
+          // Prune legacy dummy/mock IDs (1, 2, '1', '2') that caused persistent ghost badges
+          const cleaned = parsed.filter((id) => id !== 1 && id !== 2 && id !== '1' && id !== '2');
+          setWishlistItems(cleaned);
+          if (cleaned.length !== parsed.length) {
+            localStorage.setItem('sakhi_wishlist_items', JSON.stringify(cleaned));
+          }
+        }
       }
     } catch (e) {
       console.error('Failed to load cart from localStorage', e);
@@ -130,6 +138,29 @@ export function CartProvider({ children }) {
     );
   };
 
+  /* ── Clear Wishlist ── */
+  const clearWishlist = () => {
+    setWishlistItems([]);
+    try {
+      localStorage.setItem('sakhi_wishlist_items', JSON.stringify([]));
+    } catch {}
+  };
+
+  /* ── Sync / Prune Wishlist (Clean orphaned IDs) ── */
+  const syncWishlist = (validProductIds) => {
+    if (!Array.isArray(validProductIds) || validProductIds.length === 0) return;
+    const validSet = new Set(validProductIds.map(String));
+    setWishlistItems((prev) => {
+      const filtered = prev.filter((id) => validSet.has(String(id)));
+      if (filtered.length !== prev.length) {
+        try {
+          localStorage.setItem('sakhi_wishlist_items', JSON.stringify(filtered));
+        } catch {}
+      }
+      return filtered;
+    });
+  };
+
   /* Total Count of all items in cart */
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -147,6 +178,8 @@ export function CartProvider({ children }) {
         updateQuantity,
         removeFromCart,
         toggleWishlist,
+        clearWishlist,
+        syncWishlist,
         clearCart,
       }}
     >

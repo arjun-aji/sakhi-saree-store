@@ -629,15 +629,6 @@ function ProfileContent() {
                 <Lock className="w-3.5 h-3.5 text-[#1E5631]" />
                 <span>Secure 128-Bit Encryption Standard</span>
               </div>
-              <div className="pt-2 border-t border-[#E5DACD]/40 w-full text-center">
-                <Link
-                  href="/admin"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8C3B1F] hover:text-[#6A2B15] hover:underline"
-                >
-                  <Shield className="w-3.5 h-3.5 text-[#C59B27]" />
-                  <span>Looking for Store Admin CMS? Go to Admin Portal →</span>
-                </Link>
-              </div>
             </div>
           </div>
         ) : (
@@ -804,25 +795,6 @@ function ProfileContent() {
                     </div>
                   </div>
                 )}
-              </div>
-
-              {/* Admin Portal Quick Switch */}
-              <div className="bg-gradient-to-r from-[#6A2B15] to-[#8C3B1F] text-[#FFFFF0] rounded-2xl p-5 shadow-md flex items-center justify-between gap-4">
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-1.5">
-                    <Shield className="w-4 h-4 text-[#E3C397]" />
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-[#E3C397]">Store Management</span>
-                  </div>
-                  <h3 className="font-serif font-bold text-sm text-[#FFFFF0]">Admin CMS Portal</h3>
-                  <p className="text-[11px] text-[#E3C397]">Switch from customer view to store management dashboard.</p>
-                </div>
-                <Link
-                  href="/admin"
-                  className="px-3.5 py-2 bg-[#E3C397] hover:bg-[#F3D7B5] text-[#6A2B15] text-xs font-bold rounded-lg transition shadow-xs flex items-center gap-1 shrink-0"
-                >
-                  <span>Admin</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
               </div>
 
               {/* Saved Delivery Addresses Book (Amazon / Flipkart style) */}

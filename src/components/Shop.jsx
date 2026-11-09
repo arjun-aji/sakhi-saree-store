@@ -101,6 +101,8 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
   }, []);
 
   /* ── Filter States ── */
+  const [parentCategories, setParentCategories] = useState([]);
+  const [selectedParentCategory, setSelectedParentCategory] = useState('All');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedFabric, setSelectedFabric] = useState('All');
   const [selectedColor, setSelectedColor] = useState('All');
@@ -110,9 +112,40 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [showDesktopSidebar, setShowDesktopSidebar] = useState(true);
 
+  // Sync parentCategory from query string
+  useEffect(() => {
+    const pCatParam = searchParams.get('parentCategory') || searchParams.get('category');
+    if (pCatParam) {
+      setSelectedParentCategory(pCatParam);
+    }
+  }, [searchParams]);
+
+  // Fetch Parent Categories from DB
+  useEffect(() => {
+    fetch('/api/categories', { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.categories)) {
+          setParentCategories(data.categories);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   /* ── Filtering + Sorting Logic ── */
   const filteredProducts = useMemo(() => {
     let result = [...productsList];
+
+    // Filter by Parent Category (Sarees, Churidars, Women Dresses, etc.)
+    if (selectedParentCategory !== 'All') {
+      result = result.filter((p) => {
+        const prodParent = p.parentCategory || 'Sarees';
+        const matchesParent = prodParent.toLowerCase() === selectedParentCategory.toLowerCase();
+        const matchesCategory = p.category && p.category.toLowerCase().includes(selectedParentCategory.toLowerCase());
+        const matchesName = p.name && p.name.toLowerCase().includes(selectedParentCategory.toLowerCase());
+        return matchesParent || matchesCategory || matchesName;
+      });
+    }
 
     // If New Arrivals, filter by newest first or `isNew` flag
     if (isNewArrivals) {
@@ -155,12 +188,12 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
     }
 
     return result;
-  }, [productsList, selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort, isNewArrivals]);
+  }, [productsList, selectedParentCategory, selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort, isNewArrivals]);
 
   /* ── Reset visible count when filters change ── */
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort]);
+  }, [selectedParentCategory, selectedCategory, selectedFabric, selectedColor, selectedPrice, selectedSort]);
 
   const visibleProducts = filteredProducts.slice(0, visibleCount);
   const hasMore = visibleCount < filteredProducts.length;
@@ -212,9 +245,38 @@ export default function Shop({ isNewArrivalsPage = false, isEmbedded = false }) 
           {/* Tagline */}
           <p className="font-serif-luxury text-[11px] sm:text-sm text-[#5A4438] italic font-normal max-w-xl mx-auto">
             {isNewArrivals
-              ? 'Freshly handpicked sarees, crafted with love and tradition.'
-              : 'Handpicked sarees that celebrate tradition, elegance and you.'}
+              ? 'Freshly handpicked sarees, churidars and women dresses, crafted with love and tradition.'
+              : 'Handpicked sarees, churidars and women dresses celebrating timeless elegance.'}
           </p>
+
+          {/* Parent Category Selection Pills */}
+          <div className="pt-3 sm:pt-4 flex items-center justify-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => setSelectedParentCategory('All')}
+              className={`px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all shadow-2xs cursor-pointer ${
+                selectedParentCategory === 'All'
+                  ? 'bg-[#6A2B15] text-[#FFFFF0] shadow-xs'
+                  : 'bg-white/90 border border-[#E5DACD] text-[#6A2B15] hover:bg-[#FAF7EC]'
+              }`}
+            >
+              All Outfits
+            </button>
+            {parentCategories.map((pcat) => (
+              <button
+                key={pcat._id || pcat.slug}
+                type="button"
+                onClick={() => setSelectedParentCategory(pcat.name)}
+                className={`px-3.5 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all shadow-2xs cursor-pointer flex items-center gap-1.5 ${
+                  selectedParentCategory.toLowerCase() === pcat.name.toLowerCase()
+                    ? 'bg-[#6A2B15] text-[#FFFFF0] shadow-xs'
+                    : 'bg-white/90 border border-[#E5DACD] text-[#6A2B15] hover:bg-[#FAF7EC]'
+                }`}
+              >
+                <span>{pcat.name}</span>
+              </button>
+            ))}
+          </div>
 
         </div>
       </section>

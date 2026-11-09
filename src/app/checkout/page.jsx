@@ -380,7 +380,7 @@ export default function CheckoutPage() {
         handler: async function (response) {
           try {
             const formattedItems = cartItems.map((item) => ({
-              productId: item.id && item.id.length === 24 ? item.id : undefined,
+              productId: String(item.id || item._id || ''),
               name: item.name,
               price: item.price,
               quantity: item.quantity,
